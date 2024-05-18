@@ -1,16 +1,24 @@
 ﻿namespace ApiInspector.WebUI.Components;
 
 public delegate Task ListViewSelectedItemsChanged<in TRecord>(IReadOnlyList<TRecord> selectedItems);
+public delegate Task ListViewSelectedItemChanged<in TRecord>(TRecord selectedItem);
 
 sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 {
     public required IReadOnlyList<TRecord> ItemsSource { get; init; } = [];
 
     public IReadOnlyList<TRecord> SelectedItems { get; init; } = [];
+    
+    public TRecord SelectedItem { get; init; }
 
     [ReactCustomEvent]
     public ListViewSelectedItemsChanged<TRecord> SelectedItemsChanged { get; init; }
 
+    
+    [ReactCustomEvent]
+    public ListViewSelectedItemChanged<TRecord> SelectedItemChanged { get; init; }
+    
+    
     public bool SelectionIsSingle { get; init; }
 
     protected override Task constructor()
@@ -19,7 +27,9 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         {
             SelectedItems             = SelectedItems,
             SelectedItemsInitialValue = SelectedItems,
-            SelectionIsSingle         = SelectionIsSingle
+            SelectionIsSingle         = SelectionIsSingle,
+            
+            
         };
 
         return Task.CompletedTask;
@@ -27,10 +37,22 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
     protected override Task OverrideStateFromPropsBeforeRender()
     {
-        if (!state.SelectedItemsInitialValue.SequenceEqual(SelectedItems))
+        bool hasChange;
+        
+        if (SelectionIsSingle)
+        {
+            hasChange = SelectedItem is not null ? !SelectedItem.Equals(state.SelectedItem): state.SelectedItem is not null;
+        }
+        else
+        {
+            hasChange = !state.SelectedItemsInitialValue.SequenceEqual(SelectedItems);
+        }
+        
+        if (hasChange)
         {
             state = state with
             {
+                SelectedItem = SelectedItem,
                 SelectedItems = SelectedItems,
                 SelectedItemsInitialValue = SelectedItems,
                 SelectionIsSingle = SelectionIsSingle
@@ -77,8 +99,10 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             {
                 state = state with
                 {
-                    SelectedItems = [ItemsSource[index]]
+                    SelectedItem = ItemsSource[index]
                 };
+                
+                DispatchEvent(SelectedItemChanged, [state.SelectedItem]);
             }
             else
             {
@@ -86,9 +110,11 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                 {
                     SelectedItems = state.SelectedItems.Toggle(ItemsSource[index])
                 };
+                
+                DispatchEvent(SelectedItemsChanged, [state.SelectedItems]);
             }
 
-            DispatchEvent(SelectedItemsChanged, [state.SelectedItems]);
+            
         }
 
         return Task.CompletedTask;
@@ -111,7 +137,15 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             }
         }
 
-        var isSelected = SelectedItems.Contains(record);
+        bool isSelected;
+        if (SelectionIsSingle)
+        {
+            isSelected = record.Equals(SelectedItem);
+        }
+        else
+        {
+            isSelected = SelectedItems.Contains(record);
+        }
 
         return new FlexRow(Id(index), WidthFull, Padding(4, 8), CursorDefault)
         {
@@ -134,5 +168,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         public bool SelectionIsSingle { get; init; }
 
         public IReadOnlyList<TRecord> SelectedItems { get; init; } = [];
+        
+        public TRecord SelectedItem { get; init; }
     }
 }

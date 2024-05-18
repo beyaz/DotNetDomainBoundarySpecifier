@@ -7,21 +7,21 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
     protected override Element render()
     {
         var itemsSource = Directory.GetFiles(Config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(x)).Select(Path.GetFileName).ToList();
-        
+
         return new ListView<string>
         {
-            SelectionIsSingle = true,
-            ItemsSource          = itemsSource,
-            SelectedItemsChanged = SelectedItemsChanged,
-            SelectedItems = state.SelectedAssemblyFileName.HasNoValue() ? [] : [state.SelectedAssemblyFileName]
+            SelectionIsSingle   = true,
+            ItemsSource         = itemsSource,
+            SelectedItemChanged = SelectedItemChanged,
+            SelectedItem        = state.SelectedAssemblyFileName
         };
     }
 
-    Task SelectedItemsChanged(IReadOnlyList<string> selecteditems)
+    Task SelectedItemChanged(string selecteditem)
     {
         state = state with
         {
-            SelectedAssemblyFileName = selecteditems.FirstOrDefault()
+            SelectedAssemblyFileName = selecteditem
         };
 
         Client.DispatchEvent<SelectedAssemblyChanged>([state.SelectedAssemblyFileName]);
