@@ -10,6 +10,9 @@ sealed record ConfigInfo
     public int NextAvailablePortFrom { get; init; }
     public bool UseUrls { get; init; }
 
+    public string AssemblySearchDirectory { get; init; }
+    public IReadOnlyList<string> DomainFiles { get; init; }
+
     public FileStorageInfo FileStorage { get; init; }
 
     internal class FileStorageInfo

@@ -60,7 +60,7 @@ static class Extractor
 
         fileName = Path.GetFileName(fileName);
 
-        const string directory = @"d:\boa\server\bin\";
+        var directory = Config.AssemblySearchDirectory;
 
         var targetAssemblyDefinition = ReadAssemblyDefinition(Path.Combine(directory, fileName));
         if (targetAssemblyDefinition.HasError)
@@ -187,7 +187,7 @@ static class Extractor
     {
         const string padding = "    ";
 
-        const string directory = @"d:\boa\server\bin\";
+        var directory = Config.AssemblySearchDirectory;
 
         if (input.FromAssemblyDefinition is null)
         {
@@ -605,9 +605,22 @@ static class Extractor
 
         static IEnumerable<string> cardOrchestrationFiles()
         {
-            const string directory = @"d:\boa\server\bin\";
+            var directory = Config.AssemblySearchDirectory;
 
-            return Directory.GetFiles(directory, "*.dll").Where(file => file.Contains(".Orchestration.Card."));
+            return Directory.GetFiles(directory, "*.dll").Where(isInDomain);
+
+            static bool isInDomain(string file)
+            {
+                foreach (var name in Config.DomainFiles)
+                {
+                    if (file.Contains(name))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
     }
 }
