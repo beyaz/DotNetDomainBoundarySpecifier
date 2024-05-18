@@ -11,5 +11,5 @@
     },
 
     "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
-    "DomainFiles": [".Orchestration.Card."]
+    "DomainFiles": [".DomainA"]
 }
