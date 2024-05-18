@@ -8,32 +8,18 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     
     protected override Element render()
     {
-        return new FlexColumn
+        return new FlexColumn(BorderRadius(6))
         {
             new FlexRowCentered(Padding(8,16),Background("#f9fafb"))
             {
-                new FlexRow
+                new SearchTextBox
                 {
-                    new input
+                    Value = state.SearchText,
+                    OnValueChange = x =>
                     {
-                        type                     = "text",
-                        placeholder              = "Search...",
-                        valueBind                = () => state.SearchText,
-                        valueBindDebounceTimeout = 700,
-                        valueBindDebounceHandler = OnSearchKeyPressFinished,
-                        style =
-                        {
-                            BorderNone
-                        }
-                    },
-                    Theme.SearchIcon,
-                    
-                    new Style
-                    {
-                        WidthFull,
-                        Border(1,solid,"rgb(209, 213, 219)"),
-                        BorderRadius(6),
-                        Padding(10)
+                        state = state with { SearchText = x };
+                        
+                        return Task.CompletedTask;
                     }
                 }
             },
@@ -47,18 +33,30 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     
     Element ToElement(TRecord record)
     {
+        var label = record.ToString();
+
+        if (label is null)
+        {
+            return null;
+        }
+        
+        if (state.SearchText.HasValue())
+        {
+            if (!label.Contains(state.SearchText))
+            {
+                return null;
+            }
+        }
+
+        
         return new FlexRowCentered(Border(1, solid, Theme.BorderColor), BorderRadius(4), Padding(4,8), CursorDefault, Hover(Border(1,solid,"blue")))
         {
-            record.ToString()
+            label
         };
     }
 
-    Task OnSearchKeyPressFinished()
-    {
-        return Task.CompletedTask;
-    }
 
-    internal class State
+    internal record State
     {
         public string SearchText { get; init; }
     }

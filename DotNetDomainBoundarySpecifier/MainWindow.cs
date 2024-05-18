@@ -31,9 +31,9 @@ class MainWindow : Component<MainWindowModel>
                 
                 new Style
                 {
-                    Border(Solid(1, Theme.BorderColor)),
+                    Theme.Border.Component,
                     SizeFull,
-                    Background(Theme.WindowBackgroundColor),
+                    Theme.MainWindow.Background,
                     BorderRadius(10),
                     BoxShadow(0, 30, 30, 0, rgba(69, 42, 124, 0.15))
                 }
