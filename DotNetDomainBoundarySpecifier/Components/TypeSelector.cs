@@ -4,32 +4,51 @@ sealed class TypeSelector : Component<TypeSelector.State>
 {
     public delegate Task SelectedTypeChanged(string typeFullName);
 
-    public string AssemblyFileName { get; init; } = "Test.DomainB.dll";
-    
+    public string AssemblyFileName { get; init; }
+
+    public string SelectedTypeFullName { get; init; }
+
+    [ReactCustomEvent]
+    public SelectedTypeChanged SelectionChange { get; init; }
+
+    protected override Task constructor()
+    {
+        state = new()
+        {
+            SelectedTypeFullName = SelectedTypeFullName
+        };
+
+        return Task.CompletedTask;
+    }
+
     protected override Element render()
     {
-        var sourceAssemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, AssemblyFileName));
-        if (sourceAssemblyDefinitionResult.HasError)
-        {
-            return sourceAssemblyDefinitionResult.Error.ToString();
-        }
-        
         var itemsSource = new List<string>();
         
-        foreach (var moduleDefinition in sourceAssemblyDefinitionResult.Value.Modules)
+        if (AssemblyFileName.HasValue())
         {
-            foreach (var type in moduleDefinition.Types)
+            var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, AssemblyFileName));
+            if (assemblyDefinitionResult.HasError)
             {
-                itemsSource.Add(type.FullName);
+                return assemblyDefinitionResult.Error.ToString();
+            }
+
+            foreach (var moduleDefinition in assemblyDefinitionResult.Value.Modules)
+            {
+                foreach (var type in moduleDefinition.Types)
+                {
+                    itemsSource.Add(type.FullName);
+                }
             }
         }
-        
+       
+
         return new ListView<string>
         {
-            SelectionIsSingle    = true,
-            ItemsSource          = itemsSource,
+            SelectionIsSingle   = true,
+            ItemsSource         = itemsSource,
             SelectedItemChanged = SelectedItemChanged,
-            SelectedItem         = state.SelectedTypeFullName
+            SelectedItem        = state.SelectedTypeFullName
         };
     }
 
@@ -40,7 +59,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
             SelectedTypeFullName = selecteditem
         };
 
-        Client.DispatchEvent<SelectedTypeChanged>([state.SelectedTypeFullName]);
+        DispatchEvent(SelectionChange, [state.SelectedTypeFullName]);
 
         return Task.CompletedTask;
     }

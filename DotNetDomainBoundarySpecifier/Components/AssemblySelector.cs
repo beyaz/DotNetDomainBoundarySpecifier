@@ -4,6 +4,21 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
 {
     public delegate Task SelectedAssemblyChanged(string assemblyFileName);
 
+    public string SelectedAssemblyFileName { get; init; }
+
+    [ReactCustomEvent]
+    public SelectedAssemblyChanged SelectionChange { get; init; }
+
+    protected override Task constructor()
+    {
+        state = new()
+        {
+            SelectedAssemblyFileName = SelectedAssemblyFileName
+        };
+
+        return Task.CompletedTask;
+    }
+
     protected override Element render()
     {
         var itemsSource = Directory.GetFiles(Config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(x)).Select(Path.GetFileName).ToList();
@@ -24,7 +39,7 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
             SelectedAssemblyFileName = selecteditem
         };
 
-        Client.DispatchEvent<SelectedAssemblyChanged>([state.SelectedAssemblyFileName]);
+        DispatchEvent(SelectionChange, [state.SelectedAssemblyFileName]);
 
         return Task.CompletedTask;
     }
