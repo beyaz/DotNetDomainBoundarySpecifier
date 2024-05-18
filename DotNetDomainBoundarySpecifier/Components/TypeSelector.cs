@@ -24,7 +24,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
     protected override Element render()
     {
         var itemsSource = new List<string>();
-        
+
         if (SelectedAssemblyFileName.HasValue())
         {
             var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, SelectedAssemblyFileName));
@@ -41,7 +41,6 @@ sealed class TypeSelector : Component<TypeSelector.State>
                 }
             }
         }
-       
 
         return new ListView<string>
         {
