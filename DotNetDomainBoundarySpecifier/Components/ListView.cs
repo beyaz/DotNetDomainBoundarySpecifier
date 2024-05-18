@@ -53,9 +53,10 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         }
 
         
-        return new FlexRowCentered(Theme.Border, BorderRadius(4), Padding(4,8), CursorDefault, Hover(Border(1,solid,"blue")))
+        return new FlexRow(WidthFull, Padding(4,8), CursorDefault, Hover(Background(Theme.BorderColor)))
         {
-            label
+            label,
+            Background("#ecfef")
         };
     }
 
