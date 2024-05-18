@@ -20,7 +20,7 @@ static class Theme
     
     public static StyleModifier Border => Border(1, solid, BorderColor);
 
-    public static StyleModifier BorderRadius => BorderRadius(6);
+    public static int BorderRadius => 6;
     
     public static StyleModifier BackgroundForWindow => Background(rgba(255, 255, 255, 0.4));
     
