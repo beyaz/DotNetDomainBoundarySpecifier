@@ -76,6 +76,7 @@ class MainWindow : Component<MainWindowModel>
             return new FlexRow(Padding(16))
             {
                 new AssemblySelector(),
+                new TypeSelector(),
                 new div
                 {
                     "SelectedFile:" + state.SelectedAssemblyFileName
