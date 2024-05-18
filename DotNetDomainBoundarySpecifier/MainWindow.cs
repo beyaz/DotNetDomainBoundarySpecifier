@@ -15,10 +15,19 @@ namespace ApiInspector.WebUI;
 
 class MainWindow : Component<MainWindowModel>
 {
-    
+    protected override Task constructor()
+    {
+        Client.ListenEvent<AssemblySelector.SelectedAssemblyChanged>(OnSelectedAssemblyChanged);
+        
+        return Task.CompletedTask;
+    }
 
-
-   
+    Task OnSelectedAssemblyChanged(string assemblyfilename)
+    {
+        state = state with { SelectedAssemblyFileName = assemblyfilename };
+        
+        return Task.CompletedTask;
+    }
 
     protected override Element render()
     {
@@ -66,7 +75,11 @@ class MainWindow : Component<MainWindowModel>
         {
             return new FlexRow(Padding(16))
             {
-                new AssemblySelector()
+                new AssemblySelector(),
+                new div
+                {
+                    "SelectedFile:" + state.SelectedAssemblyFileName
+                }
             };
         }
     }

@@ -1,9 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿namespace ApiInspector.WebUI;
 
-namespace ApiInspector.WebUI;
-
-class MainWindowModel
+public sealed record MainWindowModel
 {
-    
+    public string SelectedAssemblyFileName { get; init; }
 }
-
