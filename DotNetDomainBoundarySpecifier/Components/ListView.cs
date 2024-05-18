@@ -24,7 +24,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                 }
             },
             
-            new FlexColumn(AlignItemsCenter,Gap(4), Background("white"))
+            new FlexColumn(AlignItemsCenter, PaddingTopBottom(4), Gap(8), Background("white"), Theme.BorderRadius)
             {
                 Records.Select(ToElement)
             }
