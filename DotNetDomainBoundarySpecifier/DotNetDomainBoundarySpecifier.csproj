@@ -9,6 +9,24 @@
         <StartupObject>ApiInspector.WebUI.Program</StartupObject>
     </PropertyGroup>
 
+	<ItemGroup>
+		<Reference Include="ReactWithDotNet">
+			<HintPath>Libs\ReactWithDotNet.dll</HintPath>
+		</Reference>
+		<Reference Include="Mono.Cecil">
+			<HintPath>Libs\mono.cecil\Mono.Cecil.dll</HintPath>
+		</Reference>
+		<Reference Include="Mono.Cecil.Mdb">
+			<HintPath>Libs\mono.cecil\Mono.Cecil.Mdb.dll</HintPath>
+		</Reference>
+		<Reference Include="Mono.Cecil.Pdb">
+			<HintPath>Libs\mono.cecil\Mono.Cecil.Pdb.dll</HintPath>
+		</Reference>
+		<Reference Include="Mono.Cecil.Rocks">
+			<HintPath>Libs\mono.cecil\Mono.Cecil.Rocks.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
     <ItemGroup>
       <Content Remove="ApiInspector.WebUI.Config.json" />
     </ItemGroup>
@@ -27,11 +45,7 @@
     </ItemGroup>
 
 
-    <ItemGroup>
-        <Reference Include="ReactWithDotNet">
-            <HintPath>Libs\ReactWithDotNet.dll</HintPath>
-        </Reference>
-    </ItemGroup>
+  
 
 
     <ItemGroup>
