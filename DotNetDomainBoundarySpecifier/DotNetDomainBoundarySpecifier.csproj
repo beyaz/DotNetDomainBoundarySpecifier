@@ -11,7 +11,7 @@
 
 	<ItemGroup>
 		<Reference Include="ReactWithDotNet">
-			<HintPath>Libs\ReactWithDotNet.dll</HintPath>
+			<HintPath>Libs\ReactWithDotNet\ReactWithDotNet.dll</HintPath>
 		</Reference>
 		<Reference Include="Mono.Cecil">
 			<HintPath>Libs\mono.cecil\Mono.Cecil.dll</HintPath>
