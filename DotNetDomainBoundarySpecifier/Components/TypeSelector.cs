@@ -2,7 +2,7 @@
 
 sealed class TypeSelector : Component<TypeSelector.State>
 {
-    public delegate Task SelectedAssemblyChanged(string assemblyFileName);
+    public delegate Task SelectedTypeChanged(string typeFullName);
 
     public string AssemblyFileName { get; init; } = "Test.DomainB.dll";
     
@@ -11,7 +11,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
         var sourceAssemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, AssemblyFileName));
         if (sourceAssemblyDefinitionResult.HasError)
         {
-            
+            return sourceAssemblyDefinitionResult.Error.ToString();
         }
         
         var itemsSource = new List<string>();
@@ -28,25 +28,25 @@ sealed class TypeSelector : Component<TypeSelector.State>
         {
             SelectionIsSingle    = true,
             ItemsSource          = itemsSource,
-            SelectedItemsChanged = SelectedItemsChanged,
-            SelectedItems        = state.SelectedAssemblyFileName.HasNoValue() ? [] : [state.SelectedAssemblyFileName]
+            SelectedItemChanged = SelectedItemChanged,
+            SelectedItem         = state.SelectedTypeFullName
         };
     }
 
-    Task SelectedItemsChanged(IReadOnlyList<string> selecteditems)
+    Task SelectedItemChanged(string selecteditem)
     {
         state = state with
         {
-            SelectedAssemblyFileName = selecteditems.FirstOrDefault()
+            SelectedTypeFullName = selecteditem
         };
 
-        Client.DispatchEvent<SelectedAssemblyChanged>([state.SelectedAssemblyFileName]);
+        Client.DispatchEvent<SelectedTypeChanged>([state.SelectedTypeFullName]);
 
         return Task.CompletedTask;
     }
 
     internal record State
     {
-        public string SelectedAssemblyFileName { get; init; }
+        public string SelectedTypeFullName { get; init; }
     }
 }
