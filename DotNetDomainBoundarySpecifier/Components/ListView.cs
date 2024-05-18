@@ -8,7 +8,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     
     protected override Element render()
     {
-        return new FlexColumn(Theme.BorderRadius, Theme.Border.Component)
+        return new FlexColumn(Theme.BorderRadius, Theme.Border)
         {
             new FlexRowCentered(Padding(8,16),Background("#f9fafb"),BorderRadius(6))
             {
@@ -49,7 +49,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         }
 
         
-        return new FlexRowCentered(Border(1, solid, Theme.BorderColor), BorderRadius(4), Padding(4,8), CursorDefault, Hover(Border(1,solid,"blue")))
+        return new FlexRowCentered(Theme.Border, BorderRadius(4), Padding(4,8), CursorDefault, Hover(Border(1,solid,"blue")))
         {
             label
         };

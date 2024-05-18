@@ -22,7 +22,7 @@ class MainWindow : Component<MainWindowModel>
 
     protected override Element render()
     {
-        return new FlexRow(Padding(10), SizeFull, Background(Theme.BackgroundColor))
+        return new FlexRow(Padding(10), SizeFull, Theme.BackgroundForBrowser)
         {
             new FlexColumn
             {
@@ -31,11 +31,11 @@ class MainWindow : Component<MainWindowModel>
                 
                 new Style
                 {
-                    Theme.Border.Component,
+                    Theme.Border,
                     SizeFull,
-                    Theme.MainWindow.Background,
+                    Theme.BackgroundForWindow,
                     BorderRadius(10),
-                    BoxShadow(0, 30, 30, 0, rgba(69, 42, 124, 0.15))
+                    Theme.BoxShadowForWindow
                 }
             }
         };
