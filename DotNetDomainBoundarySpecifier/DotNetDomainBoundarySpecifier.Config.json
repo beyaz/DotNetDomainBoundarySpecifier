@@ -10,6 +10,6 @@
         "CacheDirectoryFormat": "{MyDocuments} > ApiInspector > Cache"
     },
 
-    "AssemblySearchDirectory": "d:\\boa\\server\\bin\\",
+    "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
     "DomainFiles": [".Orchestration.Card."]
 }
