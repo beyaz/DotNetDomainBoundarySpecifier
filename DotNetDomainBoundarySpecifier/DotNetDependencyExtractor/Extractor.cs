@@ -609,18 +609,20 @@ static class Extractor
 
             return Directory.GetFiles(directory, "*.dll").Where(isInDomain);
 
-            static bool isInDomain(string file)
+            
+        }
+    }
+    
+    public static bool isInDomain(string file)
+    {
+        foreach (var name in Config.DomainFiles)
+        {
+            if (file.Contains(name))
             {
-                foreach (var name in Config.DomainFiles)
-                {
-                    if (file.Contains(name))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
+                return true;
             }
         }
+
+        return false;
     }
 }

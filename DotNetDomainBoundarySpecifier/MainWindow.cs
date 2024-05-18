@@ -27,7 +27,8 @@ class MainWindow : Component<MainWindowModel>
             new FlexColumn
             {
                 applicationTopPanel,
-
+                createContent,
+                
                 new Style
                 {
                     Border(Solid(1, Theme.BorderColor)),
@@ -58,6 +59,14 @@ class MainWindow : Component<MainWindowModel>
                     BorderBottom(Solid(1, Theme.BorderColor)),
                     Padding(5, 30)
                 }
+            };
+        }
+
+        Element createContent()
+        {
+            return new FlexRow(Padding(16))
+            {
+                new AssemblySelector()
             };
         }
     }
