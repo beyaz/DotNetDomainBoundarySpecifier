@@ -8,9 +8,9 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     
     protected override Element render()
     {
-        return new FlexColumn(BorderRadius(6))
+        return new FlexColumn(Theme.BorderRadius, Theme.Border.Component)
         {
-            new FlexRowCentered(Padding(8,16),Background("#f9fafb"))
+            new FlexRowCentered(Padding(8,16),Background("#f9fafb"),BorderRadius(6))
             {
                 new SearchTextBox
                 {
@@ -24,7 +24,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                 }
             },
             
-            new FlexColumn(AlignItemsCenter,Gap(4))
+            new FlexColumn(AlignItemsCenter,Gap(4), Background("white"))
             {
                 Records.Select(ToElement)
             }

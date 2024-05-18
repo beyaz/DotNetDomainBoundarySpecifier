@@ -24,6 +24,8 @@ static class Theme
     {
         public static StyleModifier Component => Border(1, solid, BorderColor);
     }
+
+    public static StyleModifier BorderRadius => BorderRadius(6);
     
     public static class MainWindow
     {
