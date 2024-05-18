@@ -3,8 +3,8 @@
 sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 {
     public required IReadOnlyList<TRecord> Records { get; init; }
-    
-    public IReadOnlyList<int> SelectedRecordIndexList { get; init; }
+
+    public IReadOnlyList<int> SelectedRecordIndexList { get; init; } = [];
     
     protected override Element render()
     {
@@ -35,7 +35,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         };
     }
     
-    Element ToElement(TRecord record)
+    Element ToElement(TRecord record, int index)
     {
         var label = record.ToString();
 
@@ -52,11 +52,15 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             }
         }
 
+        var isSelected = SelectedRecordIndexList.Contains(index);
         
-        return new FlexRow(WidthFull, Padding(4,8), CursorDefault, Hover(Background(Theme.BorderColor)))
+        return new FlexRow(WidthFull, Padding(4,8), CursorDefault)
         {
             label,
-            Background("#ecfef")
+            
+            isSelected ? 
+                Background(Theme.ColorForListViewItemSelectedBackground):
+                Hover(Background(Theme.ColorForListViewItemHoverBackground))
         };
     }
 
