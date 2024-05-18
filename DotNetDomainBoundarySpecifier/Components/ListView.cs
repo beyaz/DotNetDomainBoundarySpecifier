@@ -1,6 +1,6 @@
 ﻿namespace ApiInspector.WebUI.Components;
 
-sealed class ItemList<TRecord> : Component<ItemList<TRecord>.State>
+sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 {
     public required IReadOnlyList<TRecord> Records { get; init; }
     
@@ -12,16 +12,28 @@ sealed class ItemList<TRecord> : Component<ItemList<TRecord>.State>
         {
             new FlexRowCentered(Padding(8,16),Background("#f9fafb"))
             {
-                new input
+                new FlexRow
                 {
-                    type                     = "text",
-                    placeholder              = "Search...",
-                    valueBind                = () => state.SearchText,
-                    valueBindDebounceTimeout = 700,
-                    valueBindDebounceHandler = OnSearchKeyPressFinished,
-                    style =
+                    new input
                     {
-                        WidthFull
+                        type                     = "text",
+                        placeholder              = "Search...",
+                        valueBind                = () => state.SearchText,
+                        valueBindDebounceTimeout = 700,
+                        valueBindDebounceHandler = OnSearchKeyPressFinished,
+                        style =
+                        {
+                            BorderNone
+                        }
+                    },
+                    Theme.SearchIcon,
+                    
+                    new Style
+                    {
+                        WidthFull,
+                        Border(1,solid,"rgb(209, 213, 219)"),
+                        BorderRadius(6),
+                        Padding(10)
                     }
                 }
             },
