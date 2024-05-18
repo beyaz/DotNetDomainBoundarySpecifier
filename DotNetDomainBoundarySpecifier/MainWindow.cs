@@ -27,7 +27,12 @@ class MainWindow : Component<MainWindowModel>
         
         return Task.CompletedTask;
     }
-   
+    Task OnSelectedMethodChanged(string methodFullName)
+    {
+        state = state with { SelectedMethodFullName = methodFullName };
+        
+        return Task.CompletedTask;
+    }
 
     protected override Element render()
     {
@@ -73,7 +78,7 @@ class MainWindow : Component<MainWindowModel>
 
         Element createContent()
         {
-            return new FlexRow(Padding(16))
+            return new FlexRow(Padding(16), Gap(16))
             {
                 new AssemblySelector
                 {
@@ -86,10 +91,18 @@ class MainWindow : Component<MainWindowModel>
                     SelectedTypeFullName = state.SelectedTypeFullName,
                     SelectionChange = OnSelectedTypeChanged
                 },
+                new MethodSelector
+                {
+                    SelectedAssemblyFileName = state.SelectedAssemblyFileName,
+                    SelectedTypeFullName     = state.SelectedTypeFullName,
+                    SelectedMethodFullName = state.SelectedMethodFullName,
+                    SelectionChange          = OnSelectedMethodChanged
+                },
                 new div
                 {
                     "SelectedFile:" + state.SelectedAssemblyFileName + Environment.NewLine + 
-                    state.SelectedTypeFullName
+                    state.SelectedTypeFullName + 
+                    state.SelectedMethodFullName
                 }
             };
         }
