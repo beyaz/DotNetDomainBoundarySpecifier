@@ -4,19 +4,38 @@ public delegate Task ListViewSelectedItemsChanged<in TRecord>(IReadOnlyList<TRec
 
 sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 {
-    public IReadOnlyList<int> IndexListOfSelectedItems { get; init; } = [];
-    
     public required IReadOnlyList<TRecord> ItemsSource { get; init; } = [];
+
+    public IReadOnlyList<TRecord> SelectedItems { get; init; } = [];
 
     [ReactCustomEvent]
     public ListViewSelectedItemsChanged<TRecord> SelectedItemsChanged { get; init; }
+
+    public bool SelectionIsSingle { get; init; }
 
     protected override Task constructor()
     {
         state = new()
         {
-            IndexListOfSelectedItems = IndexListOfSelectedItems
+            SelectedItems             = SelectedItems,
+            SelectedItemsInitialValue = SelectedItems,
+            SelectionIsSingle         = SelectionIsSingle
         };
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task OverrideStateFromPropsBeforeRender()
+    {
+        if (!state.SelectedItemsInitialValue.SequenceEqual(SelectedItems))
+        {
+            state = state with
+            {
+                SelectedItems = SelectedItems,
+                SelectedItemsInitialValue = SelectedItems,
+                SelectionIsSingle = SelectionIsSingle
+            };
+        }
 
         return Task.CompletedTask;
     }
@@ -54,14 +73,22 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     {
         if (int.TryParse(e.currentTarget.id, out var index))
         {
-            state = state with
+            if (SelectionIsSingle)
             {
-                IndexListOfSelectedItems = state.IndexListOfSelectedItems.Toggle(index)
-            };
-            
-            
+                state = state with
+                {
+                    SelectedItems = [ItemsSource[index]]
+                };
+            }
+            else
+            {
+                state = state with
+                {
+                    SelectedItems = state.SelectedItems.Toggle(ItemsSource[index])
+                };
+            }
 
-            DispatchEvent(SelectedItemsChanged,[state.IndexListOfSelectedItems.Select(i=>ItemsSource[i]).ToArray()]);
+            DispatchEvent(SelectedItemsChanged, [state.SelectedItems]);
         }
 
         return Task.CompletedTask;
@@ -84,7 +111,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             }
         }
 
-        var isSelected = IndexListOfSelectedItems.Contains(index);
+        var isSelected = SelectedItems.Contains(record);
 
         return new FlexRow(Id(index), WidthFull, Padding(4, 8), CursorDefault)
         {
@@ -101,6 +128,11 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     internal record State
     {
         public string SearchText { get; init; }
-        public IReadOnlyList<int> IndexListOfSelectedItems { get; init; } = [];
+
+        public IReadOnlyList<TRecord> SelectedItemsInitialValue { get; init; } = [];
+
+        public bool SelectionIsSingle { get; init; }
+
+        public IReadOnlyList<TRecord> SelectedItems { get; init; } = [];
     }
 }

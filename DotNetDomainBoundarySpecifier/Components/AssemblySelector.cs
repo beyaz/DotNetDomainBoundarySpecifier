@@ -7,23 +7,13 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
     protected override Element render()
     {
         var itemsSource = Directory.GetFiles(Config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(x)).Select(Path.GetFileName).ToList();
-
-        var selectedIndexList = new List<int>();
-        
-        if (state.SelectedAssemblyFileName.HasValue())
-        {
-            var index = itemsSource.IndexOf(state.SelectedAssemblyFileName);
-            if (index >= 0)
-            {
-                selectedIndexList = [index];
-            }
-        }
         
         return new ListView<string>
         {
+            SelectionIsSingle = true,
             ItemsSource          = itemsSource,
             SelectedItemsChanged = SelectedItemsChanged,
-            IndexListOfSelectedItems = selectedIndexList
+            SelectedItems = state.SelectedAssemblyFileName.HasNoValue() ? [] : [state.SelectedAssemblyFileName]
         };
     }
 
