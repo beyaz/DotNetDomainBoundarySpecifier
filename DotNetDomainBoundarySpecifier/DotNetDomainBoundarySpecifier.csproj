@@ -1,0 +1,115 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <LangVersion>preview</LangVersion>
+        <StartupObject>ApiInspector.WebUI.Program</StartupObject>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Remove="ApiInspector.WebUI.Config.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\bug.svg" />
+      <EmbeddedResource Include="Resources\Class.svg" />
+      <EmbeddedResource Include="Resources\dll.svg" />
+      <EmbeddedResource Include="Resources\fail.svg" />
+      <EmbeddedResource Include="Resources\Folder.svg" />
+      <EmbeddedResource Include="Resources\Method.svg" />
+      <EmbeddedResource Include="Resources\Namespace.svg" />
+      <EmbeddedResource Include="Resources\play.svg" />
+      <EmbeddedResource Include="Resources\success.svg" />
+      <EmbeddedResource Include="Resources\trash.svg" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Reference Include="ReactWithDotNet">
+            <HintPath>Libs\ReactWithDotNet.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Folder Include="Properties\" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Content Update="web.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="wwwroot\dist\index.js">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <None Update="Version.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+
+	<!-- npm -->
+	<PropertyGroup>
+		<AppRoot>wwwroot\</AppRoot>
+		<SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
+	</PropertyGroup>
+	<Target Name="_EnsureNodeEnvironment_" BeforeTargets="rebuild;build" Condition=" !Exists('$(AppRoot)node_modules') ">
+		<Exec Command="node --version" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+		<Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+		<Exec WorkingDirectory="$(AppRoot)" Command="npm install" />
+	</Target>
+	<Target Name="_NpmRunForDebug_" BeforeTargets="rebuild" Condition=" '$(Configuration)' == 'Debug' ">
+		<Exec Command="node --version" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+		<Message Importance="high" Text="Runinning npm command: 'npm run dev'" />
+		<Exec WorkingDirectory="$(AppRoot)" Command="npm run dev" />
+	</Target>
+	<Target Name="_NpmRunForRelease_" BeforeTargets="rebuild" Condition=" '$(Configuration)' == 'Release' ">
+		<Exec Command="node --version" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+		<Message Importance="high" Text="Runinning npm command: 'npm run build'" />
+		<Exec WorkingDirectory="$(AppRoot)" Command="npm run build" />
+	</Target>
+
+	<Target Name="_BeforePublish_" AfterTargets="ComputeFilesToPublish">
+		<Exec WorkingDirectory="$(AppRoot)" Command="npm install" />
+		<Exec WorkingDirectory="$(AppRoot)" Command="npm run build" />
+	</Target>
+
+	<Target Name="_AfterPublish_" AfterTargets="Publish">
+		<Delete Files="$(PublishDir)\ReactWithDotNet.pdb" />
+		<Delete Files="$(PublishDir)\ReactWithDotNet.xml" />
+		<Delete Files="$(PublishDir)\$(MSBuildProjectName).pdb" />
+		<Delete Files="$(PublishDir)\$(MSBuildProjectName).xml" />
+
+		
+		<Delete Files="$(PublishDir)\wwwroot\index.jsx" />
+		<Delete Files="$(PublishDir)\wwwroot\package.json" />
+		<Delete Files="$(PublishDir)\wwwroot\package-lock.json" />
+
+		<RemoveDir Directories="$(PublishDir)\wwwroot\react-with-dotnet" />
+		<RemoveDir Directories="$(PublishDir)\Libs" />
+		
+	</Target>
+   
+</Project>
