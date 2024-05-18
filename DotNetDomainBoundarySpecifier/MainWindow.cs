@@ -82,7 +82,7 @@ class MainWindow : Component<MainWindowModel>
                 },
                 new TypeSelector
                 {
-                    AssemblyFileName = state.SelectedAssemblyFileName,
+                    SelectedAssemblyFileName = state.SelectedAssemblyFileName,
                     SelectedTypeFullName = state.SelectedTypeFullName,
                     SelectionChange = OnSelectedTypeChanged
                 },

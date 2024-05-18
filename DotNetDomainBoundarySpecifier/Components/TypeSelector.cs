@@ -4,7 +4,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
 {
     public delegate Task SelectedTypeChanged(string typeFullName);
 
-    public string AssemblyFileName { get; init; }
+    public string SelectedAssemblyFileName { get; init; }
 
     public string SelectedTypeFullName { get; init; }
 
@@ -25,9 +25,9 @@ sealed class TypeSelector : Component<TypeSelector.State>
     {
         var itemsSource = new List<string>();
         
-        if (AssemblyFileName.HasValue())
+        if (SelectedAssemblyFileName.HasValue())
         {
-            var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, AssemblyFileName));
+            var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, SelectedAssemblyFileName));
             if (assemblyDefinitionResult.HasError)
             {
                 return assemblyDefinitionResult.Error.ToString();
