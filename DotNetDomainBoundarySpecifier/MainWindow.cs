@@ -214,14 +214,14 @@ class MainWindow : Component<MainWindowModel>
         
         elements.Add(new FlexRowCentered(SizeFull)
         {
-            new textarea(SizeFull, Border(1,solid,Theme.BorderColor), FontSize11)
+            new textarea(SizeFull, Border(1,solid,Theme.BorderColor), FontSize11, OverflowScroll)
             {
                 value = "public class A {}",
                 
             }
         });
             
-        return new FlexRow(Gap(16))
+        return new SplitRow
         {
             elements
         };
