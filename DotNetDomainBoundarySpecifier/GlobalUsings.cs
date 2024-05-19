@@ -7,3 +7,4 @@ global using static ApiInspector.WebUI.Extensions;
 global using static DotNetDependencyExtractor.Extensions;
 global using System.Threading.Tasks;
 global using static DotNetDependencyExtractor.Extractor;
+global using DotNetDomainBoundarySpecifier.DataStore;
