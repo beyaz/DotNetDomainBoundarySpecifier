@@ -214,10 +214,9 @@ class MainWindow : Component<MainWindowModel>
         
         elements.Add(new FlexRowCentered(SizeFull)
         {
-            new textarea(SizeFull, Border(1,solid,Theme.BorderColor), FontSize11, OverflowScroll)
+            new CSharpText
             {
-                value = "public class A {}",
-                
+                Value = "public class A {}"
             }
         });
             
@@ -227,4 +226,6 @@ class MainWindow : Component<MainWindowModel>
         };
     }
 }
+
+
 
