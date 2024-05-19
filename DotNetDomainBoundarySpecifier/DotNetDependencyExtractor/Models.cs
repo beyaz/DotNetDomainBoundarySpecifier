@@ -38,7 +38,7 @@ sealed record FileModel
     public string Content { get; init; }
 
     public string DirectoryPath { get; init; }
-}
+} 
 
 sealed record GenerateDependentCodeInput
 {
