@@ -127,6 +127,16 @@ class MainWindow : Component<MainWindowModel>
                             
                             new p(WordBreakAll)
                             {
+                                new FlexRow(Gap(4), PaddingTopBottom(4))
+                                {
+                                    new input
+                                    {
+                                        type = "checkbox",
+                                        valueBind = ()=> state.HasTransaction
+                                    },
+                                    "Has Transaction"
+                                },
+                                
                                 (b)"Assembly: " , state.SelectedAssemblyFileName,
                                 br,
                                 (b)"Class: ", state.SelectedTypeFullName,
