@@ -9,5 +9,5 @@ sealed record MainWindowModel
     public string SelectedMethodFullName { get; init; }
     public bool IsAnalyzing { get; init; }
     
-    public IReadOnlyList<TableModel> Records { get; init; }
+    public ImmutableList<TableModel> Records { get; init; }
 }

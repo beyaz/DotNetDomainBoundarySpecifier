@@ -142,8 +142,7 @@ class MainWindow : Component<MainWindowModel>
                 
                 new div(SizeFull)
                 {
-                    state.Records is null ? "-" :
-                        JsonConvert.SerializeObject(state.Records)
+                    CreatePropertySelectors(state.Records)
                 }
             };
         }
@@ -165,6 +164,48 @@ class MainWindow : Component<MainWindowModel>
         state = state with { Records = AnalyzeMethod(state) };
         
         return Task.CompletedTask;
+    }
+
+    Element CreatePropertySelectors(ImmutableList<TableModel> records)
+    {
+        if (records is null || records.Count == 0)
+        {
+            return null;
+        }
+
+        records = records.Where(x => x.ExternalAssemblyFileName == state.SelectedAssemblyFileName &&
+                                     x.ExternalClassFullName == state.SelectedTypeFullName &&
+                                     x.ExternalMethodFullName == state.SelectedMethodFullName
+                               ).ToImmutableList();
+        
+        if (records.Count == 0)
+        {
+            return null;
+        }
+        
+        var elements = new List<Element>();
+        
+        foreach (var relatedTableFullName in records.Select(x=>x.RelatedClassFullName).Distinct())
+        {
+            elements.Add(new ListView<TableModel>
+            {
+                ItemsSource = GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x=>x.FullName == relatedTableFullName)?.Properties.Select(p=>new TableModel
+                {
+                    RelatedClassFullName = relatedTableFullName,
+                    RelatedPropertyFullName = p.FullName
+                }).ToList(),
+                
+                SelectedItems = records.Where(x=>x.RelatedClassFullName == relatedTableFullName).ToList(),
+                
+                
+            });
+            
+        }
+
+        return new FlexRow(Gap(16))
+        {
+            elements
+        };
     }
 }
 

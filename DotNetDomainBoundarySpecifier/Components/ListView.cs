@@ -87,7 +87,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             new FlexColumn(AlignItemsCenter, PaddingTopBottom(4), Gap(8), Background("white"), BorderBottomLeftRadius(Theme.BorderRadius), BorderBottomRightRadius(Theme.BorderRadius))
             {
                 OverflowYAuto,
-                ItemsSource.Select(ToElement)
+                ItemsSource?.Select(ToElement)
             }
         };
     }

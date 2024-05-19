@@ -222,7 +222,7 @@ static class Extractor
                 records = records.Add(new()
                 {
                     ExternalAssemblyFileName = ui.SelectedAssemblyFileName,
-                    ExternalClassFullName    = typeDefinition.FullName,
+                    ExternalClassFullName    = ui.SelectedTypeFullName,
                     ExternalMethodFullName   = methodDefinition.FullName,
                     ModuleName               = Config.ModuleName,
                     RelatedClassFullName     = typeDefinition.FullName,
