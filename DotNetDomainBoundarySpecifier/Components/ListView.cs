@@ -132,7 +132,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
         if (state.SearchText.HasValue())
         {
-            if (!label.Contains(state.SearchText))
+            if (!label.Contains(state.SearchText,StringComparison.OrdinalIgnoreCase))
             {
                 return null;
             }
