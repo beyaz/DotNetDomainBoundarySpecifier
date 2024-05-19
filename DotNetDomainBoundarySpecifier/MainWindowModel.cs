@@ -7,5 +7,5 @@ public sealed record MainWindowModel
     public string SelectedTypeFullName { get; init; }
     
     public string SelectedMethodFullName { get; init; }
-    
+    public bool IsAnalyzing { get; init; }
 }

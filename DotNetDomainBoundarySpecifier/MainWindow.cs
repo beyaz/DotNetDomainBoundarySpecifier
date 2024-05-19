@@ -110,7 +110,9 @@ class MainWindow : Component<MainWindowModel>
                             {
                                 new ActionButton
                                 {
-                                    Label = "Analyze"
+                                    Label = "Analyze",
+                                    OnClicked = OnAnalyzeClicked,
+                                    IsProcessing = state.IsAnalyzing
                                 },
                                 
                                 new ActionButton
@@ -142,10 +144,21 @@ class MainWindow : Component<MainWindowModel>
         }
     }
 
-  
+    Task OnAnalyzeClicked()
+    {
+        state = state with { IsAnalyzing = true };
+        
+        Client.GotoMethod(DoAnalyze);
+        
+        return Task.CompletedTask;
+    }
 
-    
+    async Task DoAnalyze()
+    {
+        state = state with { IsAnalyzing = false };
 
-    
+        await Task.Delay(4000);
+        
+    }
 }
 
