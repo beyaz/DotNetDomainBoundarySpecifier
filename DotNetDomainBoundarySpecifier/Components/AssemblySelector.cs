@@ -6,7 +6,7 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
 
     public string SelectedAssemblyFileName { get; init; }
 
-    [ReactCustomEvent]
+    [CustomEvent]
     public SelectedAssemblyChanged SelectionChange { get; init; }
 
     protected override Task constructor()

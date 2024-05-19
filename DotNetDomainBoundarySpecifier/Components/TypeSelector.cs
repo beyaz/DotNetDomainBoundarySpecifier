@@ -8,7 +8,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
     public string SelectedTypeFullName { get; init; }
 
-    [ReactCustomEvent]
+    [CustomEvent]
     public SelectedTypeChanged SelectionChange { get; init; }
 
     protected override Task constructor()

@@ -10,7 +10,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
     
     public string SelectedMethodFullName { get; init; }
 
-    [ReactCustomEvent]
+    [CustomEvent]
     public SelectedMethodChanged SelectionChange { get; init; }
 
     protected override Task constructor()

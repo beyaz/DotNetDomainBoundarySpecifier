@@ -11,11 +11,11 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     
     public TRecord SelectedItem { get; init; }
 
-    [ReactCustomEvent]
+    [CustomEvent]
     public ListViewSelectedItemsChanged<TRecord> SelectedItemsChanged { get; init; }
 
     
-    [ReactCustomEvent]
+    [CustomEvent]
     public ListViewSelectedItemChanged<TRecord> SelectedItemChanged { get; init; }
     
     

@@ -2,7 +2,7 @@
 
 sealed class SearchTextBox : Component<SearchTextBox.State>
 {
-    [ReactCustomEvent]
+    [CustomEvent]
     public Func<string, Task> OnValueChange { get; init; }
 
     public string Value { get; init; }
