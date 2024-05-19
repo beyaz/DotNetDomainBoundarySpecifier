@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using ApiInspector.WebUI;
 
@@ -235,6 +234,212 @@ static class Extractor
             return records;
         }
         
+    }
+
+
+    internal static GenerateDependentCodeOutput GenerateCode(MainWindowModel mainWindowModel, ImmutableList<TableModel> records)
+    {
+        
+        const string padding = "    ";
+        
+        var targetMethod = 
+            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, mainWindowModel.SelectedAssemblyFileName))
+                .FirstOrDefault(t => t.FullName == mainWindowModel.SelectedTypeFullName)
+                ?.Methods.FirstOrDefault(m => m.FullName== mainWindowModel.SelectedMethodFullName);
+
+        if (targetMethod is null)
+        {
+            return default;
+        }
+
+        var targetType = targetMethod.DeclaringType;
+        
+
+        var names = CalculateNames(targetType.FullName, targetMethod.Name);
+
+        var contractFile = new StringBuilder();
+        var processFile = new StringBuilder();
+        
+        
+        TypeReference outputTypeAsAlreadyExistingType = null;
+        var outputTypeIsAlreadyExistingType = false;
+
+        if (targetMethod.ReturnType is GenericInstanceType genericInstanceType)
+        {
+            if (IsDotNetCoreType(genericInstanceType.GenericArguments[0].FullName))
+            {
+                outputTypeAsAlreadyExistingType = genericInstanceType.GenericArguments[0];
+
+                outputTypeIsAlreadyExistingType = true;
+            }
+        }
+
+
+        var outputTypeName = "Output";
+        if (outputTypeIsAlreadyExistingType)
+        {
+            outputTypeName = outputTypeAsAlreadyExistingType.GetShortNameInCsharp();
+        }
+        
+
+        contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
+        contractFile.AppendLine();
+
+        processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
+        if (outputTypeIsAlreadyExistingType)
+        {
+            processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" :outputTypeName) };");
+        }
+        else
+        {
+            processFile.AppendLine($"using Output = {names.ContractsProject.NamespaceName}.{outputTypeName};");
+        }
+        processFile.AppendLine();
+        processFile.AppendLine($"namespace {names.ProcessProject.NamespaceName};");
+        processFile.AppendLine();
+        processFile.AppendLine("static class Handler");
+        processFile.AppendLine("{");
+        processFile.AppendLine($"{padding}public static GenericResponse<Output> Execute(ObjectHelper objectHelper, Input input)");
+        processFile.AppendLine($"{padding}{{");
+        processFile.AppendLine($"{padding}{padding}var returnObject = objectHelper.InitializeResponse<Output>();");
+        processFile.AppendLine();
+
+        var constructorParameters = new List<string>();
+        
+        var constructorMethods = targetType.Methods.Where(m=>m.IsConstructor && !m.IsStatic).ToList();
+        if (constructorMethods.Count == 1 && constructorMethods[0].Parameters.Count == 1 && constructorMethods[0].Parameters[0].ParameterType.Name == "ExecutionDataContext")
+        {
+            constructorParameters.Add("objectHelper.Context");
+        }
+        
+        processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
+
+        var targetMethodParameters = targetMethod.Parameters.Where(p => p.ParameterType.Name != "ObjectHelper").ToList();
+
+        if (targetMethodParameters.Count == 1 &&
+            !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
+        {
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}var parameter = ConvertTo<{targetMethodParameters[0].ParameterType.FullName}>(input);");
+
+            var parameterPart = new List<string>();
+
+            foreach (var parameterDefinition in targetMethod.Parameters)
+            {
+                if (parameterDefinition.ParameterType.Name == "ObjectHelper")
+                {
+                    parameterPart.Add("objectHelper");
+                    continue;
+                }
+                
+                parameterPart.Add($"parameter");
+            }
+
+
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}var response = bo.{targetMethod.Name}({string.Join(", ", parameterPart)});");
+            processFile.AppendLine($"{padding}{padding}if (!response.Success)");
+            processFile.AppendLine($"{padding}{padding}{{");
+            processFile.AppendLine($"{padding}{padding}{padding}returnObject.Results.AddRange(response.Results);");
+            processFile.AppendLine($"{padding}{padding}{padding}return returnObject;");
+            processFile.AppendLine($"{padding}{padding}}}");
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}var value = response.Value;");
+            processFile.AppendLine();
+            if (outputTypeIsAlreadyExistingType)
+            {
+                processFile.AppendLine($"{padding}{padding}returnObject.Value = value;");
+            }
+            else
+            {
+                processFile.AppendLine($"{padding}{padding}returnObject.Value = ConvertTo<Output>(value);");
+            }
+
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}return returnObject;");
+            processFile.AppendLine($"{padding}}}"); // end of method
+            processFile.AppendLine("}"); // end of class
+            
+        }
+        else
+        {
+            {
+                
+                contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");
+                contractFile.AppendLine("{");
+                foreach (var parameterDefinition in targetMethodParameters)
+                {
+                    var parameterTypeName = parameterDefinition.ParameterType.GetShortNameInCsharp();
+
+                    var name = parameterDefinition.Name;
+
+                    name = char.ToUpper(name[0], new CultureInfo("en-US")) + new string(name.Skip(1).ToArray());
+
+                    contractFile.AppendLine($"    public {parameterTypeName} {name} {{ get; set; }}");
+                }
+
+                contractFile.AppendLine("}");
+            }
+
+            {
+                var parameterPart = new List<string>();
+
+                foreach (var parameterDefinition in targetMethod.Parameters)
+                {
+                    if (parameterDefinition.ParameterType.Name == "ObjectHelper")
+                    {
+                        parameterPart.Add("objectHelper");
+                        continue;
+                    }
+
+                    var name = parameterDefinition.Name;
+
+                    name = char.ToUpper(name[0], new CultureInfo("en-US")) + new string(name.Skip(1).ToArray());
+
+                    parameterPart.Add($"input.{name}");
+                }
+
+                processFile.AppendLine();
+                processFile.AppendLine($"{padding}{padding}var response = bo.{targetMethod.Name}({string.Join(", ", parameterPart)});");
+                processFile.AppendLine($"{padding}{padding}if (!response.Success)");
+                processFile.AppendLine($"{padding}{padding}{{");
+                processFile.AppendLine($"{padding}{padding}{padding}returnObject.Results.AddRange(response.Results);");
+                processFile.AppendLine($"{padding}{padding}{padding}return returnObject;");
+                processFile.AppendLine($"{padding}{padding}}}");
+                processFile.AppendLine();
+                processFile.AppendLine($"{padding}{padding}var value = response.Value;");
+                processFile.AppendLine();
+                if (outputTypeIsAlreadyExistingType)
+                {
+                    processFile.AppendLine($"{padding}{padding}returnObject.Value = value;");
+                }
+                else
+                {
+                    processFile.AppendLine($"{padding}{padding}returnObject.Value = ConvertTo<Output>(value);");
+                }
+                
+                processFile.AppendLine();
+                processFile.AppendLine($"{padding}{padding}return returnObject;");
+                processFile.AppendLine($"{padding}}}"); // end of method
+                processFile.AppendLine("}"); // end of class
+            }
+        }
+
+       
+        
+        return new GenerateDependentCodeOutput
+        {
+            ContractFile = new()
+            {
+                Name    = Path.Combine(names.ContractsProject.FolderName, names.ContractsProject.FileName),
+                Content = contractFile.ToString().Trim()
+            },
+            ProcessFile = new()
+            {
+                Name    = Path.Combine(names.ProcessProject.FolderName, names.ProcessProject.FileName),
+                Content = processFile.ToString().Trim()
+            }
+        };
     }
     static Result<GenerateDependentCodeOutput> GenerateDependentCode(GenerateDependentCodeInput input)
     {
@@ -504,37 +709,7 @@ static class Extractor
             }
         };
 
-        static ((string FolderName, string FileName, string NamespaceName) ContractsProject,
-            (string FolderName, string FileName, string NamespaceName) ProcessProject)
-            CalculateNames(string targetTypeFullName, string methodName)
-        {
-            var names = targetTypeFullName.Split('.').ToImmutableArray();
-
-            var removeList = new[]
-            {
-                "BOA",
-                "Process",
-                "Business",
-                "Kernel"
-            };
-
-            names = names.Where(x => !removeList.Contains(x)).ToImmutableArray();
-
-            return (
-                ContractsProject:
-                (
-                    FolderName: string.Join(".", names.Take(names.Length - 1)),
-                    FileName: string.Join(".", names[^1], methodName),
-                    NamespaceName: "BOA.Card.Contracts.Banking." + string.Join(".", names.Add(methodName))
-                ),
-                ProcessProject:
-                (
-                    FolderName: string.Join(".", names.Take(names.Length - 1)),
-                    FileName: string.Join(".", names[^1], methodName),
-                    NamespaceName: "BOA.Process.Card.Banking." + string.Join(".", names.Add(methodName))
-                )
-            );
-        }
+        
 
         
 
@@ -605,6 +780,38 @@ static class Extractor
         return false;
     }
 
+    static ((string FolderName, string FileName, string NamespaceName) ContractsProject,
+        (string FolderName, string FileName, string NamespaceName) ProcessProject)
+        CalculateNames(string targetTypeFullName, string methodName)
+    {
+        var names = targetTypeFullName.Split('.').ToImmutableArray();
+
+        var removeList = new[]
+        {
+            "BOA",
+            "Process",
+            "Business",
+            "Kernel"
+        };
+
+        names = names.Where(x => !removeList.Contains(x)).ToImmutableArray();
+
+        return (
+            ContractsProject:
+            (
+                FolderName: string.Join(".", names.Take(names.Length - 1)),
+                FileName: string.Join(".", names[^1], methodName),
+                NamespaceName: "BOA.Card.Contracts.Banking." + string.Join(".", names.Add(methodName))
+            ),
+            ProcessProject:
+            (
+                FolderName: string.Join(".", names.Take(names.Length - 1)),
+                FileName: string.Join(".", names[^1], methodName),
+                NamespaceName: "BOA.Process.Card.Banking." + string.Join(".", names.Add(methodName))
+            )
+        );
+    }
+    
     static IReadOnlyList<AssemblyAnalyse> _domainAssemblies;
     
     static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies()

@@ -159,6 +159,15 @@ class MainWindow : Component<MainWindowModel>
         state = state with { IsAnalyzing = false };
 
         state = state with { Records = AnalyzeMethod(state) };
+
+        var generatedCode =  GenerateCode(state, state.Records);
+
+        state = state with
+        {
+            GeneratedCode = generatedCode.ContractFile.Content + Environment.NewLine+
+                            generatedCode.ProcessFile.Content
+        };
+            
         
         return Task.CompletedTask;
     }
@@ -213,7 +222,7 @@ class MainWindow : Component<MainWindowModel>
         {
             new CSharpText
             {
-                Value = "public class A {}"
+                Value = state.GeneratedCode
             }
         });
             

@@ -10,4 +10,5 @@ sealed record MainWindowModel
     public bool IsAnalyzing { get; init; }
     
     public ImmutableList<TableModel> Records { get; init; }
+    public string GeneratedCode { get; init; }
 }
