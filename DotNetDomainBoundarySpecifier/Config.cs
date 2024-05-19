@@ -12,7 +12,8 @@ sealed record ConfigInfo
 
     public string AssemblySearchDirectory { get; init; }
     public IReadOnlyList<string> DomainFiles { get; init; }
-
+    public IReadOnlyList<string> SkipTypes { get; init; }
+        
     public FileStorageInfo FileStorage { get; init; }
 
     internal class FileStorageInfo
@@ -20,6 +21,8 @@ sealed record ConfigInfo
         public string CacheDirectoryFormat { get; init; }
         public bool IsActive { get; init; }
     }
+    
+    
 }
 
 partial class Extensions

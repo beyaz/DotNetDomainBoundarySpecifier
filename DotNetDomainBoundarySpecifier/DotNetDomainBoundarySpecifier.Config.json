@@ -11,5 +11,10 @@
     },
 
     "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
-    "DomainFiles": [".DomainA"]
+    "DomainFiles": [ ".DomainA" ],
+    "SkipTypes": [
+        "<Module>",
+        "Microsoft.CodeAnalysis.EmbeddedAttribute",
+        "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
+    ]
 }

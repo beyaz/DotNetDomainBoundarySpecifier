@@ -1,4 +1,6 @@
-﻿namespace DotNetDependencyExtractor;
+﻿using DotNetDomainBoundarySpecifier;
+
+namespace DotNetDependencyExtractor;
 
 static class CecilHelper
 {
@@ -178,13 +180,48 @@ static class CecilHelper
 
     public static Result<AssemblyDefinition> ReadAssemblyDefinition(string filePath)
     {
-        return Try(() =>
+        return Cache.AccessValue(nameof(ReadAssemblyDefinition) + filePath, () => Try(() =>
         {
             var resolver = new DefaultAssemblyResolver();
 
             resolver.AddSearchDirectory(Path.GetDirectoryName(filePath));
 
             return AssemblyDefinition.ReadAssembly(filePath, new ReaderParameters { AssemblyResolver = resolver });
+        }));
+    }
+    
+    static readonly CachedObjectMap Cache = new()
+    {
+        Timeout = TimeSpan.FromDays(3)
+    };
+    
+    
+    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(string filePath)
+    {
+        return Cache.AccessValue(nameof(GetTypesInAssemblyFile) + filePath, () =>
+        {
+            var result = ReadAssemblyDefinition(filePath);
+            if (result.HasError)
+            {
+                return [];
+            }
+
+            var typeList = new List<TypeDefinition>();
+
+            foreach (var moduleDefinition in result.Value.Modules)
+            {
+                foreach (var type in moduleDefinition.Types)
+                {
+                    if (Config.SkipTypes.Contains(type.FullName))
+                    {
+                        continue;
+                    }
+                    
+                    typeList.Add(type);
+                }
+            }
+
+            return typeList;
         });
     }
 }

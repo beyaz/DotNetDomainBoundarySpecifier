@@ -27,19 +27,9 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
         if (SelectedAssemblyFileName.HasValue())
         {
-            var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, SelectedAssemblyFileName));
-            if (assemblyDefinitionResult.HasError)
-            {
-                return assemblyDefinitionResult.Error.ToString();
-            }
+            var filePath = Path.Combine(Config.AssemblySearchDirectory, SelectedAssemblyFileName);
 
-            foreach (var moduleDefinition in assemblyDefinitionResult.Value.Modules)
-            {
-                foreach (var type in moduleDefinition.Types)
-                {
-                    itemsSource.Add(type.FullName);
-                }
-            }
+            itemsSource = GetTypesInAssemblyFile(filePath).Select(x => x.FullName).ToList();
         }
 
         return new ListView<string>

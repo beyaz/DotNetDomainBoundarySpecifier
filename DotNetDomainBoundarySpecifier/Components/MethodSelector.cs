@@ -43,7 +43,11 @@ sealed class MethodSelector : Component<MethodSelector.State>
                     {
                         foreach (var methodDefinition in type.Methods)
                         {
-                            itemsSource.Add(methodDefinition.FullName);
+                            if (methodDefinition.IsConstructor)
+                            {
+                                continue;
+                            }
+                            itemsSource.Add(methodDefinition.FullName);     
                         }
                     }
                 }
