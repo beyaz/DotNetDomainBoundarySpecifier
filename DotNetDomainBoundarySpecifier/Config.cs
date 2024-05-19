@@ -15,6 +15,9 @@ sealed record ConfigInfo
     public IReadOnlyList<string> SkipTypes { get; init; }
         
     public FileStorageInfo FileStorage { get; init; }
+    public string ModuleName { get; init; }
+    public IReadOnlyList<string> ExternalDomainFileNameContains { get; init; }
+    
 
     internal class FileStorageInfo
     {

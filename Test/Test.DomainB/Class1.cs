@@ -44,6 +44,8 @@ public class Method2Input
     public int Property1 { get; set; }   
     public DateTime? Property2 { get; set; }
     public long Property3 { get; set; }
+    
+    public long Property4 { get; set; }
 }
 
 public class Method2Output

@@ -10,11 +10,13 @@
         "CacheDirectoryFormat": "{MyDocuments} > ApiInspector > Cache"
     },
 
+    "ModuleName": "BOACard",
     "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
     "DomainFiles": [ ".DomainA" ],
     "SkipTypes": [
         "<Module>",
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
         "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
-    ]
+    ],
+    "ExternalDomainFileNameContains": ["Test.DomainB"]
 }

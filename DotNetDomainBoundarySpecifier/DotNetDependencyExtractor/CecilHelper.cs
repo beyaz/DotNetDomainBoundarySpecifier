@@ -34,10 +34,15 @@ static class CecilHelper
                             {
                                 if (instruction.Operand is MethodReference mr)
                                 {
-                                    if (mr.DeclaringType.Scope.Name.Contains("BOA."))
+                                    foreach (var partOfFileName in Config.ExternalDomainFileNameContains)
                                     {
-                                        calledMethods.Add(mr);
+                                        if (mr.DeclaringType.Scope.Name.Contains(partOfFileName,StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            calledMethods.Add(mr);
+                                        }
                                     }
+
+                                    
                                 }
                             }
                         }

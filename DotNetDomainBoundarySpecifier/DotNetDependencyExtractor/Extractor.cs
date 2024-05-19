@@ -9,7 +9,7 @@ static class Extractor
 {
     public static Result<List<GenerateDependentCodeInput>> ExportUsedMethodsInCardSystem(string fileName)
     {
-        var cardSystemSearchFiles = ReadAllCardSystemSearchFiles();
+        var cardSystemSearchFiles = GetDomainAssemblies();
 
         var usageInfo = FindUsedMethodsInCardSystem(fileName, cardSystemSearchFiles);
         if (usageInfo.HasError)
@@ -53,7 +53,7 @@ static class Extractor
     public static Result<List<GenerateDependentCodeInput>>
         FindUsedMethodsInCardSystem(string fileName, IReadOnlyList<AssemblyAnalyse> cardSystemSearchFiles)
     {
-        cardSystemSearchFiles ??= ReadAllCardSystemSearchFiles();
+        cardSystemSearchFiles ??= GetDomainAssemblies();
 
         var result = ResultFrom(new List<GenerateDependentCodeInput>());
 
@@ -183,15 +183,58 @@ static class Extractor
 
     internal static ImmutableList<TableModel> AnalyzeMethod(MainWindowModel mainWindowModel)
     {
-        var returnList = ImmutableList<TableModel>.Empty;
-
-        returnList = returnList.Add(new()
-        {
-            ModuleName = "deenme"
-        });
+        var records = ImmutableList<TableModel>.Empty;
         
+        var methodDefinition = 
+            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, mainWindowModel.SelectedAssemblyFileName))
+            .FirstOrDefault(t => t.FullName == mainWindowModel.SelectedTypeFullName)
+            ?.Methods.FirstOrDefault(m => m.FullName== mainWindowModel.SelectedMethodFullName);
+
+        if (methodDefinition is null)
+        {
+            return records;
+        }
+        
+        foreach (var parameterDefinition in methodDefinition.Parameters)
+        {
+            records = pushType(mainWindowModel, methodDefinition,records,parameterDefinition.ParameterType);
+        }
          
-        return returnList;
+        return records;
+
+        static ImmutableList<TableModel> pushType(MainWindowModel ui, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
+        {
+            if (IsDotNetCoreType(typeReference.FullName))
+            {
+                return records;
+            }
+            
+            var typeDefinition = typeReference.Resolve();
+            
+            var usedProperties = GetDomainAssemblies().FindUsedProperties(typeDefinition);
+            if (usedProperties.Count is 0)
+            {
+                return records;
+            }
+
+            foreach (var propertyDefinition in usedProperties)
+            {
+                records = records.Add(new()
+                {
+                    ExternalAssemblyFileName = ui.SelectedAssemblyFileName,
+                    ExternalClassFullName    = typeDefinition.FullName,
+                    ExternalMethodFullName   = methodDefinition.FullName,
+                    ModuleName               = Config.ModuleName,
+                    RelatedClassFullName     = typeDefinition.FullName,
+                    RelatedPropertyFullName  = propertyDefinition.FullName
+                });
+                
+                records = pushType(ui, methodDefinition, records, propertyDefinition.PropertyType);
+            }
+            
+            return records;
+        }
+        
     }
     static Result<GenerateDependentCodeOutput> GenerateDependentCode(GenerateDependentCodeInput input)
     {
@@ -305,7 +348,7 @@ static class Extractor
         var exportContext = new TypeExportContext
         {
             ExportList            = ImmutableList<TypeExportInfo>.Empty,
-            CardSystemSearchFiles = input.CardSystemSearchFiles ?? ReadAllCardSystemSearchFiles()
+            CardSystemSearchFiles = input.CardSystemSearchFiles ?? GetDomainAssemblies()
         };
 
         var targetMethodParameters = targetMethod.Parameters.Where(p => p.ParameterType.Name != "ObjectHelper").ToList();
@@ -493,32 +536,7 @@ static class Extractor
             );
         }
 
-        static bool IsDotNetCoreType(string fullTypeName)
-        {
-            var coreTypes = new[]
-            {
-                "System.String",
-                "System.Byte",
-                "System.Int16",
-                "System.Double",
-                "System.Int32",
-                "System.Int64",
-                "System.Decimal",
-                "System.DateTime",
-                "System.Boolean",
-
-                "System.Nullable`1<System.Byte>",
-                "System.Nullable`1<System.Int16>",
-                "System.Nullable`1<System.Double>",
-                "System.Nullable`1<System.Int32>",
-                "System.Nullable`1<System.Int64>",
-                "System.Nullable`1<System.Decimal>",
-                "System.Nullable`1<System.DateTime>",
-                "System.Nullable`1<System.Boolean>"
-            };
-
-            return coreTypes.Contains(fullTypeName);
-        }
+        
 
         static TypeExportContext PushType(TypeExportContext exportContext, TypeReference typeReference, string className = null)
         {
@@ -587,15 +605,23 @@ static class Extractor
         return false;
     }
 
-    static IReadOnlyList<AssemblyAnalyse> ReadAllCardSystemSearchFiles()
+    static IReadOnlyList<AssemblyAnalyse> _domainAssemblies;
+    
+    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies()
     {
-        return cardOrchestrationFiles()
-              .Select(ReadAssemblyDefinition)
-              .Where(r => r.Success)
-              .Select(x => x.Value)
-              .Select(AnalyzeAssembly)
-              .ToList();
+        if (_domainAssemblies == null)
+        {
+            _domainAssemblies =  cardOrchestrationFiles()
+                .Select(ReadAssemblyDefinition)
+                .Where(r => r.Success)
+                .Select(x => x.Value)
+                .Select(AnalyzeAssembly)
+                .ToList();
 
+           
+        }
+        
+        return _domainAssemblies;
         static IEnumerable<string> cardOrchestrationFiles()
         {
             var directory = Config.AssemblySearchDirectory;
@@ -617,5 +643,32 @@ static class Extractor
         }
 
         return false;
+    }
+    
+    static bool IsDotNetCoreType(string fullTypeName)
+    {
+        var coreTypes = new[]
+        {
+            "System.String",
+            "System.Byte",
+            "System.Int16",
+            "System.Double",
+            "System.Int32",
+            "System.Int64",
+            "System.Decimal",
+            "System.DateTime",
+            "System.Boolean",
+
+            "System.Nullable`1<System.Byte>",
+            "System.Nullable`1<System.Int16>",
+            "System.Nullable`1<System.Double>",
+            "System.Nullable`1<System.Int32>",
+            "System.Nullable`1<System.Int64>",
+            "System.Nullable`1<System.Decimal>",
+            "System.Nullable`1<System.DateTime>",
+            "System.Nullable`1<System.Boolean>"
+        };
+
+        return coreTypes.Contains(fullTypeName);
     }
 }
