@@ -203,13 +203,24 @@ class MainWindow : Component<MainWindowModel>
             
             elements.Add(new ListView<string>
             {
+                Title = typeDefinition.Name,
                 ItemsSource = itemsSource,
                 SelectedItems =typeDefinition.Properties.Where(p=>selectedProperties.Contains(p.FullName)).Select(p=>p.Name).ToList()
                 
             });
             
         }
-
+        
+        
+        elements.Add(new FlexRowCentered(SizeFull)
+        {
+            new textarea(SizeFull, Border(1,solid,Theme.BorderColor), FontSize11)
+            {
+                value = "public class A {}",
+                
+            }
+        });
+            
         return new FlexRow(Gap(16))
         {
             elements

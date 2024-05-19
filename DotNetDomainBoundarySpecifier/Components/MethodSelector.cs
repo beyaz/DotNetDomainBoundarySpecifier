@@ -56,6 +56,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
 
         return new ListView<string>
         {
+            Title = "Method",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
             SelectedItemChanged = SelectedItemChanged,

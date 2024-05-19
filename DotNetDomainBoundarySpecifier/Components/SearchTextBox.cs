@@ -26,7 +26,7 @@ sealed class SearchTextBox : Component<SearchTextBox.State>
             new input
             {
                 type                     = "text",
-                placeholder              = "Search...",
+                placeholder              = "search...",
                 valueBind                = () => state.Value,
                 valueBindDebounceTimeout = 700,
                 valueBindDebounceHandler = OnSearchKeyPressFinished,

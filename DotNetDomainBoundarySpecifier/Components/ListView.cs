@@ -14,6 +14,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     [CustomEvent]
     public ListViewSelectedItemsChanged<TRecord> SelectedItemsChanged { get; init; }
 
+    public string Title { get; init; }
     
     [CustomEvent]
     public ListViewSelectedItemChanged<TRecord> SelectedItemChanged { get; init; }
@@ -66,8 +67,10 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     {
         return new FlexColumn(BorderRadius(Theme.BorderRadius), Theme.Border)
         {
-            new FlexRowCentered(Padding(8, 16), Background("#f9fafb"), BorderRadius(Theme.BorderRadius, Theme.BorderRadius, 0, 0))
+            new FlexColumnCentered(Gap(4) )
             {
+                Title.HasValue() ? (b)Title : null,
+                
                 new SearchTextBox
                 {
                     Value = state.SearchText,
@@ -80,7 +83,10 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                 },
                 new Style
                 {
-                    BorderBottom(1, solid, Theme.BorderColor)
+                    BorderBottom(1, solid, Theme.BorderColor),
+                    BorderRadius(Theme.BorderRadius, Theme.BorderRadius, 0, 0),
+                    Padding(8, 16), 
+                    Background("#f9fafb")
                 }
             },
 

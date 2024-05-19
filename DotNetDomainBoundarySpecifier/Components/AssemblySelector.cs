@@ -25,6 +25,7 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
 
         return new ListView<string>
         {
+            Title = "Assembly",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
             SelectedItemChanged = SelectedItemChanged,
