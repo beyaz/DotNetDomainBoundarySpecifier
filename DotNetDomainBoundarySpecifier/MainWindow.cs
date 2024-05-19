@@ -42,7 +42,7 @@ class MainWindow : Component<MainWindowModel>
             new FlexColumn
             {
                 applicationTopPanel,
-                createContent,
+                createContent() + Padding(16),
                 
                 new Style
                 {
@@ -81,7 +81,7 @@ class MainWindow : Component<MainWindowModel>
         {
             return new SplitColumn
             {
-                new div(Padding(16))
+                new div
                 {
                     new SplitRow
                     {
@@ -137,7 +137,7 @@ class MainWindow : Component<MainWindowModel>
                     } 
                 },
                 
-                new div(Padding(16))
+                new div
                 {
                     CreatePropertySelectors(state.Records)
                 }
