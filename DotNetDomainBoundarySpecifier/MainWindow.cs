@@ -71,7 +71,7 @@ class MainWindow : Component<MainWindowModel>
                     JustifyContentSpaceBetween,
                     AlignItemsCenter,
                     BorderBottom(Solid(1, Theme.BorderColor)),
-                    Padding(5, 30)
+                    Padding(8, 30)
                 }
             };
         }
@@ -126,13 +126,13 @@ class MainWindow : Component<MainWindowModel>
                                 }
                             },
                             
-                            new p
+                            new p(WordBreakAll)
                             {
-                                "Assembly:" + state.SelectedAssemblyFileName ,
+                                (b)"Assembly: " , state.SelectedAssemblyFileName,
                                 br,
-                                "Class:" + state.SelectedTypeFullName,
+                                (b)"Class: ", state.SelectedTypeFullName,
                                 br,
-                                "Method:" + state.SelectedMethodFullName
+                                (b)"Method: ", state.SelectedMethodFullName
                             }
                         }
                         

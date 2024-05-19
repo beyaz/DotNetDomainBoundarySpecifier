@@ -148,7 +148,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             isSelected = SelectedItems.Contains(record);
         }
 
-        return new FlexRow(Id(index), WidthFull, Padding(4, 8), CursorDefault)
+        return new FlexRow(Id(index), WidthFull, Padding(4, 8), CursorDefault, AlignItemsCenter, WordBreakAll)
         {
             label,
 
