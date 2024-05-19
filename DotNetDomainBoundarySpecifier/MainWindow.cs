@@ -139,7 +139,10 @@ class MainWindow : Component<MainWindowModel>
                     }
                 },
                 
-                new div(Background("yellow"), SizeFull)
+                new div(SizeFull)
+                {
+                    "g+"+state.Records?.Count
+                }
             };
         }
     }
@@ -153,12 +156,13 @@ class MainWindow : Component<MainWindowModel>
         return Task.CompletedTask;
     }
 
-    async Task DoAnalyze()
+    Task DoAnalyze()
     {
         state = state with { IsAnalyzing = false };
 
-        await Task.Delay(4000);
+        state = state with { Records = AnalyzeMethod(state) };
         
+        return Task.CompletedTask;
     }
 }
 

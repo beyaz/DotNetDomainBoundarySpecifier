@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
+using ApiInspector.WebUI;
 
 namespace DotNetDependencyExtractor;
 
@@ -183,6 +184,18 @@ static class Extractor
         return sb.ToString();
     }
 
+    internal static ImmutableList<TableModel> AnalyzeMethod(MainWindowModel mainWindowModel)
+    {
+        var returnList = ImmutableList<TableModel>.Empty;
+
+        returnList = returnList.Add(new()
+        {
+            ModuleName = "deenme"
+        });
+        
+        
+        return returnList;
+    }
     static Result<GenerateDependentCodeOutput> GenerateDependentCode(GenerateDependentCodeInput input)
     {
         const string padding = "    ";
