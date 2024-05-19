@@ -24226,12 +24226,11 @@ var init_react_with_dotnet = __esm({
     FunctionExecutionQueueEntryUniqueIdentifier = 1;
     FunctionExecutionQueueCurrentEntry = null;
     VisitFiberNodeForCaptureState = (parentScope, fiberNode) => {
-      if (fiberNode.key === null) {
-        return;
+      var breadcrumb = parentScope.breadcrumb;
+      if (fiberNode.key !== null) {
+        breadcrumb = breadcrumb + "," + fiberNode.key;
       }
-      var scope = parentScope;
-      var breadcrumb = parentScope.breadcrumb + "," + fiberNode.key;
-      scope = { map: parentScope.map, breadcrumb };
+      var scope = { map: parentScope.map, breadcrumb };
       var isFiberNodeRelatedWithDotNetComponent = fiberNode.type && fiberNode.type[DotNetTypeOfReactComponent];
       if (isFiberNodeRelatedWithDotNetComponent) {
         var map = parentScope.map;

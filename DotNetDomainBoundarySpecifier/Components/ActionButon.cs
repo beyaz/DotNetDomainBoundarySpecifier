@@ -20,6 +20,23 @@ sealed class ActionButton : Component<ActionButton.State>
         return Task.CompletedTask;
     }
 
+    protected override Task OverrideStateFromPropsBeforeRender()
+    {
+        if (IsProcessing && state.IsProcessing)
+        {
+            state = state with { ShouldResetStateNextRender = true };
+
+            return Task.CompletedTask;
+        }
+
+        if (state.ShouldResetStateNextRender && !IsProcessing)
+        {
+            state = new();
+        }
+
+        return Task.CompletedTask;
+    }
+
     protected override Element render()
     {
         var isProcessing = state.IsProcessing;
@@ -55,12 +72,12 @@ sealed class ActionButton : Component<ActionButton.State>
         return Task.CompletedTask;
     }
 
-  
-
     internal record State
     {
         public bool IsProcessing { get; init; }
 
         public bool IsProcessingInitialValue { get; init; }
+
+        public bool ShouldResetStateNextRender { get; init; }
     }
 }
