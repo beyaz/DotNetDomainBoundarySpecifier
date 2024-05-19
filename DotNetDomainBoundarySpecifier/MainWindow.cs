@@ -81,11 +81,9 @@ class MainWindow : Component<MainWindowModel>
         {
             return new SplitColumn
             {
-                new SplitRow
+                new div(Padding(16))
                 {
-                    sizes = [25,25,25,25],
-                    style = { Padding(16) },
-                    children =
+                    new SplitRow
                     {
                         new AssemblySelector
                         {
@@ -111,8 +109,8 @@ class MainWindow : Component<MainWindowModel>
                             {
                                 new ActionButton
                                 {
-                                    Label = "Analyze",
-                                    OnClicked = OnAnalyzeClicked,
+                                    Label        = "Analyze",
+                                    OnClicked    = OnAnalyzeClicked,
                                     IsProcessing = state.IsAnalyzing
                                 },
                                 
@@ -136,11 +134,10 @@ class MainWindow : Component<MainWindowModel>
                                 (b)"Method: ", state.SelectedMethodFullName
                             }
                         }
-                        
-                    }
+                    } 
                 },
                 
-                new div(SizeFull)
+                new div(Padding(16))
                 {
                     CreatePropertySelectors(state.Records)
                 }

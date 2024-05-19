@@ -4,17 +4,16 @@ namespace ApiInspector.WebUI.Components;
 
 sealed class SplitColumn : Component
 {
-    public int[] sizes { get; init; } = [50, 50];
+    public int[] sizes { get; init; }
 
     protected override Element render()
     {
-        return new FlexRow(SizeFull)
+        return new div(SizeFull)
         {
             new style
             {
                 new CssClass("gutter",
                 [
-                    PaddingTopBottom(8),
                     BackgroundRepeatNoRepeat,
                     BackgroundPosition("50%")
                 ]),

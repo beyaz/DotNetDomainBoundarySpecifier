@@ -4,17 +4,16 @@ namespace ApiInspector.WebUI.Components;
 
 sealed class SplitRow : Component
 {
-    public int[] sizes { get; init; } = [50, 50];
+    public int[] sizes { get; init; }
 
     protected override Element render()
     {
-        return new FlexRow(SizeFull)
+        return new div(SizeFull)
         {
             new style
             {
                 new CssClass("gutter",
                 [
-                    PaddingLeftRight(8),
                     BackgroundRepeatNoRepeat,
                     BackgroundPosition("50%")
                 ]),
@@ -29,7 +28,7 @@ sealed class SplitRow : Component
                 sizes      = sizes,
                 gutterSize = 12,
                 style      = { SizeFull, DisplayFlexRow },
-
+                direction = "horizontal",
                 children =
                 {
                     children
