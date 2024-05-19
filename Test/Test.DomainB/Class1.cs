@@ -46,6 +46,25 @@ public class Method2Input
     public long Property3 { get; set; }
     
     public long Property4 { get; set; }
+    
+    public NestedUsageClass Property5 { get; set; }
+}
+
+
+public class NestedUsageClass
+{
+    public string X { get; set; }
+    public int Y { get; set; }   
+    public DateTime? Z { get; set; }
+    
+    public NestedUsageClass2 PropertyNestedUsage2 { get; set; }
+}
+
+public class NestedUsageClass2
+{
+    public string X { get; set; }
+    public int Y { get; set; }   
+    public DateTime? Z { get; set; }
 }
 
 public class Method2Output

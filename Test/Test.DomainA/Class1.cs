@@ -13,7 +13,16 @@ namespace Test.DomainA
                 Property0 = "a",
                 Property1 = 1,
                 Property2 = null,
-                Property3 = 2
+                Property3 = 2,
+                Property5 = new ()
+                {
+                    X="a",
+                    Y = 6,
+                    PropertyNestedUsage2 = new ()
+                    {
+                        Z = DateTime.MaxValue
+                    }
+                }
             });
         }
     }
