@@ -187,16 +187,24 @@ class MainWindow : Component<MainWindowModel>
         
         foreach (var relatedTableFullName in records.Select(x=>x.RelatedClassFullName).Distinct())
         {
-            elements.Add(new ListView<TableModel>
+            var filePath = Path.Combine(Config.AssemblySearchDirectory, state.SelectedAssemblyFileName);
+
+            var typeDefinition = GetTypesInAssemblyFile(filePath).FirstOrDefault(x=>x.FullName == relatedTableFullName);
+            if (typeDefinition is null)
             {
-                ItemsSource = GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x=>x.FullName == relatedTableFullName)?.Properties.Select(p=>new TableModel
-                {
-                    RelatedClassFullName = relatedTableFullName,
-                    RelatedPropertyFullName = p.FullName
-                }).ToList(),
-                
-                SelectedItems = records.Where(x=>x.RelatedClassFullName == relatedTableFullName).ToList(),
-                
+                continue;
+            }
+            
+            var itemsSource = typeDefinition.Properties.Select(p=>p.Name).ToList();
+
+            var selectedProperties = records.Where(x => x.RelatedClassFullName == relatedTableFullName).Select(x => x.RelatedPropertyFullName).ToList();
+            
+            
+            
+            elements.Add(new ListView<string>
+            {
+                ItemsSource = itemsSource,
+                SelectedItems =typeDefinition.Properties.Where(p=>selectedProperties.Contains(p.FullName)).Select(p=>p.Name).ToList()
                 
             });
             
