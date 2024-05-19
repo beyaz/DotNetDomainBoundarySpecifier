@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using ApiInspector.WebUI.Components;
+using Newtonsoft.Json;
 using ReactWithDotNet;
 using ReactWithDotNet.ThirdPartyLibraries.MonacoEditorReact;
 using ReactWithDotNet.ThirdPartyLibraries.MUI.Material;
@@ -141,7 +142,8 @@ class MainWindow : Component<MainWindowModel>
                 
                 new div(SizeFull)
                 {
-                    "g+"+state.Records?.Count
+                    state.Records is null ? "-" :
+                        JsonConvert.SerializeObject(state.Records)
                 }
             };
         }
