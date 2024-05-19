@@ -42,15 +42,11 @@ sealed record FileModel
 
 sealed record GenerateDependentCodeInput
 {
-    public string FromAssembly { get; init; } = "BOA.Orchestration.Card.CCO.dll";
+    public string TargetAssembly { get; init; }
 
-    public string TargetAssembly { get; init; } = "BOA.Process.Kernel.Inquiry.dll";
+    public string TargetMethodName { get; init; }
 
-    public string TargetMethodName { get; init; } = "GetLKSResponse";
-
-    public string TargetTypeFullName { get; init; } = "BOA.Process.Kernel.Inquiry.KKB.LKS";
-
-    internal AssemblyDefinition FromAssemblyDefinition { get; init; }
+    public string TargetTypeFullName { get; init; }
 
     internal AssemblyDefinition TargetAssemblyDefinition { get; init; }
 

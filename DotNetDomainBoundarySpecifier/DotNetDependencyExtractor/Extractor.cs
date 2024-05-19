@@ -84,9 +84,6 @@ static class Extractor
 
                 var newRecord = new GenerateDependentCodeInput
                 {
-                    FromAssembly = analyse.AssemblyDefinition.Name.Name+".dll",
-                    FromAssemblyDefinition   = analyse.AssemblyDefinition,
-                    
                     TargetAssembly           = targetAssemblyDefinition.Value.Name.Name+".dll",
                     TargetAssemblyDefinition = targetAssemblyDefinition.Value,
                     TargetMethod             = targetMethod,
@@ -201,21 +198,7 @@ static class Extractor
         const string padding = "    ";
 
         var directory = Config.AssemblySearchDirectory;
-
-        if (input.FromAssemblyDefinition is null)
-        {
-            var sourceAssemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(directory, input.FromAssembly));
-            if (sourceAssemblyDefinitionResult.HasError)
-            {
-                return sourceAssemblyDefinitionResult.Error;
-            }
-
-            input = input with
-            {
-                FromAssemblyDefinition = sourceAssemblyDefinitionResult.Value
-            };
-        }
-
+        
         if (input.TargetAssemblyDefinition is null)
         {
             var targetAssemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(directory, input.TargetAssembly));
