@@ -230,7 +230,6 @@ static class Extractor
             };
         }
 
-        var sourceAssemblyAnalyse = AnalyzeAssembly(input.FromAssemblyDefinition);
         var targetAssemblyAnalyse = AnalyzeAssembly(input.TargetAssemblyDefinition);
 
         if (input.TargetType is null)
@@ -322,8 +321,6 @@ static class Extractor
 
         var exportContext = new TypeExportContext
         {
-            SourceAssembly        = input.FromAssemblyDefinition,
-            SourceAssemblyAnalyse = sourceAssemblyAnalyse,
             ExportList            = ImmutableList<TypeExportInfo>.Empty,
             CardSystemSearchFiles = input.CardSystemSearchFiles ?? ReadAllCardSystemSearchFiles()
         };

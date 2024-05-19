@@ -26,10 +26,6 @@ sealed record TypeExportContext
 {
     public ImmutableList<TypeExportInfo> ExportList { get; init; }
 
-    public AssemblyDefinition SourceAssembly { get; init; }
-
-    public AssemblyAnalyse SourceAssemblyAnalyse { get; init; }
-    
     public IReadOnlyList<AssemblyAnalyse> CardOrchestrations { get; init; }
     
     public IReadOnlyList<AssemblyAnalyse> CardSystemSearchFiles { get; init; }
