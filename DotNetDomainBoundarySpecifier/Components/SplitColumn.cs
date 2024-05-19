@@ -21,7 +21,6 @@ sealed class SplitColumn : Component
                 new CssClass("gutter.gutter-vertical",
                 [
                     BackgroundImage("url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=')"),
-                    //Cursor("col-resize")
                 ])
             },
 
