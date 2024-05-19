@@ -33,7 +33,8 @@ sealed class SearchTextBox : Component<SearchTextBox.State>
                 style =
                 {
                     BorderNone,
-                    Color(rgb(75, 85, 99))
+                    Color(rgb(75, 85, 99)),
+                    WidthFull
                 }
             },
 

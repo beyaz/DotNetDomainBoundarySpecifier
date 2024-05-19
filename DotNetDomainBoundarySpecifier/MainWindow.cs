@@ -104,12 +104,36 @@ class MainWindow : Component<MainWindowModel>
                             SelectedMethodFullName   = state.SelectedMethodFullName,
                             SelectionChange          = OnSelectedMethodChanged
                         },
-                        new div
+                        new FlexColumn(Gap(16))
                         {
-                            "SelectedFile:" + state.SelectedAssemblyFileName + Environment.NewLine + 
-                            state.SelectedTypeFullName + 
-                            state.SelectedMethodFullName
+                            new FlexRow(Gap(4))
+                            {
+                                new ActionButton
+                                {
+                                    Label = "Analyze"
+                                },
+                                
+                                new ActionButton
+                                {
+                                    Label = "Save"
+                                },
+                                
+                                new ActionButton
+                                {
+                                    Label = "Export cs files to project"
+                                }
+                            },
+                            
+                            new p
+                            {
+                                "Assembly:" + state.SelectedAssemblyFileName ,
+                                br,
+                                "Class:" + state.SelectedTypeFullName,
+                                br,
+                                "Method:" + state.SelectedMethodFullName
+                            }
                         }
+                        
                     }
                 },
                 
