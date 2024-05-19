@@ -80,31 +80,36 @@ class MainWindow : Component<MainWindowModel>
         {
             return new SplitColumn
             {
-                new FlexRow(Padding(16), Gap(16))
+                new SplitRow
                 {
-                    new AssemblySelector
+                    sizes = [25,25,25,25],
+                    style = { Padding(16) },
+                    children =
                     {
-                        SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-                        SelectionChange          = OnSelectedAssemblyChanged
-                    },
-                    new TypeSelector
-                    {
-                        SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-                        SelectedTypeFullName     = state.SelectedTypeFullName,
-                        SelectionChange          = OnSelectedTypeChanged
-                    },
-                    new MethodSelector
-                    {
-                        SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-                        SelectedTypeFullName     = state.SelectedTypeFullName,
-                        SelectedMethodFullName   = state.SelectedMethodFullName,
-                        SelectionChange          = OnSelectedMethodChanged
-                    },
-                    new div
-                    {
-                        "SelectedFile:" + state.SelectedAssemblyFileName + Environment.NewLine + 
-                        state.SelectedTypeFullName + 
-                        state.SelectedMethodFullName
+                        new AssemblySelector
+                        {
+                            SelectedAssemblyFileName = state.SelectedAssemblyFileName,
+                            SelectionChange          = OnSelectedAssemblyChanged
+                        },
+                        new TypeSelector
+                        {
+                            SelectedAssemblyFileName = state.SelectedAssemblyFileName,
+                            SelectedTypeFullName     = state.SelectedTypeFullName,
+                            SelectionChange          = OnSelectedTypeChanged
+                        },
+                        new MethodSelector
+                        {
+                            SelectedAssemblyFileName = state.SelectedAssemblyFileName,
+                            SelectedTypeFullName     = state.SelectedTypeFullName,
+                            SelectedMethodFullName   = state.SelectedMethodFullName,
+                            SelectionChange          = OnSelectedMethodChanged
+                        },
+                        new div
+                        {
+                            "SelectedFile:" + state.SelectedAssemblyFileName + Environment.NewLine + 
+                            state.SelectedTypeFullName + 
+                            state.SelectedMethodFullName
+                        }
                     }
                 },
                 
