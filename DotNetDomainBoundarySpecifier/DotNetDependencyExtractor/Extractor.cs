@@ -843,7 +843,7 @@ static class Extractor
     {
         foreach (var name in Config.DomainFiles)
         {
-            if (file.Contains(name))
+            if (file.Contains(name,StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
