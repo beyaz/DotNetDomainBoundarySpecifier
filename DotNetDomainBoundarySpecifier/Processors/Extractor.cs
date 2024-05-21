@@ -19,7 +19,7 @@ static class Extractor
         public required string MethodFullName { get; init; }
     }
     
-    internal static ImmutableList<TableModel> AnalyzeMethod(AnalyzeMethodInput input)
+    internal static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
         
@@ -35,14 +35,14 @@ static class Extractor
         
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            records = pushType(input, methodDefinition,records,parameterDefinition.ParameterType);
+            records = pushType(serviceContext,input, methodDefinition,records,parameterDefinition.ParameterType);
         }
 
-        records = pushType(input, methodDefinition, records, methodDefinition.ReturnType);
+        records = pushType(serviceContext, input, methodDefinition, records, methodDefinition.ReturnType);
          
         return records;
 
-        static ImmutableList<TableModel> pushType(AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
+        static ImmutableList<TableModel> pushType(ServiceContext serviceContext, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
         {
             if (IsDotNetCoreType(typeReference.FullName))
             {
@@ -51,7 +51,7 @@ static class Extractor
             
             var typeDefinition = typeReference.Resolve();
             
-            var usedProperties = GetDomainAssemblies().FindUsedProperties(typeDefinition);
+            var usedProperties = GetDomainAssemblies(serviceContext).FindUsedProperties(typeDefinition);
             if (usedProperties.Count is 0)
             {
                 return records;
@@ -69,7 +69,7 @@ static class Extractor
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
                 
-                records = pushType(input, methodDefinition, records, propertyDefinition.PropertyType);
+                records = pushType(serviceContext, input, methodDefinition, records, propertyDefinition.PropertyType);
             }
             
             return records;
@@ -78,13 +78,15 @@ static class Extractor
     }
 
 
-    internal static GenerateDependentCodeOutput GenerateCode(AnalyzeMethodInput input, ImmutableList<TableModel> records)
+    internal static GenerateDependentCodeOutput GenerateCode(ServiceContext serviceContext , AnalyzeMethodInput input, ImmutableList<TableModel> records)
     {
         
         const string padding = "    ";
+
+        var config = Config;
         
         var targetMethod = 
-            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, input.AssemblyFileName))
+            GetTypesInAssemblyFile(Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
                 .FirstOrDefault(t => t.FullName == input.TypeFullName)
                 ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
 
@@ -326,7 +328,7 @@ static class Extractor
     
     static IReadOnlyList<AssemblyAnalyse> _domainAssemblies;
     
-    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies()
+    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(ServiceContext serviceContext)
     {
         if (_domainAssemblies == null)
         {

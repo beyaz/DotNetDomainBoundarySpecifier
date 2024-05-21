@@ -48,7 +48,7 @@ partial class Extensions
         }
     }
 
-    static ConfigInfo ReadConfig()
+   public static ConfigInfo ReadConfig()
     {
         var config = JsonConvert.DeserializeObject<ConfigInfo>(File.ReadAllText(Path.Combine(AppFolder, "DotNetDomainBoundarySpecifier.Config.json")));
 

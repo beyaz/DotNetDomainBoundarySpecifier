@@ -176,9 +176,9 @@ class MainView : Component<MainViewModel>
             MethodFullName   = state.SelectedMethodFullName
         };
         
-        state = state with { Records = AnalyzeMethod(analyzeMethodInput) };
+        state = state with { Records = AnalyzeMethod(new(), analyzeMethodInput) };
 
-        var generatedCode =  GenerateCode(analyzeMethodInput, state.Records);
+        var generatedCode =  GenerateCode(new (),analyzeMethodInput, state.Records);
 
         state = state with
         {
