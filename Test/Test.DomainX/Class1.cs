@@ -1,12 +1,12 @@
-﻿using Test.DomainB;
+﻿using Test.ExternalDomainY.Scenario1;
 
-namespace Test.DomainA
+namespace Test.DomainX
 {
     public class Class1
     {
         public static void MethodA()
         {
-            var process = new DomainB.Process2();
+            var process = new Test.ExternalDomainY.Scenario1.Process2();
 
             process.Method2(new Method2Input
             {

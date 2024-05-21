@@ -1,4 +1,4 @@
-﻿namespace Test.DomainB;
+﻿namespace Test.ExternalDomainY.Scenario1;
 
 public class Process1
 {
