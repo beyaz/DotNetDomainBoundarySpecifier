@@ -45,8 +45,8 @@ sealed class ActionButton : Component<ActionButton.State>
 
         var buttonStyle = new Style
         {
-            Color(BluePrimary),
-            Border(1, solid, BluePrimary),
+            Color(Theme.BluePrimary),
+            Border(1, solid, Theme.BluePrimary),
             Background(transparent),
             BorderRadius(5),
             Padding(10, 20),

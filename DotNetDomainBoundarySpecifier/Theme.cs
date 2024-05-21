@@ -2,6 +2,8 @@
 
 static class Theme
 {
+    public static string BluePrimary => "#1976d2";
+    
     public const string BorderColor = "#d5d5d8";
 
     public static Style InputStyle =>
