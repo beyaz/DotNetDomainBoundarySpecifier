@@ -23,5 +23,8 @@ sealed record ConfigInfo
         public string CacheDirectoryFormat { get; init; }
         public bool IsActive { get; init; }
     }
+    
+    public string ExportDirectoryForTypes { get; init; }
+    public string ExportDirectoryForProcess { get; init; }
     // @formatting:on
 }

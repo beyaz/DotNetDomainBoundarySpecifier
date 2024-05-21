@@ -6,16 +6,14 @@ namespace DotNetDomainBoundarySpecifier.Processors;
 static class Extractor
 {
 
-    public static Unit ExportToFile(GenerateDependentCodeOutput output)
+    public static Unit ExportToFile(ServiceContext serviceContext, GenerateDependentCodeOutput output)
     {
-        const string solutionDirectory = @"D:\work\BOA.CardModules\Dev\BOA.Card.Banking\";
+        var config = serviceContext.Config;
 
         {
             var fileModel = output.ContractFile;
 
-            const string projectDirectory = $@"{solutionDirectory}BOA.Card.Contracts.Banking\";
-
-            Unit unit = WriteCSharpFile($"{projectDirectory}{fileModel.Name}.cs", fileModel.Content);
+            Unit unit = WriteCSharpFile($"{config.ExportDirectoryForTypes}{fileModel.Name}.cs", fileModel.Content);
             if (unit.HasError)
             {
                 return unit;
@@ -25,9 +23,7 @@ static class Extractor
         {
             var fileModel = output.ProcessFile;
 
-            const string projectDirectory = $@"{solutionDirectory}BOA.Process.Card.Banking\";
-
-            Unit unit =WriteCSharpFile($"{projectDirectory}{fileModel.Name}.cs", fileModel.Content);
+            Unit unit =WriteCSharpFile($"{config.ExportDirectoryForProcess}{fileModel.Name}.cs", fileModel.Content);
             if (unit.HasError)
             {
                 return unit;

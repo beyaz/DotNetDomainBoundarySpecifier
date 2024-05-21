@@ -21,5 +21,8 @@
     ],
     "ExternalDomainFileNameContains": [ "BOA." ],
 
-    "IgnoreParameterTypeNamesLike": ["ObjectHelper"]
+    "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
+
+    "ExportDirectoryForTypes": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
+    "ExportDirectoryForProcess": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Process.Card.Banking\\"
 }

@@ -20,5 +20,8 @@
     ],
     "ExternalDomainFileNameContains": [ "Test.ExternalDomainY" ],
 
-    "IgnoreParameterTypeNamesLike": ["ObjectHelper"]
+    "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
+
+    "ExportDirectoryForTypes": "C:\temp\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
+    "ExportDirectoryForProcess": "C:\temp\\BOA.Card.Banking\\BOA.Process.Card.Banking\\"
 }
