@@ -1,4 +1,4 @@
-﻿namespace ApiInspector.WebUI;
+﻿namespace DotNetDomainBoundarySpecifier.Utilities;
 
 partial class Extensions
 {

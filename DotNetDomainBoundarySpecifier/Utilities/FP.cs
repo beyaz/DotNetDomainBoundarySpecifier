@@ -1,6 +1,6 @@
-﻿global using static DotNetDependencyExtractor.FP;
+﻿global using static DotNetDomainBoundarySpecifier.Utilities.FP;
 
-namespace DotNetDependencyExtractor;
+namespace DotNetDomainBoundarySpecifier.Utilities;
 
 public sealed record Result<TValue, TError>
 {

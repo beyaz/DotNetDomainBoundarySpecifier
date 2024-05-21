@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace DotNetDependencyExtractor;
+namespace DotNetDomainBoundarySpecifier.Utilities;
 
 static class FileHelper
 {

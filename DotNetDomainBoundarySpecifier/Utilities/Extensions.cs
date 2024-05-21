@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace DotNetDependencyExtractor;
+﻿namespace DotNetDomainBoundarySpecifier.Utilities;
 
 static class Extensions
 {
