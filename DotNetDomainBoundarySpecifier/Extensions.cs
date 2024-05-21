@@ -1,10 +1,6 @@
-﻿using System.Collections.Immutable;
-using System.IO;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using ReactWithDotNet.ThirdPartyLibraries.ReactFreeScrollbar;
+﻿using ReactWithDotNet.ThirdPartyLibraries.ReactFreeScrollbar;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier;
 
 /// <summary>
 /// Deneme

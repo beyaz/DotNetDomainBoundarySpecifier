@@ -1,6 +1,4 @@
-﻿using ApiInspector.WebUI;
-
-namespace DotNetDomainBoundarySpecifier.Processors;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 sealed record ServiceContext
 {

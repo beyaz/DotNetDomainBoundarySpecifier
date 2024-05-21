@@ -3,7 +3,7 @@ global using ReactWithDotNet;
 global using System.Collections.Generic;
 global using System.Linq;
 global using static ReactWithDotNet.Mixin;
-global using static ApiInspector.WebUI.Extensions;
+global using static DotNetDomainBoundarySpecifier.Extensions;
 global using System.Threading.Tasks;
 global using static DotNetDomainBoundarySpecifier.Processors.Extractor;
 global using System.Collections.Immutable;
