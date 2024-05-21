@@ -2,44 +2,14 @@
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
-static class Extractor
+static class Analyzer
 {
     static readonly CachedObjectMap Cache = new()
     {
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static Unit ExportToFile(ServiceContext serviceContext, GenerateDependentCodeOutput output)
-    {
-        var config = serviceContext.Config;
-
-        return Run([
-            () => writeToFile(config.ExportDirectoryForTypes, output.ContractFile),
-            () => writeToFile(config.ExportDirectoryForProcess, output.ProcessFile)
-        ]);
-
-        static Exception writeToFile(string directory, FileModel fileModel)
-        {
-            return WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
-        }
-    }
-
-    public static bool isInDomain(ServiceContext serviceContext, string file)
-    {
-        var config = serviceContext.Config;
-
-        foreach (var name in config.DomainFiles)
-        {
-            if (file.Contains(name, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    internal static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
+    public static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
 
@@ -99,7 +69,7 @@ static class Extractor
         }
     }
 
-    internal static GenerateDependentCodeOutput GenerateCode(ServiceContext serviceContext, AnalyzeMethodInput input, ImmutableList<TableModel> records)
+    public static CodeGenerationOutput GenerateCode(ServiceContext serviceContext, AnalyzeMethodInput input, ImmutableList<TableModel> records)
     {
         const string padding = "    ";
 
@@ -304,6 +274,21 @@ static class Extractor
         };
     }
 
+    public static bool IsInDomain(ServiceContext serviceContext, string file)
+    {
+        var config = serviceContext.Config;
+
+        foreach (var name in config.DomainFiles)
+        {
+            if (file.Contains(name, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static ((string FolderName, string FileName, string NamespaceName) ContractsProject,
         (string FolderName, string FileName, string NamespaceName) ProcessProject)
         CalculateNames(string targetTypeFullName, string methodName)
@@ -349,7 +334,7 @@ static class Extractor
         {
             var directory = config.AssemblySearchDirectory;
 
-            var files = Directory.GetFiles(directory, "*.dll").Where(x => isInDomain(serviceContext, x));
+            var files = Directory.GetFiles(directory, "*.dll").Where(x => IsInDomain(serviceContext, x));
 
             return files
                 .Select(ReadAssemblyDefinition)

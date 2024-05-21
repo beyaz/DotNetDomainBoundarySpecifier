@@ -4,7 +4,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using static ReactWithDotNet.Mixin;
 global using System.Threading.Tasks;
-global using static DotNetDomainBoundarySpecifier.Processors.Extractor;
+global using static DotNetDomainBoundarySpecifier.Processors.Analyzer;
 global using System.Collections.Immutable;
 global using DotNetDomainBoundarySpecifier.Utilities;
 global using System;

@@ -18,7 +18,7 @@ sealed record FileModel
     public string DirectoryPath { get; init; }
 }
 
-sealed record GenerateDependentCodeOutput
+sealed record CodeGenerationOutput
 {
     public FileModel ContractFile { get; init; }
 
