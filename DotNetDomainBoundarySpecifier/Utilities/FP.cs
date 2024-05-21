@@ -2,56 +2,6 @@
 
 namespace DotNetDomainBoundarySpecifier.Utilities;
 
-public sealed record Result<TValue, TError>
-{
-    public TError Error { get; init; }
-    public TValue Value { get; init; }
-
-    public bool HasError => !EqualityComparer<TError>.Default.Equals(Error, default);
-
-    public static implicit operator Result<TValue, TError>(TValue value)
-    {
-        return new()
-        {
-            Value = value
-        };
-    }
-
-    public static implicit operator Result<TValue, TError>(TError error)
-    {
-        return new()
-        {
-            Error = error
-        };
-    }
-
-    public static implicit operator Result<TValue, TError>((TValue value, TError error) tuple)
-    {
-        return new()
-        {
-            Value = tuple.value,
-            Error = tuple.error
-        };
-    }
-
-    public void Match(Action<TValue> onSuccess, Action<TError> onError)
-    {
-        if (HasError)
-        {
-            onError(Error);
-        }
-        else
-        {
-            onSuccess(Value);
-        }
-    }
-
-    public TResult Select<TResult>(Func<TValue, TResult> onSuccess, Func<TError, TResult> onError)
-    {
-        return HasError ? onError(Error) : onSuccess(Value);
-    }
-}
-
 public sealed record Result<TValue>
 {
     public Exception Error { get; init; }
@@ -115,60 +65,6 @@ public sealed record Result<TValue>
     }
 }
 
-static class FP
-{
-    
-
-    
-
-
-    public static void IgnoreException(Action action)
-    {
-        try
-        {
-            action();
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
-    }
-
-    
-
-
-
-    public static Unit Run(Func<Unit>[] functions)
-    {
-        foreach (var function in functions)
-        {
-            var unit = function();
-            if (unit.HasError)
-            {
-                return unit;
-            }
-        }
-
-        return Unit.Success;
-    }
-
-
-   
-
-
-    public static Result<TValue> Try<TValue>(Func<TValue> func)
-    {
-        try
-        {
-            return func();
-        }
-        catch (Exception exception)
-        {
-            return exception;
-        }
-    }
-}
-
 public sealed class Unit
 {
     public static readonly Unit Success = new();
@@ -201,6 +97,47 @@ public sealed class Unit
         if (HasError)
         {
             throw Error;
+        }
+    }
+}
+
+static class FP
+{
+    public static void IgnoreException(Action action)
+    {
+        try
+        {
+            action();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+
+    public static Unit Run(Func<Unit>[] functions)
+    {
+        foreach (var function in functions)
+        {
+            var unit = function();
+            if (unit.HasError)
+            {
+                return unit;
+            }
+        }
+
+        return Unit.Success;
+    }
+
+    public static Result<TValue> Try<TValue>(Func<TValue> func)
+    {
+        try
+        {
+            return func();
+        }
+        catch (Exception exception)
+        {
+            return exception;
         }
     }
 }
