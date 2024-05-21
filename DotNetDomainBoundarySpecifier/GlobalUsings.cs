@@ -9,3 +9,4 @@ global using System.Threading.Tasks;
 global using static DotNetDependencyExtractor.Extractor;
 global using DotNetDomainBoundarySpecifier.DataStore;
 global using System.Collections.Immutable;
+global using DotNetDomainBoundarySpecifier.Utilities;
