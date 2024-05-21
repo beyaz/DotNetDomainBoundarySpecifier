@@ -1,4 +1,4 @@
-﻿namespace ApiInspector.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 // Taken from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_loader
 public class LoadingIcon : PureComponent

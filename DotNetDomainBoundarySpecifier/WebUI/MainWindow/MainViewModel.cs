@@ -1,6 +1,6 @@
 ﻿using DotNetDomainBoundarySpecifier.Processors;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 sealed record MainViewModel
 {

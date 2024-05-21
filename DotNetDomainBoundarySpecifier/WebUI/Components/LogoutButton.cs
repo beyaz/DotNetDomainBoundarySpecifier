@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using ReactWithDotNet.ThirdPartyLibraries.MUI.Material;
 
-namespace ApiInspector.WebUI.Components;
+namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class LogoutButton : Component<LogoutButton.State>
 {

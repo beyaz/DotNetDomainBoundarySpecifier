@@ -1,4 +1,4 @@
-﻿namespace ApiInspector.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class SearchTextBox : Component<SearchTextBox.State>
 {

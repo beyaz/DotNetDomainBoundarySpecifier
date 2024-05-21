@@ -1,6 +1,4 @@
-﻿using DotNetDomainBoundarySpecifier.Processors;
-
-namespace ApiInspector.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class AssemblySelector : Component<AssemblySelector.State>
 {

@@ -1,7 +1,6 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier.WebUI.Layout;
 
 sealed class MainLayout : Component, IPageLayout
 {

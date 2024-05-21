@@ -1,9 +1,11 @@
+using DotNetDomainBoundarySpecifier.WebUI.Layout;
+using DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using ReactWithDotNet.UIDesigner;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier.WebUI.Infrastructure;
 
 static class ReactWithDotNetIntegration
 {

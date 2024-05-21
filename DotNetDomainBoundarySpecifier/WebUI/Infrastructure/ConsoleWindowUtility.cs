@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier.WebUI.Infrastructure;
 
 static class ConsoleWindowUtility
 {

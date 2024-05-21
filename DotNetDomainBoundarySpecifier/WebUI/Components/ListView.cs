@@ -1,4 +1,4 @@
-﻿namespace ApiInspector.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 public delegate Task ListViewSelectedItemsChanged<in TRecord>(IReadOnlyList<TRecord> selectedItems);
 public delegate Task ListViewSelectedItemChanged<in TRecord>(TRecord selectedItem);

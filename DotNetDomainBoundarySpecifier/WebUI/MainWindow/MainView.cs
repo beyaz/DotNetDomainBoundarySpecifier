@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reflection.Emit;
-using System.Threading.Tasks;
-using ApiInspector.WebUI.Components;
-using DotNetDomainBoundarySpecifier.Processors;
-using Newtonsoft.Json;
-using ReactWithDotNet;
-using ReactWithDotNet.ThirdPartyLibraries.MonacoEditorReact;
-using ReactWithDotNet.ThirdPartyLibraries.MUI.Material;
-using ReactWithDotNet.ThirdPartyLibraries.ReactFreeScrollbar;
-using static System.Environment;
+﻿using DotNetDomainBoundarySpecifier.Processors;
+using DotNetDomainBoundarySpecifier.WebUI.Components;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 class MainView : Component<MainViewModel>
 {

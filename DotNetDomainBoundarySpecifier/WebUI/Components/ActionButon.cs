@@ -1,4 +1,4 @@
-﻿namespace ApiInspector.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class ActionButton : Component<ActionButton.State>
 {

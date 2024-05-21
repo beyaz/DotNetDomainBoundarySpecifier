@@ -1,6 +1,6 @@
 ﻿using ReactWithDotNet.ThirdPartyLibraries._react_split_;
 
-namespace ApiInspector.WebUI.Components;
+namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class SplitRow : Component
 {

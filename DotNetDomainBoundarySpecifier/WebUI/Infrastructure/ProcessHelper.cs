@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace ApiInspector.WebUI;
+namespace DotNetDomainBoundarySpecifier.WebUI.Infrastructure;
 
 static class ProcessHelper
 {
