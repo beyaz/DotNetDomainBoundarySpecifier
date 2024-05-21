@@ -30,6 +30,9 @@ static class Extractor
             }
         }
         
+        static Exception writeToFile(string directory, FileModel fileModel)
+            =>WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
+        
         return Unit.Success;
     }
     
