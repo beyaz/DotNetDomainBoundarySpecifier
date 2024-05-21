@@ -6,7 +6,7 @@
 
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
-        <StartupObject>ApiInspector.WebUI.Program</StartupObject>
+        <StartupObject>DotNetDomainBoundarySpecifier.WebUI.Infrastructure.Program</StartupObject>
     </PropertyGroup>
 
 	<ItemGroup>

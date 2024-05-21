@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using Extensions = DotNetDependencyExtractor.Extensions;
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
