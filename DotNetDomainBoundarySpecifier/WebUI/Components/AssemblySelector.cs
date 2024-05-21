@@ -21,7 +21,7 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
 
     protected override Element render()
     {
-        var itemsSource = Directory.GetFiles(Config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(x)).Select(Path.GetFileName).ToList();
+        var itemsSource = Directory.GetFiles(Config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(new(),x)).Select(Path.GetFileName).ToList();
 
         return new ListView<string>
         {

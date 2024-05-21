@@ -332,7 +332,12 @@ static class Extractor
     {
         if (_domainAssemblies == null)
         {
-            _domainAssemblies =  cardOrchestrationFiles()
+            var directory = Config.AssemblySearchDirectory;
+
+            var files = Directory.GetFiles(directory, "*.dll").Where(x=>isInDomain(serviceContext,x));
+
+            
+            _domainAssemblies =  files
                 .Select(ReadAssemblyDefinition)
                 .Where(r => r.Success)
                 .Select(x => x.Value)
@@ -343,17 +348,10 @@ static class Extractor
         }
         
         return _domainAssemblies;
-        static IEnumerable<string> cardOrchestrationFiles()
-        {
-            var directory = Config.AssemblySearchDirectory;
-
-            return Directory.GetFiles(directory, "*.dll").Where(isInDomain);
-
-            
-        }
+        
     }
     
-    public static bool isInDomain(string file)
+    public static bool isInDomain(ServiceContext serviceContext, string file)
     {
         foreach (var name in Config.DomainFiles)
         {
