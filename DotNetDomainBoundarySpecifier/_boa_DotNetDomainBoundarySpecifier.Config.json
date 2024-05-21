@@ -18,5 +18,7 @@
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
         "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
     ],
-    "ExternalDomainFileNameContains": ["BOA."]
+    "ExternalDomainFileNameContains": [ "BOA." ],
+
+    "IgnoreParameterTypeNamesLike": ["ObjectHelper"]
 }

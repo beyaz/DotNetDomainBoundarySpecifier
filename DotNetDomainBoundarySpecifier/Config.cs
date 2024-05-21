@@ -17,6 +17,7 @@ sealed record ConfigInfo
     public FileStorageInfo FileStorage { get; init; }
     public string ModuleName { get; init; }
     public IReadOnlyList<string> ExternalDomainFileNameContains { get; init; }
+    public IReadOnlyList<string> IgnoreParameterTypeNamesLike { get; init; }
     
 
     internal class FileStorageInfo

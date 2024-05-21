@@ -1,37 +1,30 @@
-﻿namespace Test.ExternalDomainY.Scenario1;
+﻿namespace Test.ExternalDomainY.Scenario3;
 
-public class Process1
-{
-    public string Method1(string parameter1)
-    {
-        return default;
-    }
-    
-    public string Method1(string parameter1,int parameter2)
-    {
-        return default;
-    }
-    
-    public string Method1(string parameter1,int parameter2, DateTime? parameter3)
-    {
-        return default;
-    }
-}
 
-public class Process2
+
+public class Process3
 {
-   
-    public string Method1(string parameter1,int parameter2, DateTime? parameter3)
+    public Method2Output MethodB(Method2Input parameter3)
     {
         return default;
     }
     
-    public string Method2(string parameter1,int parameter2, Method2Input parameter3)
+    public GenericResponse<Method2Output> MethodC(Method2Input parameter3)
     {
         return default;
     }
     
-    public Method2Output Method2(Method2Input parameter3)
+    public GenericResponse<int> MethodD(Method2Input parameter3)
+    {
+        return default;
+    }
+    
+    public GenericResponse<int> MethodE(Method2Input parameter3, ObjectHelper objectHelper)
+    {
+        return default;
+    }
+    
+    public GenericResponse<Method2Output> MethodF(ObjectHelper objectHelper, Method2Input parameter3)
     {
         return default;
     }
@@ -73,6 +66,17 @@ public class Method2Output
     public int OutputProperty1 { get; set; }   
     public DateTime? OutputProperty2 { get; set; }
     public long OutputProperty3 { get; set; }
+    
+}
+
+
+public class GenericResponse<T>
+{
+    public T Value { get; set; }
+}
+
+public class ObjectHelper
+{
     
 }
 
