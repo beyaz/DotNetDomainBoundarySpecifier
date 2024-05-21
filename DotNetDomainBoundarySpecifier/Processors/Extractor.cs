@@ -5,8 +5,27 @@ namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Extractor
 {
-  
 
+    public static void ExportToFile(GenerateDependentCodeOutput output)
+    {
+        const string solutionDirectory = @"D:\work\BOA.CardModules\Dev\BOA.Card.Banking\";
+
+        {
+            var fileModel = output.ContractFile;
+
+            const string projectDirectory = $@"{solutionDirectory}BOA.Card.Contracts.Banking\";
+
+            WriteCSharpFile($"{projectDirectory}{fileModel.Name}.cs", fileModel.Content);
+        }
+
+        {
+            var fileModel = output.ProcessFile;
+
+            const string projectDirectory = $@"{solutionDirectory}BOA.Process.Card.Banking\";
+
+            WriteCSharpFile($"{projectDirectory}{fileModel.Name}.cs", fileModel.Content);
+        }
+    }
     
 
     internal sealed record AnalyzeMethodInput
