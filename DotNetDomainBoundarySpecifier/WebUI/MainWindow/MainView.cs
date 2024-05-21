@@ -94,7 +94,7 @@ class MainView : Component<MainViewModel>
                                 }
                             },
 
-                            new p(WordBreakAll)
+                            new FlexColumn(WordBreakAll)
                             {
                                 new FlexRow(Gap(4), PaddingTopBottom(4))
                                 {
@@ -106,11 +106,14 @@ class MainView : Component<MainViewModel>
                                     "Has Transaction"
                                 },
 
-                                (b)"Assembly: ", state.SelectedAssemblyFileName,
-                                br,
-                                (b)"Class: ", state.SelectedTypeFullName,
-                                br,
-                                (b)"Method: ", state.SelectedMethodFullName
+                                new p
+                                {
+                                    (b)"Assembly: ", state.SelectedAssemblyFileName,
+                                    br,
+                                    (b)"Class: ", state.SelectedTypeFullName,
+                                    br,
+                                    (b)"Method: ", state.SelectedMethodFullName
+                                }
                             }
                         }
                     }
