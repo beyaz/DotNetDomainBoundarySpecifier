@@ -12,12 +12,11 @@ sealed record ConfigInfo
     public string AssemblySearchDirectory { get; init; }
     public IReadOnlyList<string> DomainFiles { get; init; }
     public IReadOnlyList<string> SkipTypes { get; init; }
-        
+
     public FileStorageInfo FileStorage { get; init; }
     public string ModuleName { get; init; }
     public IReadOnlyList<string> ExternalDomainFileNameContains { get; init; }
     public IReadOnlyList<string> IgnoreParameterTypeNamesLike { get; init; }
-    
 
     internal class FileStorageInfo
     {
@@ -25,5 +24,4 @@ sealed record ConfigInfo
         public bool IsActive { get; init; }
     }
     // @formatting:on
-    
 }
