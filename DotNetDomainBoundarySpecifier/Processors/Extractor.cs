@@ -10,6 +10,12 @@ static class Extractor
     {
         var config = serviceContext.Config;
 
+        var functions = new[]
+        {
+            () => writeToFile(config.ExportDirectoryForTypes, output.ContractFile),
+            () => writeToFile(config.ExportDirectoryForProcess, output.ProcessFile)
+        };
+        
         {
             var fileModel = output.ContractFile;
 
@@ -30,8 +36,8 @@ static class Extractor
             }
         }
         
-        static Exception writeToFile(string directory, FileModel fileModel)
-            =>WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
+        static Exception writeToFile(string directory, FileModel fileModel) =>
+            WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
         
         return Unit.Success;
     }
