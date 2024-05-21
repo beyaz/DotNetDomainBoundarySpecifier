@@ -8,7 +8,7 @@ sealed class CSharpText : PureComponent
     {
         return new textarea(SizeFull, Border(1, solid, Theme.BorderColor), FontSize11, OverflowScroll)
         {
-            value = Value,
+            value    = Value,
             readOnly = true
         };
     }

@@ -16,7 +16,7 @@ public class Program
         ProcessHelper.KillAllNamedProcess("ApiInspector.WebUI");
 
         var config = ReadConfig();
-        
+
         var Port = NetworkHelper.GetAvailablePort(config.NextAvailablePortFrom);
 
         if (config.HideConsoleWindow)
@@ -57,7 +57,7 @@ public class Program
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            RequestPath         = new PathString("/wwwroot"),
+            RequestPath         = new("/wwwroot"),
             ContentTypeProvider = new Utf8CharsetContentTypeProvider(),
             OnPrepareResponse   = ctx => { ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={TimeSpan.FromMinutes(5).TotalSeconds}"); }
         });

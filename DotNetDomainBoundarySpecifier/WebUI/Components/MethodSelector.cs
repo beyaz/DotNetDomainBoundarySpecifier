@@ -6,9 +6,9 @@ sealed class MethodSelector : Component<MethodSelector.State>
 
     public string SelectedAssemblyFileName { get; init; }
 
-    public string SelectedTypeFullName { get; init; }
-    
     public string SelectedMethodFullName { get; init; }
+
+    public string SelectedTypeFullName { get; init; }
 
     [CustomEvent]
     public SelectedMethodChanged SelectionChange { get; init; }
@@ -30,7 +30,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
         if (SelectedAssemblyFileName.HasValue())
         {
             var config = ReadConfig();
-            
+
             var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName));
             if (assemblyDefinitionResult.HasError)
             {
@@ -49,7 +49,8 @@ sealed class MethodSelector : Component<MethodSelector.State>
                             {
                                 continue;
                             }
-                            itemsSource.Add(methodDefinition.FullName);     
+
+                            itemsSource.Add(methodDefinition.FullName);
                         }
                     }
                 }
@@ -58,7 +59,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
 
         return new ListView<string>
         {
-            Title = "Method",
+            Title               = "Method",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
             SelectedItemChanged = SelectedItemChanged,

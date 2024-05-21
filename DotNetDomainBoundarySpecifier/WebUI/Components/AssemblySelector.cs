@@ -22,12 +22,12 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
     protected override Element render()
     {
         var config = ReadConfig();
-        
-        var itemsSource = Directory.GetFiles(config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(new(),x)).Select(Path.GetFileName).ToList();
+
+        var itemsSource = Directory.GetFiles(config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(new(), x)).Select(Path.GetFileName).ToList();
 
         return new ListView<string>
         {
-            Title = "Assembly",
+            Title               = "Assembly",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
             SelectedItemChanged = SelectedItemChanged,

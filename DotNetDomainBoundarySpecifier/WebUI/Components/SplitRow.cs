@@ -28,7 +28,7 @@ sealed class SplitRow : Component
                 sizes      = sizes,
                 gutterSize = 12,
                 style      = { SizeFull, DisplayFlexRow },
-                direction = "horizontal",
+                direction  = "horizontal",
                 children =
                 {
                     children

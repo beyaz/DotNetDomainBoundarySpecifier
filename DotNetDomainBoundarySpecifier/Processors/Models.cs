@@ -25,17 +25,17 @@ sealed record GenerateDependentCodeOutput
     public FileModel ProcessFile { get; init; }
 }
 
-sealed record  TableModel
+sealed record TableModel
 {
     public string ModuleName { get; init; }
-    
+
     public string ExternalAssemblyFileName { get; init; }
-    
+
     public string ExternalClassFullName { get; init; }
-    
+
     public string ExternalMethodFullName { get; init; }
-    
+
     public string RelatedClassFullName { get; init; }
-    
+
     public string RelatedPropertyFullName { get; init; }
 }

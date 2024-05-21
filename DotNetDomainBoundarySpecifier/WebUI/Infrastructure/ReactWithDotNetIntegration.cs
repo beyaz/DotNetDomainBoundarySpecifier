@@ -27,13 +27,13 @@ static class ReactWithDotNetIntegration
                 return;
             }
 
-            #if DEBUG
+#if DEBUG
             if (path == ReactWithDotNetDesigner.UrlPath)
             {
                 await WriteHtmlResponse(httpContext, typeof(MainLayout), typeof(ReactWithDotNetDesigner));
                 return;
             }
-            #endif
+#endif
 
             await next();
         });
@@ -62,7 +62,7 @@ static class ReactWithDotNetIntegration
         httpContext.Response.Headers[HeaderNames.Expires]      = "0";
         httpContext.Response.Headers[HeaderNames.Pragma]       = "no-cache";
 
-        return ProcessReactWithDotNetPageRequest(new ProcessReactWithDotNetPageRequestInput
+        return ProcessReactWithDotNetPageRequest(new()
         {
             LayoutType      = layoutType,
             MainContentType = mainContentType,

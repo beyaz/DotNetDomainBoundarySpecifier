@@ -2,10 +2,8 @@
 
 namespace DotNetDomainBoundarySpecifier;
 
-/// <summary>
-/// Deneme
-/// </summary>
-static partial class Extensions
+
+static class Extensions
 {
     
 

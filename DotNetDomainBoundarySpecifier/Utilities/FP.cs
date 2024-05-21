@@ -4,26 +4,35 @@ namespace DotNetDomainBoundarySpecifier.Utilities;
 
 public sealed record Result<TValue, TError>
 {
-    public  TError Error { get; init; }
-    public  TValue Value { get; init; }
+    public TError Error { get; init; }
+    public TValue Value { get; init; }
 
     public bool HasError => !EqualityComparer<TError>.Default.Equals(Error, default);
 
-    public static implicit operator Result<TValue, TError>(TValue value) => new()
+    public static implicit operator Result<TValue, TError>(TValue value)
     {
-        Value = value
-    };
-    
-    public static implicit operator Result<TValue, TError>(TError error) => new ()
+        return new()
+        {
+            Value = value
+        };
+    }
+
+    public static implicit operator Result<TValue, TError>(TError error)
     {
-        Error = error
-    };
-    
-    public static implicit operator Result<TValue, TError>((TValue value, TError error) tuple) => new ()
+        return new()
+        {
+            Error = error
+        };
+    }
+
+    public static implicit operator Result<TValue, TError>((TValue value, TError error) tuple)
     {
-        Value = tuple.value,
-        Error = tuple.error
-    };
+        return new()
+        {
+            Value = tuple.value,
+            Error = tuple.error
+        };
+    }
 
     public void Match(Action<TValue> onSuccess, Action<TError> onError)
     {
@@ -47,34 +56,43 @@ public sealed record Result<TValue, TError>
     //    {
     //        Error = b.Error
     //    };
-
 }
 
-public sealed record Result<TValue> 
+public sealed record Result<TValue>
 {
+    public readonly Trace Trace = new();
     public Exception Error { get; init; }
-    
+
     public TValue Value { get; init; }
 
     public bool HasError => !Success;
 
     public bool Success => EqualityComparer<Exception>.Default.Equals(Error, default);
-    
-    public static implicit operator Result<TValue>(TValue value) => new()
-    {
-        Value = value
-    };
 
-    public static implicit operator Result<TValue>(Exception error) => new()
+    public static implicit operator Result<TValue>(TValue value)
     {
-        Error = error
-    };
+        return new()
+        {
+            Value = value
+        };
+    }
 
-    public static implicit operator Result<TValue>((TValue value, Exception error) tuple) => new()
+    public static implicit operator Result<TValue>(Exception error)
     {
-        Value = tuple.value,
-        Error = tuple.error
-    };
+        return new()
+        {
+            Error = error
+        };
+    }
+
+    public static implicit operator Result<TValue>((TValue value, Exception error) tuple)
+    {
+        return new()
+        {
+            Value = tuple.value,
+            Error = tuple.error
+        };
+    }
 
     public void Match(Action<TValue> onSuccess, Action<Exception> onError)
     {
@@ -102,16 +120,11 @@ public sealed record Result<TValue>
 
         return Value;
     }
-
-    public readonly Trace Trace = new();
-
-
-   
 }
 
 public sealed class Trace
 {
-    readonly List<string> lines = new();
+    readonly List<string> lines = [];
 
     public IReadOnlyList<string> Lines => lines;
 
@@ -125,39 +138,18 @@ static class FP
 {
     public static Exception Fail(string message)
     {
-        return new Exception(message);
+        return new(message);
     }
 
-    public static Result<TValue> ResultFrom<TValue>(TValue value)
+    public static C Flow<A, B, C>(A value, Func<A, (B, Exception)> nextFunc, Func<B, C> onSuccess)
     {
-        return new Result<TValue>
+        var (b, exception) = nextFunc(value);
+        if (exception is null)
         {
-            Value = value
-        };
-    }
-    public static Result<TValue> ResultFrom<TValue>()
-    {
-        return new Result<TValue>();
-    }
-
-    public static Result<B> Then<A, B>(this Result<A> resultA, Func<A, Result<B>> onSuccess)
-    {
-        if (resultA.HasError)
-        {
-            return resultA.Error;
+            return onSuccess(b);
         }
 
-        return onSuccess(resultA.Value);
-    }
-
-    public static Result<B> Then<A, B>(this Result<A> resultA, Func<A, B> onSuccess)
-    {
-        if (resultA.HasError)
-        {
-            return resultA.Error;
-        }
-
-        return onSuccess(resultA.Value);
+        return default;
     }
 
     public static Result<IReadOnlyList<TValue>> Fold<TValue>(this IEnumerable<Result<IEnumerable<TValue>>> enumerable)
@@ -170,26 +162,13 @@ static class FP
             {
                 return result.Error;
             }
-            
+
             list.AddRange(result.Value);
         }
 
         return list;
     }
 
-    public static Result<TValue> Try<TValue>(Func<TValue> func)
-    {
-        try
-        {
-            return func();
-        }
-        catch (Exception exception)
-        {
-            return exception;
-        }
-    }
-    
-    
     public static void IgnoreException(Action action)
     {
         try
@@ -213,6 +192,33 @@ static class FP
         return false;
     }
 
+    public static Result<TValue> ResultFrom<TValue>(TValue value)
+    {
+        return new()
+        {
+            Value = value
+        };
+    }
+
+    public static Result<TValue> ResultFrom<TValue>()
+    {
+        return new();
+    }
+
+    public static Unit Run(Func<Unit>[] functions)
+    {
+        foreach (var function in functions)
+        {
+            var unit = function();
+            if (unit.HasError)
+            {
+                return unit;
+            }
+        }
+
+        return Unit.Success;
+    }
+
     public static (T value, Exception exception) SafeInvoke<T>(Func<T> func)
     {
         try
@@ -223,6 +229,26 @@ static class FP
         {
             return (default, exception);
         }
+    }
+
+    public static Result<B> Then<A, B>(this Result<A> resultA, Func<A, Result<B>> onSuccess)
+    {
+        if (resultA.HasError)
+        {
+            return resultA.Error;
+        }
+
+        return onSuccess(resultA.Value);
+    }
+
+    public static Result<B> Then<A, B>(this Result<A> resultA, Func<A, B> onSuccess)
+    {
+        if (resultA.HasError)
+        {
+            return resultA.Error;
+        }
+
+        return onSuccess(resultA.Value);
     }
 
     public static void Then<T>(this (T value, Exception exception) response, Action<T> onSuccess, Action<Exception> onFail)
@@ -237,7 +263,7 @@ static class FP
         }
     }
 
-    public static B Then<T,B>(this (T value, Exception exception) response, Func<T,B> onSuccess, Func<Exception,B> onFail)
+    public static B Then<T, B>(this (T value, Exception exception) response, Func<T, B> onSuccess, Func<Exception, B> onFail)
     {
         if (response.exception is null)
         {
@@ -247,45 +273,33 @@ static class FP
         return onFail(response.exception);
     }
 
-    public static C Flow<A,B,C>(A value, Func<A,(B, Exception)> nextFunc, Func<B,C> onSuccess)
+    public static Result<TValue> Try<TValue>(Func<TValue> func)
     {
-        var (b, exception) = nextFunc(value);
-        if (exception is null)
+        try
         {
-            return onSuccess(b);
+            return func();
         }
-
-        return default;
-    }
-    
-    
-    public static Unit Run(Func<Unit>[] functions)
-    {
-        foreach (var function in functions)
+        catch (Exception exception)
         {
-            var unit = function();
-            if (unit.HasError)
-            {
-                return unit;
-            }
+            return exception;
         }
-        
-        return Unit.Success;
     }
 }
 
-
 public sealed class Unit
 {
+    public static readonly Unit Success = new();
     public Exception Error { get; init; }
-    
+
     public bool HasError => Error is not null;
 
-    public static implicit operator Unit(Exception error) => new()
+    public static implicit operator Unit(Exception error)
     {
-        Error = error
-    };
-   
+        return new()
+        {
+            Error = error
+        };
+    }
 
     public void Match(Action onSuccess, Action<Exception> onError)
     {
@@ -299,7 +313,6 @@ public sealed class Unit
         }
     }
 
-
     public void Unwrap()
     {
         if (HasError)
@@ -307,7 +320,4 @@ public sealed class Unit
             throw Error;
         }
     }
-    
-    
-    public static readonly Unit Success=new Unit();
 }

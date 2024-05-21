@@ -28,15 +28,15 @@ sealed class TypeSelector : Component<TypeSelector.State>
         if (SelectedAssemblyFileName.HasValue())
         {
             var config = ReadConfig();
-            
+
             var filePath = Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName);
 
-            itemsSource = GetTypesInAssemblyFile(new(),filePath).Select(x => x.FullName).ToList();
+            itemsSource = GetTypesInAssemblyFile(new(), filePath).Select(x => x.FullName).ToList();
         }
 
         return new ListView<string>
         {
-            Title = "Class",
+            Title               = "Class",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
             SelectedItemChanged = SelectedItemChanged,

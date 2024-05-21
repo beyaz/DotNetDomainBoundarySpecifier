@@ -57,8 +57,8 @@ sealed class MainLayout : Component, IPageLayout
                 },
                 new link
                 {
-                    href = "https://fonts.cdnfonts.com/css/ibm-plex-mono-3", 
-                    rel = "stylesheet"
+                    href = "https://fonts.cdnfonts.com/css/ibm-plex-mono-3",
+                    rel  = "stylesheet"
                 }
             },
             new body

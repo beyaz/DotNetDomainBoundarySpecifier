@@ -1,6 +1,6 @@
 ﻿namespace DotNetDomainBoundarySpecifier.Utilities;
 
-static  partial class Extensions
+static class Extensions
 {
     public static IReadOnlyList<T> Distinct<T>(this IReadOnlyList<T> items, Func<T, T, bool> isSame)
     {
