@@ -28,7 +28,7 @@ static class Theme
 
     public static StyleModifier BoxShadowForWindow => BoxShadow(0, 30, 30, 0, rgba(69, 42, 124, 0.15));
 
-    public static string ColorForListViewItemSelectedBackground => "#ecfeff";
+    public static string ColorForListViewItemSelectedBackground => rgb(163, 239, 243);
     
     public static string ColorForListViewItemHoverBackground => "#f3f4f6";
     

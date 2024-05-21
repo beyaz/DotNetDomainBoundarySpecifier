@@ -183,11 +183,11 @@ static class Extractor
 
     internal sealed record AnalyzeMethodInput
     {
-        public  required string SelectedAssemblyFileName { get; init; }
+        public  required string AssemblyFileName { get; init; }
     
-        public required string SelectedTypeFullName { get; init; }
+        public required string TypeFullName { get; init; }
 
-        public required string SelectedMethodFullName { get; set; }
+        public required string MethodFullName { get; init; }
     }
     
     internal static ImmutableList<TableModel> AnalyzeMethod(AnalyzeMethodInput input)
@@ -195,9 +195,9 @@ static class Extractor
         var records = ImmutableList<TableModel>.Empty;
         
         var methodDefinition = 
-            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, input.SelectedAssemblyFileName))
-            .FirstOrDefault(t => t.FullName == input.SelectedTypeFullName)
-            ?.Methods.FirstOrDefault(m => m.FullName== input.SelectedMethodFullName);
+            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, input.AssemblyFileName))
+            .FirstOrDefault(t => t.FullName == input.TypeFullName)
+            ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
 
         if (methodDefinition is null)
         {
@@ -232,8 +232,8 @@ static class Extractor
             {
                 records = records.Add(new()
                 {
-                    ExternalAssemblyFileName = input.SelectedAssemblyFileName,
-                    ExternalClassFullName    = input.SelectedTypeFullName,
+                    ExternalAssemblyFileName = input.AssemblyFileName,
+                    ExternalClassFullName    = input.TypeFullName,
                     ExternalMethodFullName   = methodDefinition.FullName,
                     ModuleName               = Config.ModuleName,
                     RelatedClassFullName     = typeDefinition.FullName,

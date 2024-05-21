@@ -170,9 +170,9 @@ class MainWindow : Component<MainWindowModel>
 
         var analyzeMethodInput = new AnalyzeMethodInput()
         {
-            SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-            SelectedTypeFullName     = state.SelectedTypeFullName,
-            SelectedMethodFullName   = state.SelectedMethodFullName
+            AssemblyFileName = state.SelectedAssemblyFileName,
+            TypeFullName     = state.SelectedTypeFullName,
+            MethodFullName   = state.SelectedMethodFullName
         };
         
         state = state with { Records = AnalyzeMethod(analyzeMethodInput) };
