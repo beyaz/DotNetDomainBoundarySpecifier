@@ -2,10 +2,15 @@
 
 static class CecilHelper
 {
+    static readonly CachedObjectMap Cache = new()
+    {
+        Timeout = TimeSpan.FromDays(3)
+    };
+
     public static AssemblyAnalyse AnalyzeAssembly(ServiceContext serviceContext, AssemblyDefinition assemblyDefinition)
     {
         var config = serviceContext.Config;
-        
+
         var types = new List<TypeDefinition>();
 
         foreach (var moduleDefinition in assemblyDefinition.Modules)
@@ -34,10 +39,9 @@ static class CecilHelper
                             {
                                 if (instruction.Operand is MethodReference mr)
                                 {
-                                    
                                     foreach (var partOfFileName in config.ExternalDomainFileNameContains)
                                     {
-                                        if (mr.DeclaringType.Scope.Name.Contains(partOfFileName,StringComparison.OrdinalIgnoreCase))
+                                        if (mr.DeclaringType.Scope.Name.Contains(partOfFileName, StringComparison.OrdinalIgnoreCase))
                                         {
                                             calledMethods.Add(mr);
                                         }
@@ -50,7 +54,7 @@ static class CecilHelper
             }
         }
 
-        return new AssemblyAnalyse
+        return new()
         {
             AssemblyDefinition = assemblyDefinition,
             Types              = types,
@@ -88,15 +92,12 @@ static class CecilHelper
 
         return usedProperties.Distinct(IsSame);
 
-
         static bool IsSame(PropertyDefinition a, PropertyDefinition b)
         {
             return a.FullName == b.FullName;
         }
     }
-    
-    
-    
+
     public static string GetShortNameInCsharp(this TypeReference typeReference)
     {
         var name = typeReference.Name;
@@ -120,7 +121,7 @@ static class CecilHelper
         {
             return "long";
         }
-        
+
         if (name is "Int32")
         {
             return "int";
@@ -140,7 +141,7 @@ static class CecilHelper
         {
             return "bool";
         }
-        
+
         if (name is "DateTime")
         {
             return "DateTime";
@@ -162,10 +163,40 @@ static class CecilHelper
             {
                 return $"ObservableCollection<{GetShortNameInCsharp(genericInstanceType.GenericArguments[0])}>";
             }
-            
         }
 
         return name;
+    }
+
+    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(ServiceContext serviceContext, string filePath)
+    {
+        var config = serviceContext.Config;
+
+        return Cache.AccessValue(nameof(GetTypesInAssemblyFile) + filePath, () =>
+        {
+            var result = ReadAssemblyDefinition(filePath);
+            if (result.HasError)
+            {
+                return [];
+            }
+
+            var typeList = new List<TypeDefinition>();
+
+            foreach (var moduleDefinition in result.Value.Modules)
+            {
+                foreach (var type in moduleDefinition.Types)
+                {
+                    if (config.SkipTypes.Contains(type.FullName))
+                    {
+                        continue;
+                    }
+
+                    typeList.Add(type);
+                }
+            }
+
+            return typeList;
+        });
     }
 
     public static bool HasUsage(this AssemblyAnalyse assemblyAnalyse, PropertyDefinition propertyDefinition)
@@ -190,45 +221,7 @@ static class CecilHelper
 
             resolver.AddSearchDirectory(Path.GetDirectoryName(filePath));
 
-            return AssemblyDefinition.ReadAssembly(filePath, new ReaderParameters { AssemblyResolver = resolver });
+            return AssemblyDefinition.ReadAssembly(filePath, new() { AssemblyResolver = resolver });
         }));
-    }
-    
-    static readonly CachedObjectMap Cache = new()
-    {
-        Timeout = TimeSpan.FromDays(3)
-    };
-    
-    
-    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile( ServiceContext serviceContext, string filePath)
-    {
-        var config = serviceContext.Config;
-        
-        return Cache.AccessValue(nameof(GetTypesInAssemblyFile) + filePath, () =>
-        {
-            var result = ReadAssemblyDefinition(filePath);
-            if (result.HasError)
-            {
-                return [];
-            }
-
-            var typeList = new List<TypeDefinition>();
-
-            foreach (var moduleDefinition in result.Value.Modules)
-            {
-                foreach (var type in moduleDefinition.Types)
-                {
-                    
-                    if (config.SkipTypes.Contains(type.FullName))
-                    {
-                        continue;
-                    }
-                    
-                    typeList.Add(type);
-                }
-            }
-
-            return typeList;
-        });
     }
 }
