@@ -7,6 +7,6 @@ global using static ApiInspector.WebUI.Extensions;
 global using static DotNetDependencyExtractor.Extensions;
 global using System.Threading.Tasks;
 global using static DotNetDependencyExtractor.Extractor;
-global using DotNetDomainBoundarySpecifier.DataStore;
 global using System.Collections.Immutable;
 global using DotNetDomainBoundarySpecifier.Utilities;
+global using DotNetDomainBoundarySpecifier.Process;
