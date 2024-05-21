@@ -5,41 +5,20 @@ namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Extractor
 {
+  
 
     public static Unit ExportToFile(ServiceContext serviceContext, GenerateDependentCodeOutput output)
     {
         var config = serviceContext.Config;
 
-        var functions = new[]
-        {
+        return Run([
             () => writeToFile(config.ExportDirectoryForTypes, output.ContractFile),
             () => writeToFile(config.ExportDirectoryForProcess, output.ProcessFile)
-        };
-        
-        {
-            var fileModel = output.ContractFile;
-
-            Unit unit = WriteCSharpFile($"{config.ExportDirectoryForTypes}{fileModel.Name}.cs", fileModel.Content);
-            if (unit.HasError)
-            {
-                return unit;
-            }
-        }
-
-        {
-            var fileModel = output.ProcessFile;
-
-            Unit unit =WriteCSharpFile($"{config.ExportDirectoryForProcess}{fileModel.Name}.cs", fileModel.Content);
-            if (unit.HasError)
-            {
-                return unit;
-            }
-        }
+        ]);
         
         static Exception writeToFile(string directory, FileModel fileModel) =>
             WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
         
-        return Unit.Success;
     }
     
 
@@ -199,7 +178,7 @@ static class Extractor
             constructorParameters.Add("objectHelper.Context");
         }
         
-        processFile.AppendLine($"{padding}{padding}var bo = new {Extensions.RemoveFromStart(targetType.FullName, "BOA.Process.")}({string.Join(", ", constructorParameters)});");
+        processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
         var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParamaterType(serviceContext,p.ParameterType)).ToList();
 
@@ -219,7 +198,7 @@ static class Extractor
                     continue;
                 }
                 
-                parameterPart.Add($"parameter");
+                parameterPart.Add("parameter");
             }
 
 

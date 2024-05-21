@@ -257,6 +257,21 @@ static class FP
 
         return default;
     }
+    
+    
+    public static Unit Run(Func<Unit>[] functions)
+    {
+        foreach (var function in functions)
+        {
+            var unit = function();
+            if (unit.HasError)
+            {
+                return unit;
+            }
+        }
+        
+        return Unit.Success;
+    }
 }
 
 
