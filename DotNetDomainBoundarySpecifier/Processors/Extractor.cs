@@ -1,11 +1,13 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Extractor
 {
-  
+    static readonly CachedObjectMap Cache = new()
+    {
+        Timeout = TimeSpan.FromDays(3)
+    };
 
     public static Unit ExportToFile(ServiceContext serviceContext, GenerateDependentCodeOutput output)
     {
@@ -15,57 +17,63 @@ static class Extractor
             () => writeToFile(config.ExportDirectoryForTypes, output.ContractFile),
             () => writeToFile(config.ExportDirectoryForProcess, output.ProcessFile)
         ]);
-        
-        static Exception writeToFile(string directory, FileModel fileModel) =>
-            WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
-        
-    }
-    
 
-    internal sealed record AnalyzeMethodInput
+        static Exception writeToFile(string directory, FileModel fileModel)
+        {
+            return WriteCSharpFile($"{directory}{fileModel.Name}.cs", fileModel.Content);
+        }
+    }
+
+    public static bool isInDomain(ServiceContext serviceContext, string file)
     {
-        public  required string AssemblyFileName { get; init; }
-    
-        public required string TypeFullName { get; init; }
+        var config = serviceContext.Config;
 
-        public required string MethodFullName { get; init; }
+        foreach (var name in config.DomainFiles)
+        {
+            if (file.Contains(name, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
-    
+
     internal static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
 
         var config = serviceContext.Config;
-        var methodDefinition = 
-            GetTypesInAssemblyFile(serviceContext,Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
-            .FirstOrDefault(t => t.FullName == input.TypeFullName)
-            ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
+        var methodDefinition =
+            GetTypesInAssemblyFile(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+                .FirstOrDefault(t => t.FullName == input.TypeFullName)
+                ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
         if (methodDefinition is null)
         {
             return records;
         }
-        
+
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            records = pushType(serviceContext,input, methodDefinition,records,parameterDefinition.ParameterType);
+            records = pushType(serviceContext, input, methodDefinition, records, parameterDefinition.ParameterType);
         }
 
         records = pushType(serviceContext, input, methodDefinition, records, methodDefinition.ReturnType);
-         
+
         return records;
 
         static ImmutableList<TableModel> pushType(ServiceContext serviceContext, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
         {
             var config = serviceContext.Config;
-            
+
             if (IsDotNetCoreType(typeReference.FullName))
             {
                 return records;
             }
-            
+
             var typeDefinition = typeReference.Resolve();
-            
+
             var usedProperties = GetDomainAssemblies(serviceContext).FindUsedProperties(typeDefinition);
             if (usedProperties.Count is 0)
             {
@@ -74,7 +82,6 @@ static class Extractor
 
             foreach (var propertyDefinition in usedProperties)
             {
-                
                 records = records.Add(new()
                 {
                     ExternalAssemblyFileName = input.AssemblyFileName,
@@ -84,27 +91,24 @@ static class Extractor
                     RelatedClassFullName     = typeDefinition.FullName,
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
-                
+
                 records = pushType(serviceContext, input, methodDefinition, records, propertyDefinition.PropertyType);
             }
-            
+
             return records;
         }
-        
     }
 
-
-    internal static GenerateDependentCodeOutput GenerateCode(ServiceContext serviceContext , AnalyzeMethodInput input, ImmutableList<TableModel> records)
+    internal static GenerateDependentCodeOutput GenerateCode(ServiceContext serviceContext, AnalyzeMethodInput input, ImmutableList<TableModel> records)
     {
-        
         const string padding = "    ";
 
         var config = serviceContext.Config;
-        
-        var targetMethod = 
-            GetTypesInAssemblyFile(serviceContext,Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+
+        var targetMethod =
+            GetTypesInAssemblyFile(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
                 .FirstOrDefault(t => t.FullName == input.TypeFullName)
-                ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
+                ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
         if (targetMethod is null)
         {
@@ -112,14 +116,12 @@ static class Extractor
         }
 
         var targetType = targetMethod.DeclaringType;
-        
 
         var names = CalculateNames(targetType.FullName, targetMethod.Name);
 
         var contractFile = new StringBuilder();
         var processFile = new StringBuilder();
-        
-        
+
         TypeReference outputTypeAsAlreadyExistingType = null;
         var outputTypeIsAlreadyExistingType = false;
 
@@ -140,13 +142,11 @@ static class Extractor
             outputTypeIsAlreadyExistingType = true;
         }
 
-
         var outputTypeName = "Output";
         if (outputTypeIsAlreadyExistingType)
         {
             outputTypeName = outputTypeAsAlreadyExistingType.GetShortNameInCsharp();
         }
-        
 
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
         contractFile.AppendLine();
@@ -154,12 +154,13 @@ static class Extractor
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
         if (outputTypeIsAlreadyExistingType)
         {
-            processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" :outputTypeName) };");
+            processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" : outputTypeName)};");
         }
         else
         {
             processFile.AppendLine($"using Output = {names.ContractsProject.NamespaceName}.{outputTypeName};");
         }
+
         processFile.AppendLine();
         processFile.AppendLine($"namespace {names.ProcessProject.NamespaceName};");
         processFile.AppendLine();
@@ -171,16 +172,16 @@ static class Extractor
         processFile.AppendLine();
 
         var constructorParameters = new List<string>();
-        
-        var constructorMethods = targetType.Methods.Where(m=>m.IsConstructor && !m.IsStatic).ToList();
+
+        var constructorMethods = targetType.Methods.Where(m => m.IsConstructor && !m.IsStatic).ToList();
         if (constructorMethods.Count == 1 && constructorMethods[0].Parameters.Count == 1 && constructorMethods[0].Parameters[0].ParameterType.Name == "ExecutionDataContext")
         {
             constructorParameters.Add("objectHelper.Context");
         }
-        
+
         processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
-        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParamaterType(serviceContext,p.ParameterType)).ToList();
+        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParamaterType(serviceContext, p.ParameterType)).ToList();
 
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
@@ -197,10 +198,9 @@ static class Extractor
                     parameterPart.Add("objectHelper");
                     continue;
                 }
-                
+
                 parameterPart.Add("parameter");
             }
-
 
             processFile.AppendLine();
             processFile.AppendLine($"{padding}{padding}var response = bo.{targetMethod.Name}({string.Join(", ", parameterPart)});");
@@ -225,12 +225,10 @@ static class Extractor
             processFile.AppendLine($"{padding}{padding}return returnObject;");
             processFile.AppendLine($"{padding}}}"); // end of method
             processFile.AppendLine("}"); // end of class
-            
         }
         else
         {
             {
-                
                 contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");
                 contractFile.AppendLine("{");
                 foreach (var parameterDefinition in targetMethodParameters)
@@ -239,7 +237,7 @@ static class Extractor
 
                     var name = parameterDefinition.Name;
 
-                    name = char.ToUpper(name[0], new CultureInfo("en-US")) + new string(name.Skip(1).ToArray());
+                    name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
 
                     contractFile.AppendLine($"    public {parameterTypeName} {name} {{ get; set; }}");
                 }
@@ -260,7 +258,7 @@ static class Extractor
 
                     var name = parameterDefinition.Name;
 
-                    name = char.ToUpper(name[0], new CultureInfo("en-US")) + new string(name.Skip(1).ToArray());
+                    name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
 
                     parameterPart.Add($"input.{name}");
                 }
@@ -283,7 +281,7 @@ static class Extractor
                 {
                     processFile.AppendLine($"{padding}{padding}returnObject.Value = ConvertTo<Output>(value);");
                 }
-                
+
                 processFile.AppendLine();
                 processFile.AppendLine($"{padding}{padding}return returnObject;");
                 processFile.AppendLine($"{padding}}}"); // end of method
@@ -291,9 +289,7 @@ static class Extractor
             }
         }
 
-       
-        
-        return new GenerateDependentCodeOutput
+        return new()
         {
             ContractFile = new()
             {
@@ -307,8 +303,6 @@ static class Extractor
             }
         };
     }
-  
-    
 
     static ((string FolderName, string FileName, string NamespaceName) ContractsProject,
         (string FolderName, string FileName, string NamespaceName) ProcessProject)
@@ -341,55 +335,31 @@ static class Extractor
             )
         );
     }
-    
-    static IReadOnlyList<AssemblyAnalyse> _domainAssemblies;
-    
-    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(ServiceContext serviceContext)
-    {
-        var config = serviceContext.Config;
-        
-        if (_domainAssemblies == null)
-        {
-            
-            var directory = config.AssemblySearchDirectory;
-
-            var files = Directory.GetFiles(directory, "*.dll").Where(x=>isInDomain(serviceContext,x));
-
-            
-            _domainAssemblies =  files
-                .Select(ReadAssemblyDefinition)
-                .Where(r => r.Success)
-                .Select(x => x.Value)
-                .Select(x=>AnalyzeAssembly(serviceContext,x))
-                .ToList();
-
-           
-        }
-        
-        return _domainAssemblies;
-        
-    }
-    
-    public static bool isInDomain(ServiceContext serviceContext, string file)
-    {
-        var config = serviceContext.Config;
-        
-        foreach (var name in config.DomainFiles)
-        {
-            if (file.Contains(name,StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     static bool CanIgnoreParamaterType(ServiceContext serviceContext, TypeReference parameterTypeReference)
     {
         return serviceContext.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }
-    
+
+    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(ServiceContext serviceContext)
+    {
+        var config = serviceContext.Config;
+
+        return Cache.AccessValue(nameof(GetDomainAssemblies), () =>
+        {
+            var directory = config.AssemblySearchDirectory;
+
+            var files = Directory.GetFiles(directory, "*.dll").Where(x => isInDomain(serviceContext, x));
+
+            return files
+                .Select(ReadAssemblyDefinition)
+                .Where(r => r.Success)
+                .Select(x => x.Value)
+                .Select(x => AnalyzeAssembly(serviceContext, x))
+                .ToList();
+        });
+    }
+
     static bool IsDotNetCoreType(string fullTypeName)
     {
         var coreTypes = new[]
@@ -415,5 +385,14 @@ static class Extractor
         };
 
         return coreTypes.Contains(fullTypeName);
+    }
+
+    internal sealed record AnalyzeMethodInput
+    {
+        public required string AssemblyFileName { get; init; }
+
+        public required string TypeFullName { get; init; }
+
+        public required string MethodFullName { get; init; }
     }
 }
