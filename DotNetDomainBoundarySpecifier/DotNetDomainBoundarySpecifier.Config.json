@@ -11,12 +11,12 @@
     },
 
     "ModuleName": "BOACard",
-    "AssemblySearchDirectory": "d:\\boa\\server\\bin\\",
-  "DomainFiles": [ ".Orchestration.Card." ],
+    "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
+    "DomainFiles": [ ".DomainA" ],
     "SkipTypes": [
         "<Module>",
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
         "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
     ],
-    "ExternalDomainFileNameContains": ["BOA."]
+    "ExternalDomainFileNameContains": ["Test.DomainB"]
 }
