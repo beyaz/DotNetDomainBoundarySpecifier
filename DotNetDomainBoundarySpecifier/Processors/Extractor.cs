@@ -1,7 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
+using Extensions = DotNetDependencyExtractor.Extensions;
 
-namespace DotNetDependencyExtractor;
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Extractor
 {
@@ -159,7 +160,7 @@ static class Extractor
             constructorParameters.Add("objectHelper.Context");
         }
         
-        processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
+        processFile.AppendLine($"{padding}{padding}var bo = new {Extensions.RemoveFromStart(targetType.FullName, "BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
         var targetMethodParameters = targetMethod.Parameters.Where(p => !p.ParameterType.CanIgnoreParamaterType()).ToList();
 

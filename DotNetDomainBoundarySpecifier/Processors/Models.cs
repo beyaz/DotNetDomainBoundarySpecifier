@@ -1,4 +1,4 @@
-﻿namespace DotNetDomainBoundarySpecifier.Process;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 sealed record AssemblyAnalyse
 {

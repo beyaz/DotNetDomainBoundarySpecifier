@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using ApiInspector.WebUI.Components;
+using DotNetDomainBoundarySpecifier.Processors;
 using Newtonsoft.Json;
 using ReactWithDotNet;
 using ReactWithDotNet.ThirdPartyLibraries.MonacoEditorReact;

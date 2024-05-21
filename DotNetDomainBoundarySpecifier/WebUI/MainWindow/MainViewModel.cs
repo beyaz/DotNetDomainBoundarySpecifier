@@ -1,4 +1,6 @@
-﻿namespace ApiInspector.WebUI;
+﻿using DotNetDomainBoundarySpecifier.Processors;
+
+namespace ApiInspector.WebUI;
 
 sealed record MainViewModel
 {

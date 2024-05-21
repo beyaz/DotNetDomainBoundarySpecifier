@@ -1,6 +1,6 @@
-﻿using DotNetDomainBoundarySpecifier;
+﻿using DotNetDependencyExtractor;
 
-namespace DotNetDependencyExtractor;
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class CecilHelper
 {
