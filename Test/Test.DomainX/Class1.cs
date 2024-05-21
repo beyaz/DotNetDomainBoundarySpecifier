@@ -1,4 +1,4 @@
-﻿using Test.ExternalDomainY.Scenario1;
+﻿using Test.ExternalDomainY.Scenario2;
 
 namespace Test.DomainX
 {
@@ -6,9 +6,9 @@ namespace Test.DomainX
     {
         public static void MethodA()
         {
-            var process = new Test.ExternalDomainY.Scenario1.Process2();
+            var process = new Test.ExternalDomainY.Scenario2.Process2();
 
-            process.Method2(new Method2Input
+            process.MethodA(new ()
             {
                 Property0 = "a",
                 Property1 = 1,
@@ -23,7 +23,7 @@ namespace Test.DomainX
                         Z = DateTime.MaxValue
                     }
                 }
-            });
+            }, "A", 5);
         }
     }
 }

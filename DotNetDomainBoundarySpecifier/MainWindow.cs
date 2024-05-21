@@ -182,6 +182,7 @@ class MainWindow : Component<MainWindowModel>
         state = state with
         {
             GeneratedCode = generatedCode.ContractFile.Content + Environment.NewLine+
+                            "PROCESS"+ Environment.NewLine+
                             generatedCode.ProcessFile.Content
         };
             

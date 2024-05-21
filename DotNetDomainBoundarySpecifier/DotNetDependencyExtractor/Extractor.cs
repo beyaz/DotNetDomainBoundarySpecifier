@@ -326,7 +326,7 @@ static class Extractor
         
         processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
-        var targetMethodParameters = targetMethod.Parameters.Where(p => p.ParameterType.Name != "ObjectHelper").ToList();
+        var targetMethodParameters = targetMethod.Parameters.Where(p => !p.ParameterType.CanIgnoreParamaterType()).ToList();
 
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
@@ -862,6 +862,11 @@ static class Extractor
         }
 
         return false;
+    }
+
+    static bool CanIgnoreParamaterType(this TypeReference parameterTypeReference)
+    {
+        return Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }
     
     static bool IsDotNetCoreType(string fullTypeName)

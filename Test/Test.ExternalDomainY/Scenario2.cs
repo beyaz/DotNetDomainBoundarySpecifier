@@ -2,7 +2,7 @@
 
 public class Process2
 {
-    public string MethodA(string parameter1,int parameter2, Method2Input parameter3)
+    public string MethodA( Method2Input parameter3, string parameter1,int parameter2)
     {
         return default;
     }
