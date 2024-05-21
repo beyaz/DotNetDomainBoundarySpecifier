@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using ApiInspector.WebUI;
-using Mono.Cecil;
 
 namespace DotNetDependencyExtractor;
 
@@ -249,15 +247,15 @@ static class Extractor
     }
 
 
-    internal static GenerateDependentCodeOutput GenerateCode(MainWindowModel mainWindowModel, ImmutableList<TableModel> records)
+    internal static GenerateDependentCodeOutput GenerateCode(AnalyzeMethodInput input, ImmutableList<TableModel> records)
     {
         
         const string padding = "    ";
         
         var targetMethod = 
-            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, mainWindowModel.SelectedAssemblyFileName))
-                .FirstOrDefault(t => t.FullName == mainWindowModel.SelectedTypeFullName)
-                ?.Methods.FirstOrDefault(m => m.FullName== mainWindowModel.SelectedMethodFullName);
+            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, input.AssemblyFileName))
+                .FirstOrDefault(t => t.FullName == input.TypeFullName)
+                ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
 
         if (targetMethod is null)
         {
@@ -284,6 +282,13 @@ static class Extractor
 
                 outputTypeIsAlreadyExistingType = true;
             }
+        }
+
+        if (IsDotNetCoreType(targetMethod.ReturnType.FullName))
+        {
+            outputTypeAsAlreadyExistingType = targetMethod.ReturnType;
+
+            outputTypeIsAlreadyExistingType = true;
         }
 
 

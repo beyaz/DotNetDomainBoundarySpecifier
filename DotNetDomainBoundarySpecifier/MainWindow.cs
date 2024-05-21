@@ -168,7 +168,7 @@ class MainWindow : Component<MainWindowModel>
     {
         state = state with { IsAnalyzing = false };
 
-        var analyzeMethodInput = new AnalyzeMethodInput()
+        var analyzeMethodInput = new AnalyzeMethodInput
         {
             AssemblyFileName = state.SelectedAssemblyFileName,
             TypeFullName     = state.SelectedTypeFullName,
@@ -177,7 +177,7 @@ class MainWindow : Component<MainWindowModel>
         
         state = state with { Records = AnalyzeMethod(analyzeMethodInput) };
 
-        var generatedCode =  GenerateCode(state, state.Records);
+        var generatedCode =  GenerateCode(analyzeMethodInput, state.Records);
 
         state = state with
         {
