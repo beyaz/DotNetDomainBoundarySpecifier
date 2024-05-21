@@ -6,7 +6,7 @@ sealed class CSharpText : PureComponent
 
     protected override Element render()
     {
-        return new textarea(SizeFull, Border(1, solid, Theme.BorderColor), FontSize11, OverflowScroll)
+        return new textarea(SizeFull, Border(1, solid, Theme.BorderColor), FontSize11, OverflowScroll, WhiteSpacePre)
         {
             value    = Value,
             readOnly = true

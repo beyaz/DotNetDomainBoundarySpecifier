@@ -198,8 +198,12 @@ class MainView : Component<MainViewModel>
 
         state = state with
         {
-            GeneratedCode = generatedCode.ContractFile.Content + Environment.NewLine +
-                            "PROCESS" + Environment.NewLine +
+            GeneratedCode = "<< T Y P E S >>" + Environment.NewLine +
+            
+            generatedCode.ContractFile.Content 
+                            + Environment.NewLine 
+                            +"<< P R O C E S S >>"
+                            + Environment.NewLine +
                             generatedCode.ProcessFile.Content
         };
 
