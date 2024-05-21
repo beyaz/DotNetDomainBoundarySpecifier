@@ -50,17 +50,10 @@ public sealed record Result<TValue, TError>
     {
         return HasError ? onError(Error) : onSuccess(Value);
     }
-
-    //public static Result<TValue, TError> operator +(Result<TValue, TError> a, IError<TError> b)
-    //    => a with
-    //    {
-    //        Error = b.Error
-    //    };
 }
 
 public sealed record Result<TValue>
 {
-    public readonly Trace Trace = new();
     public Exception Error { get; init; }
 
     public TValue Value { get; init; }
@@ -122,52 +115,12 @@ public sealed record Result<TValue>
     }
 }
 
-public sealed class Trace
-{
-    readonly List<string> lines = [];
-
-    public IReadOnlyList<string> Lines => lines;
-
-    public void Add(string line)
-    {
-        lines.Add(line);
-    }
-}
-
 static class FP
 {
-    public static Exception Fail(string message)
-    {
-        return new(message);
-    }
+    
 
-    public static C Flow<A, B, C>(A value, Func<A, (B, Exception)> nextFunc, Func<B, C> onSuccess)
-    {
-        var (b, exception) = nextFunc(value);
-        if (exception is null)
-        {
-            return onSuccess(b);
-        }
+    
 
-        return default;
-    }
-
-    public static Result<IReadOnlyList<TValue>> Fold<TValue>(this IEnumerable<Result<IEnumerable<TValue>>> enumerable)
-    {
-        var list = new List<TValue>();
-
-        foreach (var result in enumerable)
-        {
-            if (result.HasError)
-            {
-                return result.Error;
-            }
-
-            list.AddRange(result.Value);
-        }
-
-        return list;
-    }
 
     public static void IgnoreException(Action action)
     {
@@ -181,29 +134,9 @@ static class FP
         }
     }
 
-    public static bool IsNullOrWhiteSpaceOrEmptyJsonObject(this string jsonText)
-    {
-        if (string.IsNullOrWhiteSpace(jsonText) ||
-            string.IsNullOrWhiteSpace(jsonText.Replace("{", string.Empty).Replace("}", string.Empty)))
-        {
-            return true;
-        }
+    
 
-        return false;
-    }
 
-    public static Result<TValue> ResultFrom<TValue>(TValue value)
-    {
-        return new()
-        {
-            Value = value
-        };
-    }
-
-    public static Result<TValue> ResultFrom<TValue>()
-    {
-        return new();
-    }
 
     public static Unit Run(Func<Unit>[] functions)
     {
@@ -219,59 +152,9 @@ static class FP
         return Unit.Success;
     }
 
-    public static (T value, Exception exception) SafeInvoke<T>(Func<T> func)
-    {
-        try
-        {
-            return (func(), null);
-        }
-        catch (Exception exception)
-        {
-            return (default, exception);
-        }
-    }
 
-    public static Result<B> Then<A, B>(this Result<A> resultA, Func<A, Result<B>> onSuccess)
-    {
-        if (resultA.HasError)
-        {
-            return resultA.Error;
-        }
+   
 
-        return onSuccess(resultA.Value);
-    }
-
-    public static Result<B> Then<A, B>(this Result<A> resultA, Func<A, B> onSuccess)
-    {
-        if (resultA.HasError)
-        {
-            return resultA.Error;
-        }
-
-        return onSuccess(resultA.Value);
-    }
-
-    public static void Then<T>(this (T value, Exception exception) response, Action<T> onSuccess, Action<Exception> onFail)
-    {
-        if (response.exception is null)
-        {
-            onSuccess(response.value);
-        }
-        else
-        {
-            onFail(response.exception);
-        }
-    }
-
-    public static B Then<T, B>(this (T value, Exception exception) response, Func<T, B> onSuccess, Func<Exception, B> onFail)
-    {
-        if (response.exception is null)
-        {
-            return onSuccess(response.value);
-        }
-
-        return onFail(response.exception);
-    }
 
     public static Result<TValue> Try<TValue>(Func<TValue> func)
     {
