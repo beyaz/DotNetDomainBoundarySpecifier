@@ -1,0 +1,44 @@
+﻿foreach (var analyse in cardSystemSearchFiles)
+{
+    foreach (var methodReference in analyse.CalledMethods.Where(isMethodBelongToTargetAssembly))
+    {
+        var targetMethod = methodReference.Resolve();
+
+        if (IsNotAllowedType(methodReference.DeclaringType))
+        {
+            continue;
+        }
+
+        var targetType = methodReference.DeclaringType.Resolve();
+
+        var newRecord = new GenerateDependentCodeInput
+        {
+            TargetAssembly           = targetAssemblyDefinition.Value.Name.Name+".dll",
+            TargetAssemblyDefinition = targetAssemblyDefinition.Value,
+            TargetMethod             = targetMethod,
+            TargetType               = targetType,
+
+            TargetTypeFullName = targetType.FullName,
+            TargetMethodName   = targetMethod.Name
+        };
+
+        if (records.Any(x => IsSame(x, newRecord)))
+        {
+            continue;
+        }
+
+        records.Add(newRecord);
+    }
+}
+
+
+
+ static bool IsNotAllowedType(TypeReference typeReference)
+ {
+     if (typeReference.FullName == "BOA.Business.Kernel.General.FTP")
+     {
+         return true;
+     }
+
+     return false;
+ }
