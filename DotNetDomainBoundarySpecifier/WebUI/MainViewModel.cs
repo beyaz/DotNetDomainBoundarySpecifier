@@ -1,6 +1,6 @@
 ﻿namespace ApiInspector.WebUI;
 
-sealed record MainWindowModel
+sealed record MainViewModel
 {
     public string SelectedAssemblyFileName { get; init; }
     

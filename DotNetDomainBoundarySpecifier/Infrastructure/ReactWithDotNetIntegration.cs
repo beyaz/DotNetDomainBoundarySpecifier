@@ -49,7 +49,7 @@ static class ReactWithDotNetIntegration
 
     static Task HomePage(HttpContext httpContext)
     {
-        return WriteHtmlResponse(httpContext, typeof(MainLayout), typeof(MainWindow));
+        return WriteHtmlResponse(httpContext, typeof(MainLayout), typeof(MainView));
     }
 
     static Task WriteHtmlResponse(HttpContext httpContext, Type layoutType, Type mainContentType)

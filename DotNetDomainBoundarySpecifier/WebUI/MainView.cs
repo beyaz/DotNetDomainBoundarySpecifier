@@ -14,7 +14,7 @@ using static System.Environment;
 
 namespace ApiInspector.WebUI;
 
-class MainWindow : Component<MainWindowModel>
+class MainView : Component<MainViewModel>
 {
     Task OnSelectedAssemblyChanged(string assemblyfilename)
     {
