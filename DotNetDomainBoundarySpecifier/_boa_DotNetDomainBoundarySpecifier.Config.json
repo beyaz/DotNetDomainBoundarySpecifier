@@ -16,7 +16,8 @@
     "SkipTypes": [
         "<Module>",
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
-        "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
+        "System.Runtime.CompilerServices.RefSafetyRulesAttribute",
+        "BOA.Business.Kernel.General.FTP"
     ],
     "ExternalDomainFileNameContains": [ "BOA." ],
 

@@ -258,3 +258,41 @@ static class FP
         return default;
     }
 }
+
+
+public sealed class Unit
+{
+    public Exception Error { get; init; }
+    
+    public bool HasError => Error is not null;
+
+    public static implicit operator Unit(Exception error) => new()
+    {
+        Error = error
+    };
+   
+
+    public void Match(Action onSuccess, Action<Exception> onError)
+    {
+        if (HasError)
+        {
+            onError(Error);
+        }
+        else
+        {
+            onSuccess();
+        }
+    }
+
+
+    public void Unwrap()
+    {
+        if (HasError)
+        {
+            throw Error;
+        }
+    }
+    
+    
+    public static readonly Unit Success=new Unit();
+}
