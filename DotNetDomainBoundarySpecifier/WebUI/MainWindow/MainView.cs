@@ -12,7 +12,7 @@ class MainView : Component<MainViewModel>
             new FlexColumn
             {
                 applicationTopPanel,
-                createContent() + Padding(16),
+                createContent() + Padding(16) + OverflowAuto,
 
                 new Style
                 {
@@ -119,7 +119,7 @@ class MainView : Component<MainViewModel>
                     }
                 },
 
-                new div
+                new div(SizeFull)
                 {
                     CreatePropertySelectors(state.Records)
                 }
