@@ -4,8 +4,10 @@ namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class CecilHelper
 {
-    public static AssemblyAnalyse AnalyzeAssembly(AssemblyDefinition assemblyDefinition)
+    public static AssemblyAnalyse AnalyzeAssembly(ServiceContext serviceContext, AssemblyDefinition assemblyDefinition)
     {
+        var config = serviceContext.Config;
+        
         var types = new List<TypeDefinition>();
 
         foreach (var moduleDefinition in assemblyDefinition.Modules)
@@ -34,15 +36,14 @@ static class CecilHelper
                             {
                                 if (instruction.Operand is MethodReference mr)
                                 {
-                                    foreach (var partOfFileName in Config.ExternalDomainFileNameContains)
+                                    
+                                    foreach (var partOfFileName in config.ExternalDomainFileNameContains)
                                     {
                                         if (mr.DeclaringType.Scope.Name.Contains(partOfFileName,StringComparison.OrdinalIgnoreCase))
                                         {
                                             calledMethods.Add(mr);
                                         }
                                     }
-
-                                    
                                 }
                             }
                         }
@@ -201,8 +202,10 @@ static class CecilHelper
     };
     
     
-    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(string filePath)
+    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile( ServiceContext serviceContext, string filePath)
     {
+        var config = serviceContext.Config;
+        
         return Cache.AccessValue(nameof(GetTypesInAssemblyFile) + filePath, () =>
         {
             var result = ReadAssemblyDefinition(filePath);
@@ -217,7 +220,8 @@ static class CecilHelper
             {
                 foreach (var type in moduleDefinition.Types)
                 {
-                    if (Config.SkipTypes.Contains(type.FullName))
+                    
+                    if (config.SkipTypes.Contains(type.FullName))
                     {
                         continue;
                     }

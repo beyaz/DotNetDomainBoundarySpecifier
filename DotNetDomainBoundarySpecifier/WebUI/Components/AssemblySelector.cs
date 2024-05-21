@@ -1,4 +1,6 @@
-﻿namespace ApiInspector.WebUI.Components;
+﻿using DotNetDomainBoundarySpecifier.Processors;
+
+namespace ApiInspector.WebUI.Components;
 
 sealed class AssemblySelector : Component<AssemblySelector.State>
 {
@@ -21,7 +23,9 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
 
     protected override Element render()
     {
-        var itemsSource = Directory.GetFiles(Config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(new(),x)).Select(Path.GetFileName).ToList();
+        var config = ReadConfig();
+        
+        var itemsSource = Directory.GetFiles(config.AssemblySearchDirectory, "*.dll").Where(x => !isInDomain(new(),x)).Select(Path.GetFileName).ToList();
 
         return new ListView<string>
         {

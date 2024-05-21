@@ -15,16 +15,18 @@ public class Program
     {
         ProcessHelper.KillAllNamedProcess("ApiInspector.WebUI");
 
-        var Port = NetworkHelper.GetAvailablePort(Config.NextAvailablePortFrom);
+        var config = ReadConfig();
+        
+        var Port = NetworkHelper.GetAvailablePort(config.NextAvailablePortFrom);
 
-        if (Config.HideConsoleWindow)
+        if (config.HideConsoleWindow)
         {
             IgnoreException(ConsoleWindowUtility.HideConsoleWindow);
         }
 
-        if (Config.UseUrls)
+        if (config.UseUrls)
         {
-            Process.Start(Config.BrowserExePath, Config.BrowserExeArguments.Replace("{Port}", Port.ToString()));
+            Process.Start(config.BrowserExePath, config.BrowserExeArguments.Replace("{Port}", Port.ToString()));
         }
 
         var builder = WebApplication.CreateBuilder(args);
@@ -64,7 +66,7 @@ public class Program
 
         app.ConfigureReactWithDotNet();
 
-        if (Config.UseUrls)
+        if (config.UseUrls)
         {
             app.Run($"https://*:{Port}");
         }

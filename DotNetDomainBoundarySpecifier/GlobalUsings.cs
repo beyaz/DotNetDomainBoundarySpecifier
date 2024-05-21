@@ -14,4 +14,5 @@ global using System.IO;
 global using Mono.Cecil;
 global using Mono.Cecil.Cil;
 global using static DotNetDependencyExtractor.FileHelper;
+global using static DotNetDomainBoundarySpecifier.ConfigReader;
 global using static DotNetDomainBoundarySpecifier.Processors.CecilHelper;

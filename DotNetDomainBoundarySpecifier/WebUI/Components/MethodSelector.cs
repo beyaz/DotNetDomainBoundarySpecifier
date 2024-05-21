@@ -29,7 +29,9 @@ sealed class MethodSelector : Component<MethodSelector.State>
 
         if (SelectedAssemblyFileName.HasValue())
         {
-            var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(Config.AssemblySearchDirectory, SelectedAssemblyFileName));
+            var config = ReadConfig();
+            
+            var assemblyDefinitionResult = ReadAssemblyDefinition(Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName));
             if (assemblyDefinitionResult.HasError)
             {
                 return assemblyDefinitionResult.Error.ToString();

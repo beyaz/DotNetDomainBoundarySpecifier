@@ -210,11 +210,13 @@ class MainView : Component<MainViewModel>
         
         var elements = new List<Element>();
         
+        var config = ReadConfig();
+        
         foreach (var relatedTableFullName in records.Select(x=>x.RelatedClassFullName).Distinct())
         {
-            var filePath = Path.Combine(Config.AssemblySearchDirectory, state.SelectedAssemblyFileName);
+            var filePath = Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName);
 
-            var typeDefinition = GetTypesInAssemblyFile(filePath).FirstOrDefault(x=>x.FullName == relatedTableFullName);
+            var typeDefinition = GetTypesInAssemblyFile(new(),filePath).FirstOrDefault(x=>x.FullName == relatedTableFullName);
             if (typeDefinition is null)
             {
                 continue;

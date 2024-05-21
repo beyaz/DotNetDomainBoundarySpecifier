@@ -22,9 +22,10 @@ static class Extractor
     internal static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
-        
+
+        var config = serviceContext.Config;
         var methodDefinition = 
-            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, input.AssemblyFileName))
+            GetTypesInAssemblyFile(serviceContext,Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
             .FirstOrDefault(t => t.FullName == input.TypeFullName)
             ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
 
@@ -44,6 +45,8 @@ static class Extractor
 
         static ImmutableList<TableModel> pushType(ServiceContext serviceContext, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
         {
+            var config = serviceContext.Config;
+            
             if (IsDotNetCoreType(typeReference.FullName))
             {
                 return records;
@@ -59,12 +62,13 @@ static class Extractor
 
             foreach (var propertyDefinition in usedProperties)
             {
+                
                 records = records.Add(new()
                 {
                     ExternalAssemblyFileName = input.AssemblyFileName,
                     ExternalClassFullName    = input.TypeFullName,
                     ExternalMethodFullName   = methodDefinition.FullName,
-                    ModuleName               = Config.ModuleName,
+                    ModuleName               = config.ModuleName,
                     RelatedClassFullName     = typeDefinition.FullName,
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
@@ -83,10 +87,10 @@ static class Extractor
         
         const string padding = "    ";
 
-        var config = Config;
+        var config = serviceContext.Config;
         
         var targetMethod = 
-            GetTypesInAssemblyFile(Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+            GetTypesInAssemblyFile(serviceContext,Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
                 .FirstOrDefault(t => t.FullName == input.TypeFullName)
                 ?.Methods.FirstOrDefault(m => m.FullName== input.MethodFullName);
 
@@ -164,7 +168,7 @@ static class Extractor
         
         processFile.AppendLine($"{padding}{padding}var bo = new {Extensions.RemoveFromStart(targetType.FullName, "BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
-        var targetMethodParameters = targetMethod.Parameters.Where(p => !p.ParameterType.CanIgnoreParamaterType()).ToList();
+        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParamaterType(serviceContext,p.ParameterType)).ToList();
 
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
@@ -330,9 +334,12 @@ static class Extractor
     
     static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(ServiceContext serviceContext)
     {
+        var config = serviceContext.Config;
+        
         if (_domainAssemblies == null)
         {
-            var directory = Config.AssemblySearchDirectory;
+            
+            var directory = config.AssemblySearchDirectory;
 
             var files = Directory.GetFiles(directory, "*.dll").Where(x=>isInDomain(serviceContext,x));
 
@@ -341,7 +348,7 @@ static class Extractor
                 .Select(ReadAssemblyDefinition)
                 .Where(r => r.Success)
                 .Select(x => x.Value)
-                .Select(AnalyzeAssembly)
+                .Select(x=>AnalyzeAssembly(serviceContext,x))
                 .ToList();
 
            
@@ -353,7 +360,9 @@ static class Extractor
     
     public static bool isInDomain(ServiceContext serviceContext, string file)
     {
-        foreach (var name in Config.DomainFiles)
+        var config = serviceContext.Config;
+        
+        foreach (var name in config.DomainFiles)
         {
             if (file.Contains(name,StringComparison.OrdinalIgnoreCase))
             {
@@ -364,9 +373,9 @@ static class Extractor
         return false;
     }
 
-    static bool CanIgnoreParamaterType(this TypeReference parameterTypeReference)
+    static bool CanIgnoreParamaterType(ServiceContext serviceContext, TypeReference parameterTypeReference)
     {
-        return Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
+        return serviceContext.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }
     
     static bool IsDotNetCoreType(string fullTypeName)

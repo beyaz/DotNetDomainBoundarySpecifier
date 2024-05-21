@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace ApiInspector.WebUI;
+﻿namespace DotNetDomainBoundarySpecifier;
 
 sealed record ConfigInfo
 {
+    // @formatting:off
     public string BrowserExeArguments { get; init; }
     public string BrowserExePath { get; init; }
     public bool HideConsoleWindow { get; init; }
@@ -25,38 +24,6 @@ sealed record ConfigInfo
         public string CacheDirectoryFormat { get; init; }
         public bool IsActive { get; init; }
     }
+    // @formatting:on
     
-    
-}
-
-partial class Extensions
-{
-    static readonly bool IsRunningInVS = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
-    public static readonly ConfigInfo Config = ReadConfig();
-
-    public static string AppFolder
-    {
-        get
-        {
-            var location = Path.GetDirectoryName(typeof(Extensions).Assembly.Location);
-            if (location == null)
-            {
-                throw new ArgumentException("assembly location not found");
-            }
-
-            return location;
-        }
-    }
-
-   public static ConfigInfo ReadConfig()
-    {
-        var config = JsonConvert.DeserializeObject<ConfigInfo>(File.ReadAllText(Path.Combine(AppFolder, "DotNetDomainBoundarySpecifier.Config.json")));
-
-        if (IsRunningInVS)
-        {
-            config = config with { UseUrls = false };
-        }
-
-        return config;
-    }
 }

@@ -27,9 +27,11 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
         if (SelectedAssemblyFileName.HasValue())
         {
-            var filePath = Path.Combine(Config.AssemblySearchDirectory, SelectedAssemblyFileName);
+            var config = ReadConfig();
+            
+            var filePath = Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName);
 
-            itemsSource = GetTypesInAssemblyFile(filePath).Select(x => x.FullName).ToList();
+            itemsSource = GetTypesInAssemblyFile(new(),filePath).Select(x => x.FullName).ToList();
         }
 
         return new ListView<string>
