@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using ApiInspector.WebUI;
+using Mono.Cecil;
 
 namespace DotNetDependencyExtractor;
 
@@ -180,14 +181,23 @@ static class Extractor
         return sb.ToString();
     }
 
-    internal static ImmutableList<TableModel> AnalyzeMethod(MainWindowModel mainWindowModel)
+    internal sealed record AnalyzeMethodInput
+    {
+        public  required string SelectedAssemblyFileName { get; init; }
+    
+        public required string SelectedTypeFullName { get; init; }
+
+        public required string SelectedMethodFullName { get; set; }
+    }
+    
+    internal static ImmutableList<TableModel> AnalyzeMethod(AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
         
         var methodDefinition = 
-            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, mainWindowModel.SelectedAssemblyFileName))
-            .FirstOrDefault(t => t.FullName == mainWindowModel.SelectedTypeFullName)
-            ?.Methods.FirstOrDefault(m => m.FullName== mainWindowModel.SelectedMethodFullName);
+            GetTypesInAssemblyFile(Path.Combine(Config.AssemblySearchDirectory, input.SelectedAssemblyFileName))
+            .FirstOrDefault(t => t.FullName == input.SelectedTypeFullName)
+            ?.Methods.FirstOrDefault(m => m.FullName== input.SelectedMethodFullName);
 
         if (methodDefinition is null)
         {
@@ -196,12 +206,14 @@ static class Extractor
         
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            records = pushType(mainWindowModel, methodDefinition,records,parameterDefinition.ParameterType);
+            records = pushType(input, methodDefinition,records,parameterDefinition.ParameterType);
         }
+
+        records = pushType(input, methodDefinition, records, methodDefinition.ReturnType);
          
         return records;
 
-        static ImmutableList<TableModel> pushType(MainWindowModel ui, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
+        static ImmutableList<TableModel> pushType(AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
         {
             if (IsDotNetCoreType(typeReference.FullName))
             {
@@ -220,15 +232,15 @@ static class Extractor
             {
                 records = records.Add(new()
                 {
-                    ExternalAssemblyFileName = ui.SelectedAssemblyFileName,
-                    ExternalClassFullName    = ui.SelectedTypeFullName,
+                    ExternalAssemblyFileName = input.SelectedAssemblyFileName,
+                    ExternalClassFullName    = input.SelectedTypeFullName,
                     ExternalMethodFullName   = methodDefinition.FullName,
                     ModuleName               = Config.ModuleName,
                     RelatedClassFullName     = typeDefinition.FullName,
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
                 
-                records = pushType(ui, methodDefinition, records, propertyDefinition.PropertyType);
+                records = pushType(input, methodDefinition, records, propertyDefinition.PropertyType);
             }
             
             return records;
