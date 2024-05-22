@@ -41,9 +41,8 @@ static class Analyzer
     {
         var records = ImmutableList<TableModel>.Empty;
 
-        var config = serviceContext.Config;
         var methodDefinition =
-            GetTypesInFilePath(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+            serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
                .FirstOrDefault(t => t.FullName == input.TypeFullName)
               ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
@@ -106,7 +105,7 @@ static class Analyzer
         var config = serviceContext.Config;
 
         var targetMethod =
-            GetTypesInFilePath(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+            serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
                .FirstOrDefault(t => t.FullName == input.TypeFullName)
               ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
