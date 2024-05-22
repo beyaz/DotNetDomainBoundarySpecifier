@@ -31,14 +31,6 @@
       <Content Remove="ApiInspector.WebUI.Config.json" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Remove="Processors\notes.txt" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="Processors\notes.txt" />
-    </ItemGroup>
-
 
   
 

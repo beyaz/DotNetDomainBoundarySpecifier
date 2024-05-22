@@ -11,17 +11,18 @@
     },
 
     "ModuleName": "BOACard",
-    "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
-    "DomainFiles": [ "Test.DomainX" ],
+    "AssemblySearchDirectory": "d:\\boa\\server\\bin\\",
+  "DomainFiles": [ ".Orchestration.Card." ],
     "SkipTypes": [
         "<Module>",
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
-        "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
+        "System.Runtime.CompilerServices.RefSafetyRulesAttribute",
+        "BOA.Business.Kernel.General.FTP"
     ],
-    "ExternalDomainFileNameContains": [ "Test.ExternalDomainY" ],
+    "ExternalDomainFileNameContains": [ "BOA." ],
 
     "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
 
-    "ExportDirectoryForTypes": "C:\temp\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
-    "ExportDirectoryForProcess": "C:\temp\\BOA.Card.Banking\\BOA.Process.Card.Banking\\"
+    "ExportDirectoryForTypes": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
+    "ExportDirectoryForProcess": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Process.Card.Banking\\"
 }
