@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
+﻿using DotNetDomainBoundarySpecifier.Processors;
+
+namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class TypeSelector : Component<TypeSelector.State>
 {
@@ -28,11 +30,14 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
         if (SelectedAssemblyFileName.HasValue())
         {
-            var config = ReadConfig();
+            var serviceContext = new ServiceContext();
 
-            var filePath = Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName);
+            
 
-            itemsSource = GetTypesInFilePath(new(), filePath).Select(x => x.FullName).ToList();
+
+
+
+            itemsSource = serviceContext.GetTypesInAssemblyFile(SelectedAssemblyFileName).Select(x => x.FullName).ToList();
 
             markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
                          .Select(m => m.DeclaringType.FullName).ToList();

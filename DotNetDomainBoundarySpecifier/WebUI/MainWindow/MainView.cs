@@ -145,12 +145,16 @@ class MainView : Component<MainViewModel>
             return null;
         }
 
-        var config = ReadConfig();
         
-        var methodDefinition =
-            GetTypesInFilePath(new(), Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName))
-               .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)
-              ?.Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
+        var config = ReadConfig();
+
+        var serviceContext = new ServiceContext();
+
+        var methodDefinition = serviceContext
+                              .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)
+                              .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)?
+                              .Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
+        
 
         if (methodDefinition is null)
         {
@@ -163,9 +167,7 @@ class MainView : Component<MainViewModel>
 
         foreach (var relatedTableFullName in records.Select(x => x.RelatedClassFullName).Distinct())
         {
-            var filePath = Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName);
-
-            var typeDefinition = GetTypesInFilePath(new(), filePath).FirstOrDefault(x => x.FullName == relatedTableFullName);
+            var typeDefinition = serviceContext.GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x => x.FullName == relatedTableFullName);
             if (typeDefinition is null)
             {
                 continue;
