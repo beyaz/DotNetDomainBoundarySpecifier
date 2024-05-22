@@ -45,6 +45,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
         return new ListView<string>
         {
+            Name = "Class",
             Title               = "Class",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,

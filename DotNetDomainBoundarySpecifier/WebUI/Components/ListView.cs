@@ -24,7 +24,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
     public string Title { get; init; }
 
-    public string Name { get; init; }
+    public required string Name { get; init; }
 
     protected override Task constructor()
     {

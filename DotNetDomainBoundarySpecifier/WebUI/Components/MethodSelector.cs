@@ -47,6 +47,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
 
         return new ListView<string>
         {
+            Name = "Method",
             Title               = "Method",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,

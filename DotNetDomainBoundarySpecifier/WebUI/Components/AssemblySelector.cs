@@ -29,6 +29,7 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
     {
         return new ListView<string>
         {
+            Name = "Assembly",
             Title               = "Assembly",
             SelectionIsSingle   = true,
             ItemsSource         = ExternalDomainAssemblyFiles,

@@ -178,6 +178,7 @@ class MainView : Component<MainViewModel>
 
             elements.Add(new ListView<string>
             {
+                Name = typeDefinition.Name,
                 Title         = typeDefinition.Name,
                 ItemsSource   = itemsSource,
                 SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
@@ -199,6 +200,7 @@ class MainView : Component<MainViewModel>
 
                 elements.Add(new ListView<string>
                 {
+                    Name = typeDefinition.Name,
                     Title         = typeDefinition.Name,
                     ItemsSource   = itemsSource,
                     SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
