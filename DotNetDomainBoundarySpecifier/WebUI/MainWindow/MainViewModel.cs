@@ -1,6 +1,4 @@
-﻿using DotNetDomainBoundarySpecifier.Processors;
-
-namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 sealed record MainViewModel
 {
