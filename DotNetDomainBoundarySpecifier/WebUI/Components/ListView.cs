@@ -131,14 +131,14 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
         if (label is null)
         {
-            return null;
+            return default;
         }
 
         if (state.SearchText.HasValue())
         {
             if (!label.Contains(state.SearchText, StringComparison.OrdinalIgnoreCase))
             {
-                return null;
+                return default;
             }
         }
 
@@ -152,13 +152,17 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             isSelected = SelectedItems.Contains(record);
         }
 
+        var isMarked = MarkedItems.Contains(record);
+
         return new FlexRow(Id(index), WidthFull, Padding(4, 8), BorderRadius(3), CursorDefault, AlignItemsCenter, WordBreakAll)
         {
             label,
 
-            isSelected ? Background(Theme.ColorForListViewItemSelectedBackground) : Hover(Background(Theme.ColorForListViewItemHoverBackground)),
+            isSelected ? Background(Theme.ListView.ItemSelectedBackgroundColor) : Hover(Background(Theme.ListView.ItemHoverBackgroundColor)),
 
-            isSelected ? null : OnClick(OnItemClicked)
+            isSelected ? null : OnClick(OnItemClicked),
+            
+            isMarked && !isSelected ? Background(Theme.ListView.MarkedItemBackgroundColor) : null
         };
     }
 

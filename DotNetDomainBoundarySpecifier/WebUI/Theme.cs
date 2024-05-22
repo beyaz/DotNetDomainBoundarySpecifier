@@ -15,10 +15,6 @@ static class Theme
 
     public static StyleModifier BoxShadowForWindow => BoxShadow(0, 30, 30, 0, rgba(69, 42, 124, 0.15));
 
-    public static string ColorForListViewItemHoverBackground => "#f3f4f6";
-
-    public static string ColorForListViewItemSelectedBackground => rgb(163, 239, 243);
-
     public static Style InputStyle =>
     [
         WidthFull,
@@ -31,4 +27,13 @@ static class Theme
     {
         new path { d = "M2.676 11.027a6.02 6.02 0 0 0 7.157-.347l3.144 3.144a.595.595 0 0 0 .847 0 .6.6 0 0 0 0-.848l-3.143-3.143a6.02 6.02 0 1 0-8.005 1.194Zm.68-9.011a4.797 4.797 0 1 1 5.33 7.977 4.797 4.797 0 0 1-5.33-7.977Z", fill = "currentColor" }
     };
+
+    public static class ListView
+    {
+        public static string ItemHoverBackgroundColor => "#f3f4f6";
+
+        public static string ItemSelectedBackgroundColor => rgb(163, 239, 243);
+
+        public static string MarkedItemBackgroundColor => "#f5f7e6";
+    }
 }
