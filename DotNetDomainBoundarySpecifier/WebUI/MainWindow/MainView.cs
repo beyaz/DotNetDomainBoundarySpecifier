@@ -222,9 +222,17 @@ class MainView : Component<MainViewModel>
         return Task.CompletedTask;
     }
 
-    Task OnSelectedAssemblyChanged(string assemblyfilename)
+    Task OnSelectedAssemblyChanged(string assemblyFilename)
     {
-        state = state with { SelectedAssemblyFileName = assemblyfilename };
+        state = state with { SelectedAssemblyFileName = assemblyFilename };
+        
+        // todo: fetch from db
+        if (state.Records.Count is 0)
+        {
+
+           
+
+        }
 
         return Task.CompletedTask;
     }

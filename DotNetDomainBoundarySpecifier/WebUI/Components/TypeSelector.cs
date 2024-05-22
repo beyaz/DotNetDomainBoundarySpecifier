@@ -24,7 +24,8 @@ sealed class TypeSelector : Component<TypeSelector.State>
     protected override Element render()
     {
         var itemsSource = new List<string>();
-
+        var markedItems = new List<string>();
+        
         if (SelectedAssemblyFileName.HasValue())
         {
             var config = ReadConfig();
@@ -32,13 +33,20 @@ sealed class TypeSelector : Component<TypeSelector.State>
             var filePath = Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName);
 
             itemsSource = GetTypesInAssemblyFile(new(), filePath).Select(x => x.FullName).ToList();
+
+            markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
+                                      .Select(m => m.DeclaringType.FullName).ToList();
         }
 
+        
+            
+            
         return new ListView<string>
         {
             Title               = "Class",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
+            MarkedItems = markedItems,
             SelectedItemChanged = SelectedItemChanged,
             SelectedItem        = state.SelectedTypeFullName
         };

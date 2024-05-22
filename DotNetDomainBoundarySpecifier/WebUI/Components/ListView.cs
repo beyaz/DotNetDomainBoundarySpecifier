@@ -8,6 +8,8 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 {
     public required IReadOnlyList<TRecord> ItemsSource { get; init; } = [];
 
+    public IReadOnlyList<TRecord> MarkedItems { get; init; } = [];
+
     public TRecord SelectedItem { get; init; }
 
     [CustomEvent]
@@ -154,9 +156,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         {
             label,
 
-            isSelected ?
-                Background(Theme.ColorForListViewItemSelectedBackground) :
-                Hover(Background(Theme.ColorForListViewItemHoverBackground)),
+            isSelected ? Background(Theme.ColorForListViewItemSelectedBackground) : Hover(Background(Theme.ColorForListViewItemHoverBackground)),
 
             isSelected ? null : OnClick(OnItemClicked)
         };

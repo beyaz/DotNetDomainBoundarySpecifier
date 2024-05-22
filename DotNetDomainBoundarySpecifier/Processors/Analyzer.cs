@@ -16,8 +16,8 @@ static class Analyzer
         var config = serviceContext.Config;
         var methodDefinition =
             GetTypesInAssemblyFile(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
-                .FirstOrDefault(t => t.FullName == input.TypeFullName)
-                ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
+               .FirstOrDefault(t => t.FullName == input.TypeFullName)
+              ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
         if (methodDefinition is null)
         {
@@ -77,8 +77,8 @@ static class Analyzer
 
         var targetMethod =
             GetTypesInAssemblyFile(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
-                .FirstOrDefault(t => t.FullName == input.TypeFullName)
-                ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
+               .FirstOrDefault(t => t.FullName == input.TypeFullName)
+              ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
         if (targetMethod is null)
         {
@@ -274,6 +274,31 @@ static class Analyzer
         };
     }
 
+    public static IEnumerable<MethodDefinition> GetCalledMethodsFromExternalDomain(ServiceContext serviceContext, string assemblyFileNameInExternalDomain)
+    {
+        var config = serviceContext.Config;
+
+        var domainAssemblies = GetDomainAssemblies(serviceContext);
+
+        foreach (var analyse in domainAssemblies)
+        {
+            foreach (var methodReference in analyse.CalledMethods.Where(m => IsMethodBelongToExternalDomain(serviceContext, m)))
+            {
+                if (config.SkipTypes.Contains(methodReference.DeclaringType.FullName))
+                {
+                    continue;
+                }
+
+                var targetMethod = methodReference.Resolve();
+
+                if (targetMethod?.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
+                {
+                    yield return targetMethod;
+                }
+            }
+        }
+    }
+
     public static bool IsInDomain(ServiceContext serviceContext, string file)
     {
         var config = serviceContext.Config;
@@ -337,11 +362,11 @@ static class Analyzer
             var files = Directory.GetFiles(directory, "*.dll").Where(x => IsInDomain(serviceContext, x));
 
             return files
-                .Select(ReadAssemblyDefinition)
-                .Where(r => r.Success)
-                .Select(x => x.Value)
-                .Select(x => AnalyzeAssembly(serviceContext, x))
-                .ToList();
+                  .Select(ReadAssemblyDefinition)
+                  .Where(r => r.Success)
+                  .Select(x => x.Value)
+                  .Select(x => AnalyzeAssembly(serviceContext, x))
+                  .ToList();
         });
     }
 
