@@ -9,6 +9,34 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
+    public static TypeReference GetValueTypeIfTypeIsMonadType(TypeReference typeReference)
+    {
+        if (IsMonadType(typeReference))
+        {
+            return GetMonadValueType(typeReference);
+        }
+
+        return typeReference;
+    }
+    
+    static bool IsMonadType(TypeReference typeReference)
+    {
+        if (typeReference.Name == "GenericResponse`1" &&
+            typeReference is GenericInstanceType)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+     static TypeReference GetMonadValueType(TypeReference typeReference)
+    {
+        var genericInstanceType = (GenericInstanceType)typeReference;
+        
+        return genericInstanceType.GenericArguments[0];
+    }
+    
     public static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
@@ -42,11 +70,7 @@ static class Analyzer
                 return records;
             }
 
-            if (typeReference.Name == "GenericResponse`1" && 
-                typeReference is GenericInstanceType genericInstanceType)
-            {
-                 typeReference = genericInstanceType.GenericArguments[0];
-            }
+            typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
             
             var typeDefinition = typeReference.Resolve();
 

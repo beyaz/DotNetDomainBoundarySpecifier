@@ -184,11 +184,9 @@ class MainView : Component<MainViewModel>
         }
 
         var returnType = methodDefinition.ReturnType;
-        if (returnType.Name == "GenericResponse`1" &&
-            returnType is GenericInstanceType genericInstanceType)
-        {
-            returnType = genericInstanceType.GenericArguments[0];
-        }
+        
+        returnType = GetValueTypeIfTypeIsMonadType(returnType);
+
         if (!IsDotNetCoreType(returnType.FullName))
         {
             var typeDefinition = Try(returnType.Resolve).Value;
