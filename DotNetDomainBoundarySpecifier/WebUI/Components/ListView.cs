@@ -170,7 +170,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
     static class Marker
     {
-        public static IComparer<HtmlElement> Comparer = new MarkedComparer();
+        public static readonly IComparer<HtmlElement> Comparer = new MarkedComparer();
         public static HtmlElementModifier Mark => Data("isMarked", 1);
 
         class MarkedComparer : IComparer<HtmlElement>
