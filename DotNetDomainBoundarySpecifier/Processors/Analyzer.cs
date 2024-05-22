@@ -294,7 +294,7 @@ static class Analyzer
                 {
                     continue;
                 }
-                
+
                 if (!IsMethodBelongToExternalDomain(serviceContext, methodReference))
                 {
                     continue;
@@ -304,13 +304,16 @@ static class Analyzer
                 if (targetMethodResult.Success)
                 {
                     var targetMethod = targetMethodResult.Value;
-                    
-                    if (targetMethod?.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
+                    if (targetMethod is null || targetMethod.IsConstructor)
+                    {
+                        continue;
+                    }
+
+                    if (targetMethod.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
                     {
                         yield return targetMethod;
                     }
                 }
-               
             }
         }
     }
