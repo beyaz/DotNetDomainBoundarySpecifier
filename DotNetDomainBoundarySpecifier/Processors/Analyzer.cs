@@ -289,12 +289,17 @@ static class Analyzer
                     continue;
                 }
 
-                var targetMethod = methodReference.Resolve();
-
-                if (targetMethod?.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
+                var targetMethodResult = Try(methodReference.Resolve);
+                if (targetMethodResult.Success)
                 {
-                    yield return targetMethod;
+                    var targetMethod = targetMethodResult.Value;
+                    
+                    if (targetMethod?.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
+                    {
+                        yield return targetMethod;
+                    }
                 }
+               
             }
         }
     }

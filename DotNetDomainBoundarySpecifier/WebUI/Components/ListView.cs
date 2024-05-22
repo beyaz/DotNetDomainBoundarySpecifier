@@ -93,7 +93,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             new FlexColumn(AlignItemsCenter, PaddingTopBottom(4), Gap(8), Background("white"), BorderBottomLeftRadius(Theme.BorderRadius), BorderBottomRightRadius(Theme.BorderRadius))
             {
                 OverflowYAuto,
-                ItemsSource?.Select(ToElement)
+                ItemsSource?.Select(ToElement).OrderBy(el=>el?.data.ContainsKey("isMarked") is true? 0:1)
             }
         };
     }
@@ -125,7 +125,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         return Task.CompletedTask;
     }
 
-    Element ToElement(TRecord record, int index)
+    HtmlElement ToElement(TRecord record, int index)
     {
         var label = record.ToString();
 
@@ -162,7 +162,9 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
             isSelected ? null : OnClick(OnItemClicked),
             
-            isMarked && !isSelected ? Background(Theme.ListView.MarkedItemBackgroundColor) : null
+            isMarked && !isSelected ? Background(Theme.ListView.MarkedItemBackgroundColor)  : null,
+            
+            isMarked ?  Data("isMarked",1) : null
         };
     }
 
