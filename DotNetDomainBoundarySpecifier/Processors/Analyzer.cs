@@ -102,8 +102,6 @@ static class Analyzer
     {
         const string padding = "    ";
 
-        var config = serviceContext.Config;
-
         var targetMethod =
             serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
                .FirstOrDefault(t => t.FullName == input.TypeFullName)
@@ -182,7 +180,7 @@ static class Analyzer
 
         processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
-        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParamaterType(serviceContext, p.ParameterType)).ToList();
+        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(serviceContext, p.ParameterType)).ToList();
 
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
@@ -396,7 +394,7 @@ static class Analyzer
         );
     }
 
-    static bool CanIgnoreParamaterType(ServiceContext serviceContext, TypeReference parameterTypeReference)
+    static bool CanIgnoreParameterType(ServiceContext serviceContext, TypeReference parameterTypeReference)
     {
         return serviceContext.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }

@@ -146,8 +146,6 @@ class MainView : Component<MainViewModel>
         }
 
         
-        var config = ReadConfig();
-
         var serviceContext = new ServiceContext();
 
         var methodDefinition = serviceContext
