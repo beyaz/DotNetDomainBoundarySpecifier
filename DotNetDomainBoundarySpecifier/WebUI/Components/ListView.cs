@@ -93,7 +93,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             new FlexColumn(AlignItemsCenter, PaddingTopBottom(4), Gap(8), Background("white"), BorderBottomLeftRadius(Theme.BorderRadius), BorderBottomRightRadius(Theme.BorderRadius))
             {
                 OverflowYAuto,
-                ItemsSource?.Select(ToElement).OrderBy(el=>el?.data.ContainsKey("isMarked") is true? 0:1)
+                ItemsSource?.Select(ToElement).OrderDescending(Marker.Comparer)
             }
         };
     }
@@ -161,11 +161,35 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             isSelected ? Background(Theme.ListView.ItemSelectedBackgroundColor) : Hover(Background(Theme.ListView.ItemHoverBackgroundColor)),
 
             isSelected ? null : OnClick(OnItemClicked),
-            
-            isMarked && !isSelected ? Background(Theme.ListView.MarkedItemBackgroundColor)  : null,
-            
-            isMarked ?  Data("isMarked",1) : null
+
+            isMarked && !isSelected ? Background(Theme.ListView.MarkedItemBackgroundColor) : null,
+
+            isMarked ? Marker.Mark : null
         };
+    }
+
+    static class Marker
+    {
+        public static IComparer<HtmlElement> Comparer = new MarkedComparer();
+        public static HtmlElementModifier Mark => Data("isMarked", 1);
+
+        class MarkedComparer : IComparer<HtmlElement>
+        {
+            public int Compare(HtmlElement x, HtmlElement y)
+            {
+                if (x?.data.ContainsKey("isMarked") is true)
+                {
+                    if (y?.data.ContainsKey("isMarked") is true)
+                    {
+                        return 0;
+                    }
+
+                    return 1;
+                }
+
+                return -1;
+            }
+        }
     }
 
     internal record State
