@@ -1,42 +1,18 @@
-﻿using System.Text;
-using System.Text.Json;
-using DotNetDomainBoundarySpecifier.Processors;
-using DotNetDomainBoundarySpecifier.WebUI.Components;
-
-
-namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 class MainView : Component<MainViewModel>
 {
-    
-    static class StateFile
-    {
-        static string StateFilePath => System.IO.Path.GetTempPath() + nameof(DotNetDomainBoundarySpecifier) + ".json";
-        
-        public static void SaveCurrentState(object state)
-        {
-            var jsonContent = JsonSerializer.Serialize(state);
-
-            File.WriteAllText(StateFilePath, jsonContent,Encoding.UTF8);
-        }
-
-        public static MainViewModel TryReadState()
-        {
-            return Try(() => JsonSerializer.Deserialize<MainViewModel>(File.ReadAllText(StateFilePath))).Value;
-        }
-    }
-
     protected override Task constructor()
     {
         state = StateFile.TryReadState() ?? new();
-        
+
         return base.constructor();
     }
 
     protected override Element render()
     {
         StateFile.SaveCurrentState(state);
-        
+
         return new FlexRow(Padding(10), SizeFull, Theme.BackgroundForBrowser)
         {
             new FlexColumn
@@ -174,14 +150,12 @@ class MainView : Component<MainViewModel>
             return null;
         }
 
-        
         var serviceContext = new ServiceContext();
 
         var methodDefinition = serviceContext
                               .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)
                               .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)?
                               .Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
-        
 
         if (methodDefinition is null)
         {
@@ -189,8 +163,6 @@ class MainView : Component<MainViewModel>
         }
 
         var elements = new List<Element>();
-
-       
 
         foreach (var relatedTableFullName in records.Select(x => x.RelatedClassFullName).Distinct())
         {
@@ -213,7 +185,7 @@ class MainView : Component<MainViewModel>
         }
 
         var returnType = methodDefinition.ReturnType;
-        
+
         returnType = GetValueTypeIfTypeIsMonadType(returnType);
 
         if (!IsDotNetCoreType(returnType.FullName))
@@ -232,10 +204,7 @@ class MainView : Component<MainViewModel>
                     SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
                 });
             }
-            
-            
         }
-        
 
         elements.Add(new FlexRowCentered(SizeFull)
         {
@@ -269,10 +238,9 @@ class MainView : Component<MainViewModel>
         state = state with
         {
             GeneratedCode = "<< T Y P E S >>" + Environment.NewLine +
-            
-            generatedCode.ContractFile.Content 
-                            + Environment.NewLine 
-                            +"<< P R O C E S S >>"
+                            generatedCode.ContractFile.Content
+                            + Environment.NewLine
+                            + "<< P R O C E S S >>"
                             + Environment.NewLine +
                             generatedCode.ProcessFile.Content
         };
@@ -289,21 +257,21 @@ class MainView : Component<MainViewModel>
         return Task.CompletedTask;
     }
 
-    Task OnSelectedAssemblyChanged_Start(string assemblyFilename)
-    {
-        IsInSkeletonMode[Context] = true;
-        
-        Client.GotoMethod(OnSelectedAssemblyChanged_Finish,assemblyFilename);
-        
-        return Task.CompletedTask;
-    }
-
     Task OnSelectedAssemblyChanged_Finish(string assemblyFilename)
     {
         state = state with
         {
             SelectedAssemblyFileName = assemblyFilename,
         };
+
+        return Task.CompletedTask;
+    }
+
+    Task OnSelectedAssemblyChanged_Start(string assemblyFilename)
+    {
+        IsInSkeletonMode[Context] = true;
+
+        Client.GotoMethod(OnSelectedAssemblyChanged_Finish, assemblyFilename);
 
         return Task.CompletedTask;
     }
@@ -320,5 +288,18 @@ class MainView : Component<MainViewModel>
         state = state with { SelectedTypeFullName = typeFullName };
 
         return Task.CompletedTask;
+    }
+
+    static class StateFile
+    {
+        static string StateFilePath => Path.GetTempPath()
+                                       + nameof(DotNetDomainBoundarySpecifier)
+                                       + ".json";
+
+        public static void SaveCurrentState(MainViewModel state)
+            => File.WriteAllText(StateFilePath, Json.Serialize(state), Encoding.UTF8);
+
+        public static MainViewModel TryReadState()
+            => Try(() => Json.Deserialize<MainViewModel>(File.ReadAllText(StateFilePath))).Value;
     }
 }

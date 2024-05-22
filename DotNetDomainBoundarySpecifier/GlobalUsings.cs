@@ -15,3 +15,7 @@ global using static DotNetDomainBoundarySpecifier.Utilities.FileHelper;
 global using static DotNetDomainBoundarySpecifier.ConfigReader;
 global using static DotNetDomainBoundarySpecifier.Processors.CecilHelper;
 global using static DotNetDomainBoundarySpecifier.Extensions;
+global using DotNetDomainBoundarySpecifier.Processors;
+global using DotNetDomainBoundarySpecifier.WebUI.Components;
+global using System.Text;
+global using ReactWithDotNet.ThirdPartyLibraries.ReactWithDotNetSkeleton;

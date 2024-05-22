@@ -1,6 +1,4 @@
-﻿using ReactWithDotNet.ThirdPartyLibraries.ReactWithDotNetSkeleton;
-
-namespace DotNetDomainBoundarySpecifier.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 public delegate Task ListViewSelectedItemsChanged<in TRecord>(IReadOnlyList<TRecord> selectedItems);
 
@@ -26,7 +24,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
     public string Title { get; init; }
 
-    
+    public string Name { get; init; }
 
     protected override Task constructor()
     {
@@ -34,12 +32,32 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         {
             SelectedItems             = SelectedItems,
             SelectedItemsInitialValue = SelectedItems,
-            SelectionIsSingle         = SelectionIsSingle
+            SelectionIsSingle         = SelectionIsSingle,
+            SearchText = LastUsedSearchText.TryRead(Name)
         };
 
         return Task.CompletedTask;
     }
 
+    static class LastUsedSearchText
+    {
+
+        static string CalculateFilePath(string listViewComponentName)
+        {
+            return Path.GetTempPath()
+                + nameof(DotNetDomainBoundarySpecifier)
+                + ".ListView."
+                + listViewComponentName
+                + ".json";
+        }
+         
+
+        public static void Save(string listViewComponentName, string lastUsedSearchText)
+            => File.WriteAllText(CalculateFilePath(listViewComponentName), lastUsedSearchText, Encoding.UTF8);
+
+        public static string TryRead(string listViewComponentName)
+            => Try(() => File.ReadAllText(CalculateFilePath(listViewComponentName))).Value;
+    }
     protected override Task OverrideStateFromPropsBeforeRender()
     {
         bool hasChange;
@@ -82,6 +100,8 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                     OnValueChange = x =>
                     {
                         state = state with { SearchText = x };
+
+                        LastUsedSearchText.Save(Name,x);
 
                         return Task.CompletedTask;
                     }
