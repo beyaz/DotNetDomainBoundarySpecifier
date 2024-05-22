@@ -67,11 +67,11 @@ sealed class MethodSelector : Component<MethodSelector.State>
         };
     }
 
-    Task SelectedItemChanged(string selecteditem)
+    Task SelectedItemChanged(string selectedItem)
     {
-        state = state with
+        state = new()
         {
-            SelectedMethodFullName = selecteditem
+            SelectedMethodFullName = selectedItem
         };
 
         DispatchEvent(SelectionChange, [state.SelectedMethodFullName]);

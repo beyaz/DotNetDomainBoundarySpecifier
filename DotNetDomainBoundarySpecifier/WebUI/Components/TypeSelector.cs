@@ -25,7 +25,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
     {
         var itemsSource = new List<string>();
         var markedItems = new List<string>();
-        
+
         if (SelectedAssemblyFileName.HasValue())
         {
             var config = ReadConfig();
@@ -35,18 +35,15 @@ sealed class TypeSelector : Component<TypeSelector.State>
             itemsSource = GetTypesInAssemblyFile(new(), filePath).Select(x => x.FullName).ToList();
 
             markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
-                                      .Select(m => m.DeclaringType.FullName).ToList();
+                         .Select(m => m.DeclaringType.FullName).ToList();
         }
 
-        
-            
-            
         return new ListView<string>
         {
             Title               = "Class",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
-            MarkedItems = markedItems,
+            MarkedItems         = markedItems,
             SelectedItemChanged = SelectedItemChanged,
             SelectedItem        = state.SelectedTypeFullName
         };
@@ -54,7 +51,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
     Task SelectedItemChanged(string selectedItem)
     {
-        state = state with
+        state = new()
         {
             SelectedTypeFullName = selectedItem
         };
