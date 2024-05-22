@@ -96,7 +96,8 @@ class MainView : Component<MainViewModel>
 
                                 new ActionButton
                                 {
-                                    Label = "Export cs files to project"
+                                    Label     = "Export cs files to project",
+                                    OnClicked = OnExportClicked
                                 }
                             },
 
@@ -178,7 +179,7 @@ class MainView : Component<MainViewModel>
 
             elements.Add(new ListView<string>
             {
-                Name = typeDefinition.Name,
+                Name          = typeDefinition.Name,
                 Title         = typeDefinition.Name,
                 ItemsSource   = itemsSource,
                 SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
@@ -200,7 +201,7 @@ class MainView : Component<MainViewModel>
 
                 elements.Add(new ListView<string>
                 {
-                    Name = typeDefinition.Name,
+                    Name          = typeDefinition.Name,
                     Title         = typeDefinition.Name,
                     ItemsSource   = itemsSource,
                     SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
@@ -255,6 +256,28 @@ class MainView : Component<MainViewModel>
         state = state with { IsAnalyzing = true };
 
         Client.GotoMethod(DoAnalyze);
+
+        return Task.CompletedTask;
+    }
+
+    Task OnExportClicked()
+    {
+        var analyzeMethodInput = new AnalyzeMethodInput
+        {
+            AssemblyFileName = state.SelectedAssemblyFileName,
+            TypeFullName     = state.SelectedTypeFullName,
+            MethodFullName   = state.SelectedMethodFullName
+        };
+
+        var records = AnalyzeMethod(new(), analyzeMethodInput);
+
+        var generatedCode = GenerateCode(new(), analyzeMethodInput, records);
+
+        var result = FileExporter.ExportToFile(new(), generatedCode);
+        if (result.HasError)
+        {
+            Client.RunJavascript($"alert(\"{result.Error}\")");
+        }
 
         return Task.CompletedTask;
     }

@@ -12,7 +12,7 @@
 
     "ModuleName": "BOACard",
     "AssemblySearchDirectory": "d:\\boa\\server\\bin\\",
-  "DomainFiles": [ ".Orchestration.Card.CCO." ],
+  "DomainFiles": [ ".Orchestration.Card.CCO.dll", ".Orchestration.Card.Application.dll" ],
     "SkipTypes": [
         "<Module>",
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
