@@ -32,7 +32,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
             var filePath = Path.Combine(config.AssemblySearchDirectory, SelectedAssemblyFileName);
 
-            itemsSource = GetTypesInAssemblyFile(new(), filePath).Select(x => x.FullName).ToList();
+            itemsSource = GetTypesInFilePath(new(), filePath).Select(x => x.FullName).ToList();
 
             markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
                          .Select(m => m.DeclaringType.FullName).ToList();

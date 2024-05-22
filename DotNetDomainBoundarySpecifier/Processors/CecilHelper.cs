@@ -178,11 +178,11 @@ static class CecilHelper
         return name;
     }
 
-    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(ServiceContext serviceContext, string filePath)
+    public static IReadOnlyList<TypeDefinition> GetTypesInFilePath(ServiceContext serviceContext, string filePath)
     {
         var config = serviceContext.Config;
 
-        return Cache.AccessValue(nameof(GetTypesInAssemblyFile) + filePath, () =>
+        return Cache.AccessValue(nameof(GetTypesInFilePath) + filePath, () =>
         {
             var result = ReadAssemblyDefinition(filePath);
             if (result.HasError)

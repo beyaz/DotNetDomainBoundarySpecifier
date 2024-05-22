@@ -148,7 +148,7 @@ class MainView : Component<MainViewModel>
         var config = ReadConfig();
         
         var methodDefinition =
-            GetTypesInAssemblyFile(new(), Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName))
+            GetTypesInFilePath(new(), Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName))
                .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)
               ?.Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
 
@@ -165,7 +165,7 @@ class MainView : Component<MainViewModel>
         {
             var filePath = Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName);
 
-            var typeDefinition = GetTypesInAssemblyFile(new(), filePath).FirstOrDefault(x => x.FullName == relatedTableFullName);
+            var typeDefinition = GetTypesInFilePath(new(), filePath).FirstOrDefault(x => x.FullName == relatedTableFullName);
             if (typeDefinition is null)
             {
                 continue;

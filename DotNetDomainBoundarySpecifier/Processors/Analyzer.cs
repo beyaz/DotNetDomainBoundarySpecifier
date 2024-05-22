@@ -43,7 +43,7 @@ static class Analyzer
 
         var config = serviceContext.Config;
         var methodDefinition =
-            GetTypesInAssemblyFile(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+            GetTypesInFilePath(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
                .FirstOrDefault(t => t.FullName == input.TypeFullName)
               ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
@@ -106,7 +106,7 @@ static class Analyzer
         var config = serviceContext.Config;
 
         var targetMethod =
-            GetTypesInAssemblyFile(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
+            GetTypesInFilePath(serviceContext, Path.Combine(config.AssemblySearchDirectory, input.AssemblyFileName))
                .FirstOrDefault(t => t.FullName == input.TypeFullName)
               ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
