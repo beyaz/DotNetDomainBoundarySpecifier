@@ -1,4 +1,6 @@
-﻿using DotNetDomainBoundarySpecifier.Processors;
+﻿using System.Text;
+using System.Text.Json;
+using DotNetDomainBoundarySpecifier.Processors;
 using DotNetDomainBoundarySpecifier.WebUI.Components;
 
 
@@ -6,8 +8,35 @@ namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 class MainView : Component<MainViewModel>
 {
+    
+    static class StateFile
+    {
+        static string StateFilePath => System.IO.Path.GetTempPath() + nameof(DotNetDomainBoundarySpecifier) + ".json";
+        
+        public static void SaveCurrentState(object state)
+        {
+            var jsonContent = JsonSerializer.Serialize(state);
+
+            File.WriteAllText(StateFilePath, jsonContent,Encoding.UTF8);
+        }
+
+        public static MainViewModel TryReadState()
+        {
+            return Try(() => JsonSerializer.Deserialize<MainViewModel>(File.ReadAllText(StateFilePath))).Value;
+        }
+    }
+
+    protected override Task constructor()
+    {
+        state = StateFile.TryReadState() ?? new();
+        
+        return base.constructor();
+    }
+
     protected override Element render()
     {
+        StateFile.SaveCurrentState(state);
+        
         return new FlexRow(Padding(10), SizeFull, Theme.BackgroundForBrowser)
         {
             new FlexColumn
