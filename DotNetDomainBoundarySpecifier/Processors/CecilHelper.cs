@@ -7,21 +7,6 @@ static class CecilHelper
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static bool IsMethodBelongToExternalDomain(ServiceContext serviceContext, MethodReference methodReference)
-    {
-        var config = serviceContext.Config;
-        
-        foreach (var partOfFileName in config.ExternalDomainFileNameContains)
-        {
-            if (methodReference.DeclaringType.Scope.Name.Contains(partOfFileName, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
     public static AssemblyAnalyse AnalyzeAssembly(ServiceContext serviceContext, AssemblyDefinition assemblyDefinition)
     {
         var types = new List<TypeDefinition>();
@@ -182,15 +167,9 @@ static class CecilHelper
     {
         var config = serviceContext.Config;
 
-        return GetTypesInFilePath(serviceContext, Path.Combine(config.AssemblySearchDirectory, assemblyFileName));
-    }
+        var filePath = Path.Combine(config.AssemblySearchDirectory, assemblyFileName);
 
-
-    public static IReadOnlyList<TypeDefinition> GetTypesInFilePath(ServiceContext serviceContext, string filePath)
-    {
-        var config = serviceContext.Config;
-
-        return Cache.AccessValue(nameof(GetTypesInFilePath) + filePath, () =>
+        return Cache.AccessValue(nameof(GetTypesInAssemblyFile) + filePath, () =>
         {
             var result = ReadAssemblyDefinition(filePath);
             if (result.HasError)
@@ -223,6 +202,21 @@ static class CecilHelper
         {
             if (propertyDefinition.GetMethod?.FullName == mr.FullName ||
                 propertyDefinition.SetMethod?.FullName == mr.FullName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static bool IsMethodBelongToExternalDomain(ServiceContext serviceContext, MethodReference methodReference)
+    {
+        var config = serviceContext.Config;
+
+        foreach (var partOfFileName in config.ExternalDomainFileNameContains)
+        {
+            if (methodReference.DeclaringType.Scope.Name.Contains(partOfFileName, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
