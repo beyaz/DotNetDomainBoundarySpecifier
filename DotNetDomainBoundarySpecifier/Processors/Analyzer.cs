@@ -42,6 +42,12 @@ static class Analyzer
                 return records;
             }
 
+            if (typeReference.Name == "GenericResponse`1" && 
+                typeReference is GenericInstanceType genericInstanceType)
+            {
+                 typeReference = genericInstanceType.GenericArguments[0];
+            }
+            
             var typeDefinition = typeReference.Resolve();
 
             var usedProperties = GetDomainAssemblies(serviceContext).FindUsedProperties(typeDefinition);
@@ -97,11 +103,13 @@ static class Analyzer
 
         if (targetMethod.ReturnType is GenericInstanceType genericInstanceType)
         {
-            if (IsDotNetCoreType(genericInstanceType.GenericArguments[0].FullName))
+            //if (IsDotNetCoreType(genericInstanceType.GenericArguments[0].FullName))
             {
                 outputTypeAsAlreadyExistingType = genericInstanceType.GenericArguments[0];
 
                 outputTypeIsAlreadyExistingType = true;
+                
+                
             }
         }
 
@@ -389,7 +397,7 @@ static class Analyzer
         });
     }
 
-    static bool IsDotNetCoreType(string fullTypeName)
+    public static bool IsDotNetCoreType(string fullTypeName)
     {
         var coreTypes = new[]
         {

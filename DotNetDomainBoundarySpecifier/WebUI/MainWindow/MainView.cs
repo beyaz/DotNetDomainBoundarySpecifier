@@ -145,9 +145,21 @@ class MainView : Component<MainViewModel>
             return null;
         }
 
+        var config = ReadConfig();
+        
+        var methodDefinition =
+            GetTypesInAssemblyFile(new(), Path.Combine(config.AssemblySearchDirectory, state.SelectedAssemblyFileName))
+               .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)
+              ?.Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
+
+        if (methodDefinition is null)
+        {
+            return null;
+        }
+
         var elements = new List<Element>();
 
-        var config = ReadConfig();
+       
 
         foreach (var relatedTableFullName in records.Select(x => x.RelatedClassFullName).Distinct())
         {
@@ -170,6 +182,33 @@ class MainView : Component<MainViewModel>
                 SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
             });
         }
+
+        var returnType = methodDefinition.ReturnType;
+        if (returnType.Name == "GenericResponse`1" &&
+            returnType is GenericInstanceType genericInstanceType)
+        {
+            returnType = genericInstanceType.GenericArguments[0];
+        }
+        if (!IsDotNetCoreType(returnType.FullName))
+        {
+            var typeDefinition = Try(returnType.Resolve).Value;
+            if (typeDefinition is not null)
+            {
+                var itemsSource = typeDefinition.Properties.Select(p => p.Name).ToList();
+
+                var selectedProperties = records.Where(x => x.RelatedClassFullName == returnType.FullName).Select(x => x.RelatedPropertyFullName).ToList();
+
+                elements.Add(new ListView<string>
+                {
+                    Title         = typeDefinition.Name,
+                    ItemsSource   = itemsSource,
+                    SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
+                });
+            }
+            
+            
+        }
+        
 
         elements.Add(new FlexRowCentered(SizeFull)
         {
