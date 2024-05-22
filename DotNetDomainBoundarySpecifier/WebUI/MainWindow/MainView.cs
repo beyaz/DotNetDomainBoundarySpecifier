@@ -1,6 +1,7 @@
 ﻿using DotNetDomainBoundarySpecifier.Processors;
 using DotNetDomainBoundarySpecifier.WebUI.Components;
 
+
 namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 class MainView : Component<MainViewModel>
@@ -57,7 +58,7 @@ class MainView : Component<MainViewModel>
                         new AssemblySelector
                         {
                             SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-                            SelectionChange          = OnSelectedAssemblyChanged
+                            SelectionChange          = OnSelectedAssemblyChanged_Start
                         },
                         new TypeSelector
                         {
@@ -222,17 +223,21 @@ class MainView : Component<MainViewModel>
         return Task.CompletedTask;
     }
 
-    Task OnSelectedAssemblyChanged(string assemblyFilename)
+    Task OnSelectedAssemblyChanged_Start(string assemblyFilename)
     {
-        state = state with { SelectedAssemblyFileName = assemblyFilename };
+        IsInSkeletonMode[Context] = true;
         
-        // todo: fetch from db
-        if (state.Records.Count is 0)
+        Client.GotoMethod(OnSelectedAssemblyChanged_Finish,assemblyFilename);
+        
+        return Task.CompletedTask;
+    }
+
+    Task OnSelectedAssemblyChanged_Finish(string assemblyFilename)
+    {
+        state = state with
         {
-
-           
-
-        }
+            SelectedAssemblyFileName = assemblyFilename,
+        };
 
         return Task.CompletedTask;
     }

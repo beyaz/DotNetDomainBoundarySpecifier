@@ -58,4 +58,6 @@ static class Extensions
 
         return data;
     }
+
+    public static ReactContextKey<bool> IsInSkeletonMode = new(nameof(IsInSkeletonMode));
 }

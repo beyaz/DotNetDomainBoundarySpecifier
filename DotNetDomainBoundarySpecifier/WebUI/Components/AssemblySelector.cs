@@ -19,27 +19,32 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
         return Task.CompletedTask;
     }
 
-    protected override Element render()
+    static IReadOnlyList<string> ExternalDomainAssemblyFiles => Cache.AccessValue(nameof(ExternalDomainAssemblyFiles), () =>
     {
         var config = ReadConfig();
 
-        var itemsSource = Directory.GetFiles(config.AssemblySearchDirectory, "*.dll").Where(x => !IsInDomain(new(), x)).Select(Path.GetFileName).ToList();
+        return Directory.GetFiles(config.AssemblySearchDirectory, "*.dll").Where(x => !IsInDomain(new(), x)).Select(Path.GetFileName).ToList();
 
+    });
+    protected override Element render()
+    {
         return new ListView<string>
         {
             Title               = "Assembly",
             SelectionIsSingle   = true,
-            ItemsSource         = itemsSource,
+            ItemsSource         = ExternalDomainAssemblyFiles,
             SelectedItemChanged = SelectedItemChanged,
             SelectedItem        = state.SelectedAssemblyFileName
         };
     }
 
-    Task SelectedItemChanged(string selecteditem)
+    static readonly CachedObjectMap Cache = new ();
+
+    Task SelectedItemChanged(string selectedItem)
     {
         state = state with
         {
-            SelectedAssemblyFileName = selecteditem
+            SelectedAssemblyFileName = selectedItem
         };
 
         DispatchEvent(SelectionChange, [state.SelectedAssemblyFileName]);

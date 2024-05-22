@@ -52,11 +52,11 @@ sealed class TypeSelector : Component<TypeSelector.State>
         };
     }
 
-    Task SelectedItemChanged(string selecteditem)
+    Task SelectedItemChanged(string selectedItem)
     {
         state = state with
         {
-            SelectedTypeFullName = selecteditem
+            SelectedTypeFullName = selectedItem
         };
 
         DispatchEvent(SelectionChange, [state.SelectedTypeFullName]);

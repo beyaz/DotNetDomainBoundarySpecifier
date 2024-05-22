@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
+﻿using ReactWithDotNet.ThirdPartyLibraries.ReactWithDotNetSkeleton;
+
+namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 public delegate Task ListViewSelectedItemsChanged<in TRecord>(IReadOnlyList<TRecord> selectedItems);
 
@@ -23,6 +25,8 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
     public bool SelectionIsSingle { get; init; }
 
     public string Title { get; init; }
+
+    
 
     protected override Task constructor()
     {
@@ -71,6 +75,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             {
                 Title.HasValue() ? (b)Title : null,
 
+                IsInSkeletonMode[Context] ? new Skeleton{ Padding(8, 16) } :
                 new SearchTextBox
                 {
                     Value = state.SearchText,
