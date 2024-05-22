@@ -26,6 +26,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
     protected override Element render()
     {
         var itemsSource = new List<string>();
+        var markedItems = new List<string>();
 
         if (SelectedAssemblyFileName.HasValue())
         {
@@ -37,24 +38,11 @@ sealed class MethodSelector : Component<MethodSelector.State>
                 return assemblyDefinitionResult.Error.ToString();
             }
 
-            foreach (var moduleDefinition in assemblyDefinitionResult.Value.Modules)
-            {
-                foreach (var type in moduleDefinition.Types)
-                {
-                    if (type.FullName == SelectedTypeFullName)
-                    {
-                        foreach (var methodDefinition in type.Methods)
-                        {
-                            if (methodDefinition.IsConstructor)
-                            {
-                                continue;
-                            }
+            itemsSource = GetMethods(assemblyDefinitionResult.Value, SelectedTypeFullName).Select(m => m.FullName).ToList();
 
-                            itemsSource.Add(methodDefinition.FullName);
-                        }
-                    }
-                }
-            }
+            markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
+                         .Where(m => m.DeclaringType.FullName == SelectedTypeFullName)
+                         .Select(m => m.FullName).ToList();
         }
 
         return new ListView<string>
@@ -62,9 +50,32 @@ sealed class MethodSelector : Component<MethodSelector.State>
             Title               = "Method",
             SelectionIsSingle   = true,
             ItemsSource         = itemsSource,
+            MarkedItems         = markedItems,
             SelectedItemChanged = SelectedItemChanged,
             SelectedItem        = state.SelectedMethodFullName
         };
+    }
+
+    static IEnumerable<MethodDefinition> GetMethods(AssemblyDefinition assemblyDefinition, string filterTypeFullName)
+    {
+        foreach (var moduleDefinition in assemblyDefinition.Modules)
+        {
+            foreach (var type in moduleDefinition.Types)
+            {
+                if (type.FullName == filterTypeFullName)
+                {
+                    foreach (var methodDefinition in type.Methods)
+                    {
+                        if (methodDefinition.IsConstructor)
+                        {
+                            continue;
+                        }
+
+                        yield return methodDefinition;
+                    }
+                }
+            }
+        }
     }
 
     Task SelectedItemChanged(string selectedItem)
