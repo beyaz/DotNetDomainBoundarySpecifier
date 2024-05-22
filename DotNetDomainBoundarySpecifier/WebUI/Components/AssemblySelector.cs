@@ -2,6 +2,12 @@
 
 sealed class AssemblySelector : Component<AssemblySelector.State>
 {
+    static readonly IReadOnlyList<string> ExternalDomainAssemblyFiles
+        = Directory.GetFiles(ReadConfig().AssemblySearchDirectory, "*.dll")
+                   .Where(x => !IsInDomain(new(), x))
+                   .Select(Path.GetFileName)
+                   .ToList();
+
     public delegate Task SelectedAssemblyChanged(string assemblyFileName);
 
     public string SelectedAssemblyFileName { get; init; }
@@ -19,13 +25,6 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
         return Task.CompletedTask;
     }
 
-    static IReadOnlyList<string> ExternalDomainAssemblyFiles => Cache.AccessValue(nameof(ExternalDomainAssemblyFiles), () =>
-    {
-        var config = ReadConfig();
-
-        return Directory.GetFiles(config.AssemblySearchDirectory, "*.dll").Where(x => !IsInDomain(new(), x)).Select(Path.GetFileName).ToList();
-
-    });
     protected override Element render()
     {
         return new ListView<string>
@@ -38,11 +37,9 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
         };
     }
 
-    static readonly CachedObjectMap Cache = new ();
-
     Task SelectedItemChanged(string selectedItem)
     {
-        state = state with
+        state = new()
         {
             SelectedAssemblyFileName = selectedItem
         };

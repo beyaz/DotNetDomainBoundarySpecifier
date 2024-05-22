@@ -4,7 +4,14 @@ namespace DotNetDomainBoundarySpecifier;
 
 static class ConfigReader
 {
+    static ConfigInfo cache;
+
     public static ConfigInfo ReadConfig()
+    {
+        return cache ??= ReadFromFileSystem();
+    }
+
+    static ConfigInfo ReadFromFileSystem()
     {
         var appFolder = Path.GetDirectoryName(typeof(ConfigReader).Assembly.Location);
         if (appFolder == null)
@@ -14,8 +21,8 @@ static class ConfigReader
 
         var config = JsonConvert.DeserializeObject<ConfigInfo>(File.ReadAllText(Path.Combine(appFolder, "DotNetDomainBoundarySpecifier.Config.json")));
 
-        var isRunningInVisiualStudio = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
-        if (isRunningInVisiualStudio)
+        var isRunningInVisualStudio = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
+        if (isRunningInVisualStudio)
         {
             config = config with { UseUrls = false };
         }

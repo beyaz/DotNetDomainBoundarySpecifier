@@ -282,9 +282,20 @@ static class Analyzer
 
         foreach (var analyse in domainAssemblies)
         {
-            foreach (var methodReference in analyse.CalledMethods.Where(m => IsMethodBelongToExternalDomain(serviceContext, m)))
+            foreach (var methodReference in analyse.CalledMethods)
             {
                 if (config.SkipTypes.Contains(methodReference.DeclaringType.FullName))
+                {
+                    continue;
+                }
+
+                var isPropertyGetOrSetMethod = methodReference.Name.StartsWith("set_") || methodReference.Name.StartsWith("get_");
+                if (isPropertyGetOrSetMethod)
+                {
+                    continue;
+                }
+                
+                if (!IsMethodBelongToExternalDomain(serviceContext, methodReference))
                 {
                     continue;
                 }
