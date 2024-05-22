@@ -9,42 +9,14 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static TypeReference GetValueTypeIfTypeIsMonadType(TypeReference typeReference)
-    {
-        if (IsMonadType(typeReference))
-        {
-            return GetMonadValueType(typeReference);
-        }
-
-        return typeReference;
-    }
-    
-    static bool IsMonadType(TypeReference typeReference)
-    {
-        if (typeReference.Name == "GenericResponse`1" &&
-            typeReference is GenericInstanceType)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-     static TypeReference GetMonadValueType(TypeReference typeReference)
-    {
-        var genericInstanceType = (GenericInstanceType)typeReference;
-        
-        return genericInstanceType.GenericArguments[0];
-    }
-    
     public static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
 
         var methodDefinition =
             serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
-               .FirstOrDefault(t => t.FullName == input.TypeFullName)
-              ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
+                          .FirstOrDefault(t => t.FullName == input.TypeFullName)
+                         ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
         if (methodDefinition is null)
         {
@@ -70,7 +42,7 @@ static class Analyzer
             }
 
             typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
-            
+
             var typeDefinition = typeReference.Resolve();
 
             var usedProperties = GetDomainAssemblies(serviceContext).FindUsedProperties(typeDefinition);
@@ -104,8 +76,8 @@ static class Analyzer
 
         var targetMethod =
             serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
-               .FirstOrDefault(t => t.FullName == input.TypeFullName)
-              ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
+                          .FirstOrDefault(t => t.FullName == input.TypeFullName)
+                         ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
         if (targetMethod is null)
         {
@@ -129,8 +101,6 @@ static class Analyzer
                 outputTypeAsAlreadyExistingType = genericInstanceType.GenericArguments[0];
 
                 outputTypeIsAlreadyExistingType = true;
-                
-                
             }
         }
 
@@ -347,6 +317,43 @@ static class Analyzer
         }
     }
 
+    public static TypeReference GetValueTypeIfTypeIsMonadType(TypeReference typeReference)
+    {
+        if (IsMonadType(typeReference))
+        {
+            return GetMonadValueType(typeReference);
+        }
+
+        return typeReference;
+    }
+
+    public static bool IsDotNetCoreType(string fullTypeName)
+    {
+        var coreTypes = new[]
+        {
+            "System.String",
+            "System.Byte",
+            "System.Int16",
+            "System.Double",
+            "System.Int32",
+            "System.Int64",
+            "System.Decimal",
+            "System.DateTime",
+            "System.Boolean",
+
+            "System.Nullable`1<System.Byte>",
+            "System.Nullable`1<System.Int16>",
+            "System.Nullable`1<System.Double>",
+            "System.Nullable`1<System.Int32>",
+            "System.Nullable`1<System.Int64>",
+            "System.Nullable`1<System.Decimal>",
+            "System.Nullable`1<System.DateTime>",
+            "System.Nullable`1<System.Boolean>"
+        };
+
+        return coreTypes.Contains(fullTypeName);
+    }
+
     public static bool IsInDomain(ServiceContext serviceContext, string file)
     {
         var config = serviceContext.Config;
@@ -418,31 +425,22 @@ static class Analyzer
         });
     }
 
-    public static bool IsDotNetCoreType(string fullTypeName)
+    static TypeReference GetMonadValueType(TypeReference typeReference)
     {
-        var coreTypes = new[]
+        var genericInstanceType = (GenericInstanceType)typeReference;
+
+        return genericInstanceType.GenericArguments[0];
+    }
+
+    static bool IsMonadType(TypeReference typeReference)
+    {
+        if (typeReference.Name == "GenericResponse`1" &&
+            typeReference is GenericInstanceType)
         {
-            "System.String",
-            "System.Byte",
-            "System.Int16",
-            "System.Double",
-            "System.Int32",
-            "System.Int64",
-            "System.Decimal",
-            "System.DateTime",
-            "System.Boolean",
+            return true;
+        }
 
-            "System.Nullable`1<System.Byte>",
-            "System.Nullable`1<System.Int16>",
-            "System.Nullable`1<System.Double>",
-            "System.Nullable`1<System.Int32>",
-            "System.Nullable`1<System.Int64>",
-            "System.Nullable`1<System.Decimal>",
-            "System.Nullable`1<System.DateTime>",
-            "System.Nullable`1<System.Boolean>"
-        };
-
-        return coreTypes.Contains(fullTypeName);
+        return false;
     }
 
     internal sealed record AnalyzeMethodInput
