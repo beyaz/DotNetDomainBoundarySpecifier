@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace DotNetDomainBoundarySpecifier.Processors;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -118,7 +116,6 @@ static class Analyzer
         }
 
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
-        contractFile.AppendLine();
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
         if (outputTypeIsAlreadyExistingType)
@@ -156,10 +153,41 @@ static class Analyzer
         var contracts = new List<(IReadOnlyList<string> lines, bool isInputType)>();
         
         // Input Output types
-        static (bool success, IReadOnlyList<string> lines) tryCreateInputType()
+        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod, string outputTypeName)
         {
-            return default;
+            var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
+            
+            var isInputType = parameters.Count == 1 &&  IsDotNetCoreType(parameters[0].ParameterType.FullName)||
+                              parameters.Count > 1;
+            
+            if (isInputType)
+            {
+                var lines = new List<string>
+                {
+                    $"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>",
+                    "{"
+                };
+
+                foreach (var parameterDefinition in parameters)
+                {
+                    var parameterTypeName = parameterDefinition.ParameterType.GetShortNameInCsharp();
+
+                    var name = parameterDefinition.Name;
+
+                    name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
+
+                    lines.Add($"    public {parameterTypeName} {name} {{ get; set; }}");
+                }
+                lines.Add("}");
+                
+                return lines;
+            }
+            
+            return None;
         }
+
+        tryCreateInputTypeLines(scope, targetMethod, outputTypeName).Then(lines => contracts.Add((lines, true)));
+        
         foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
         {
             var lines = new List<string>();
@@ -252,22 +280,7 @@ static class Analyzer
         }
         else
         {
-            {
-                contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");
-                contractFile.AppendLine("{");
-                foreach (var parameterDefinition in targetMethodParameters)
-                {
-                    var parameterTypeName = parameterDefinition.ParameterType.GetShortNameInCsharp();
-
-                    var name = parameterDefinition.Name;
-
-                    name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
-
-                    contractFile.AppendLine($"    public {parameterTypeName} {name} {{ get; set; }}");
-                }
-
-                contractFile.AppendLine("}");
-            }
+            
 
             {
                 var parameterPart = new List<string>();

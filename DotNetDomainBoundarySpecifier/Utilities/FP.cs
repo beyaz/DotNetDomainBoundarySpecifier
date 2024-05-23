@@ -140,4 +140,53 @@ static class FP
             return exception;
         }
     }
+
+    public static readonly OptionNoneValue None = new();
+}
+
+class OptionNoneValue;
+
+sealed class Option<TValue>
+{
+    public TValue Value { get; init; }
+    
+    bool IsNone { get; init; }
+    
+    public static implicit operator Option<TValue>(TValue value)
+    {
+        return new()
+        {
+            Value = value
+        };
+    }
+
+    public static implicit operator Option<TValue>(OptionNoneValue value)
+    {
+        return new()
+        {
+            IsNone=true
+        };
+    }
+    
+    public T Then<T>(Func<TValue, T> nextOperation)
+    {
+        if (IsNone)
+        {
+            return default;    
+        }
+
+        return nextOperation(Value);
+    }
+    
+    public void Then(Action<TValue> nextOperation)
+    {
+        if (IsNone)
+        {
+            return;    
+        }
+
+        nextOperation(Value);
+
+    }
+    
 }
