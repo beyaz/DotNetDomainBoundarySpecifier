@@ -1,37 +1,45 @@
-﻿namespace Test.ExternalDomainY.Scenario3;
+﻿namespace Test.ExternalDomainY;
 
-
-
-public class Process3
+public class AnyProcess
 {
-    public Method2Output MethodB(Method2In parameter3)
+    public string Method1(string parameter1, int parameter2, DateTime? parameter3)
     {
         return default;
     }
     
-    public GenericResponse<Method2Output> MethodC(Method2In parameter3)
+    public string Method2( A parameter3, string parameter1,int parameter2)
     {
         return default;
     }
     
-    public GenericResponse<int> MethodD(Method2In parameter3)
+    public AnyOutput Method3(A parameter3)
     {
         return default;
     }
     
-    public GenericResponse<int> MethodE(Method2In parameter3, ObjectHelper objectHelper)
+    public GenericResponse<AnyOutput> Method4(A parameter3)
     {
         return default;
     }
     
-    public GenericResponse<Method2Output> MethodF(ObjectHelper objectHelper, Method2In parameter3)
+    public GenericResponse<int> Method5(A parameter3)
+    {
+        return default;
+    }
+    
+    public GenericResponse<int> Method6(A parameter3, ObjectHelper objectHelper)
+    {
+        return default;
+    }
+    
+    public GenericResponse<AnyOutput> Method7(ObjectHelper objectHelper, A parameter3)
     {
         return default;
     }
 }
 
 
-public class Method2In
+public class A
 {
     public string Property0 { get; set; }
     public int Property1 { get; set; }   
@@ -40,27 +48,27 @@ public class Method2In
     
     public long Property4 { get; set; }
     
-    public NestedUsageClass Property5 { get; set; }
+    public B Property5 { get; set; }
 }
 
 
-public class NestedUsageClass
+public class B
 {
     public string X { get; set; }
     public int Y { get; set; }   
     public DateTime? Z { get; set; }
     
-    public NestedUsageClass2 PropertyNestedUsage2 { get; set; }
+    public C Nested { get; set; }
 }
 
-public class NestedUsageClass2
+public class C
 {
     public string X { get; set; }
     public int Y { get; set; }   
     public DateTime? Z { get; set; }
 }
 
-public class Method2Output
+public class AnyOutput
 {
     public string OutputProperty0 { get; set; }
     public int OutputProperty1 { get; set; }   

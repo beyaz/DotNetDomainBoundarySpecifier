@@ -1,5 +1,3 @@
-using DotNetDomainBoundarySpecifier.Processors;
-using FluentAssertions;
 
 namespace DotNetDomainBoundarySpecifier.Tests;
 
