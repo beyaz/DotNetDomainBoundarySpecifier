@@ -1,7 +1,12 @@
-﻿namespace Test.ExternalDomainY.Scenario2;
+﻿namespace Test.ExternalDomainY;
 
-public class Process2
+public class AnyProcess
 {
+    public string Method1(string parameter1, int parameter2, DateTime? parameter3)
+    {
+        return default;
+    }
+    
     public string MethodA( Method2In parameter3, string parameter1,int parameter2)
     {
         return default;
