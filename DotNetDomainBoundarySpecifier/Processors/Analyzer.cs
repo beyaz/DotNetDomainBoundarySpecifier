@@ -84,7 +84,7 @@ static class Analyzer
 
         var targetType = targetMethod.DeclaringType;
 
-        var names = CalculateNames(targetType.FullName, targetMethod.Name);
+        var names = CalculateNames(scope, targetType.FullName, targetMethod.Name);
 
         var contractFile = new StringBuilder();
         var processFile = new StringBuilder();
@@ -369,8 +369,10 @@ static class Analyzer
 
     static ((string FolderName, string FileName, string NamespaceName) ContractsProject,
         (string FolderName, string FileName, string NamespaceName) ProcessProject)
-        CalculateNames(string targetTypeFullName, string methodName)
+        CalculateNames(Scope scope, string targetTypeFullName, string methodName)
     {
+        var config = scope.Config;
+        
         var names = targetTypeFullName.Split('.').ToImmutableArray();
 
         var removeList = new[]
@@ -388,13 +390,13 @@ static class Analyzer
             (
                 FolderName: string.Join(".", names.Take(names.Length - 1)),
                 FileName: string.Join(".", names[^1], methodName),
-                NamespaceName: "BOA.Card.Contracts.Banking." + string.Join(".", names.Add(methodName))
+                NamespaceName: config.InputOutputsNamespacePrefix+ "." + string.Join(".", names.Add(methodName))
             ),
             ProcessProject:
             (
                 FolderName: string.Join(".", names.Take(names.Length - 1)),
                 FileName: string.Join(".", names[^1], methodName),
-                NamespaceName: "BOA.Process.Card.Banking." + string.Join(".", names.Add(methodName))
+                NamespaceName: config.ProcessNamespacePrefix+ "." + string.Join(".", names.Add(methodName))
             )
         );
     }

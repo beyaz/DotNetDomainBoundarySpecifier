@@ -10,7 +10,7 @@
         "CacheDirectoryFormat": "{MyDocuments} > ApiInspector > Cache"
     },
 
-    "ModuleName": "BOACard",
+    "ModuleName": "ModuleX",
     "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
     "DomainFiles": [ "Test.DomainX" ],
     "SkipTypes": [
@@ -23,5 +23,8 @@
     "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
 
     "ExportDirectoryForTypes": "C:\temp\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
-    "ExportDirectoryForProcess": "C:\temp\\BOA.Card.Banking\\BOA.Process.Card.Banking\\"
+    "ExportDirectoryForProcess": "C:\temp\\BOA.Card.Banking\\BOA.Process.Card.Banking\\",
+
+    "InputOutputsNamespacePrefix": "BOA.Card.Contracts.Banking",
+    "ProcessNamespacePrefix": "BOA.Process.Card.Banking"
 }

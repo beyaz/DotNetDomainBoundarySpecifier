@@ -26,5 +26,9 @@ sealed record ConfigInfo
     
     public string ExportDirectoryForTypes { get; init; }
     public string ExportDirectoryForProcess { get; init; }
+    
+    
+    public string InputOutputsNamespacePrefix { get; init; }
+    public string ProcessNamespacePrefix { get; init; }
     // @formatting:on
 }

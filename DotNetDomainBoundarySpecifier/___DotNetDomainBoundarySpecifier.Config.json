@@ -12,7 +12,7 @@
 
     "ModuleName": "BOACard",
     "AssemblySearchDirectory": "d:\\boa\\server\\bin\\",
-  "DomainFiles": [ ".Orchestration.Card.CCO.dll", ".Orchestration.Card.Application.dll" ],
+    "DomainFiles": [ ".Orchestration.Card.CCO.dll", ".Orchestration.Card.Application.dll" ],
     "SkipTypes": [
         "<Module>",
         "Microsoft.CodeAnalysis.EmbeddedAttribute",
@@ -24,5 +24,8 @@
     "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
 
     "ExportDirectoryForTypes": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
-    "ExportDirectoryForProcess": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Process.Card.Banking\\"
+    "ExportDirectoryForProcess": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Process.Card.Banking\\",
+
+    "InputOutputsNamespacePrefix": "BOA.Card.Contracts.Banking",
+    "ProcessNamespacePrefix": "BOA.Process.Card.Banking"
 }
