@@ -8,7 +8,7 @@ public class Scenario3Test
     {
         var process = new ExternalDomainY.Scenario3.Process3();
 
-        process.MethodB(new Method2In()
+        process.MethodB(new Method2In
         {
             Property0 = "a",
             Property1 = 1,
