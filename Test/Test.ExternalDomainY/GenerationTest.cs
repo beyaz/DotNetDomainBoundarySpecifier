@@ -85,4 +85,55 @@ public class GenerationTest
             """;
         generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
     }
+    
+    
+    [TestMethod]
+    public void Method3()
+    {
+        var analyzeMethodInput = new Analyzer.AnalyzeMethodInput()
+        {
+            AssemblyFileName = "Test.ExternalDomainY.dll",
+            TypeFullName     = "Test.ExternalDomainY.AnyProcess",
+            MethodFullName   = "Test.ExternalDomainY.AnyOutput Test.ExternalDomainY.AnyProcess::Method3(Test.ExternalDomainY.A)"
+        };
+        
+        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+
+        records.Count.Should().Be(11);
+
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+
+        var expected =
+            """
+            namespace _Contracts_.Test.ExternalDomainY.AnyProcess.Method3;
+            
+            public sealed class Method3Input : IBankingProxyInput<Output>
+            {
+                public string Property0 { get; set; }
+                public int Property1 { get; set; }
+                public DateTime? Property2 { get; set; }
+                public long Property3 { get; set; }
+                public B Property5 { get; set; }
+            }
+            
+            public sealed class B
+            {
+                public string X { get; set; }
+                public int Y { get; set; }
+                public C Nested { get; set; }
+            }
+            
+            public sealed class C
+            {
+                public DateTime? Z { get; set; }
+            }
+            
+            public sealed class AnyOutput
+            {
+                public int OutputProperty1 { get; set; }
+                public long OutputProperty3 { get; set; }
+            }
+            """;
+        generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
+    }
 }
