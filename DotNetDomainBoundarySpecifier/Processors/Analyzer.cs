@@ -170,12 +170,8 @@ static class Analyzer
                     "{"
                 };
 
-                foreach (var parameterDefinition in parameters)
-                {
-                    var parameterTypeName = parameterDefinition.ParameterType.GetShortNameInCsharp();
-
-                    lines.Add($"    public {parameterTypeName} {UppercaseFirstChar(parameterDefinition.Name)} {{ get; set; }}");
-                }
+                lines.AddRange(parameters.Select(p=>$"    public {p.ParameterType.GetShortNameInCsharp()} {UppercaseFirstChar(p.Name)} {{ get; set; }}"));
+                
                 lines.Add("}");
                 
                 return lines;
