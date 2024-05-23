@@ -25,6 +25,6 @@
     "ExportDirectoryForTypes": "C:\temp\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
     "ExportDirectoryForProcess": "C:\temp\\BOA.Card.Banking\\BOA.Process.Card.Banking\\",
 
-    "InputOutputsNamespacePrefix": "BOA.Card.Contracts.Banking",
-    "ProcessNamespacePrefix": "BOA.Process.Card.Banking"
+    "InputOutputsNamespacePrefix": "_Contracts_",
+    "ProcessNamespacePrefix": "_Process_"
 }

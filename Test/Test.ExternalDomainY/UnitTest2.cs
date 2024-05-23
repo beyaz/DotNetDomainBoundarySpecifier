@@ -25,7 +25,7 @@ public class Scenario2
 
         var expected =
             """
-           namespace BOA.Card.Contracts.Banking.Test.ExternalDomainY.Scenario2.Process2.MethodA;
+           namespace _Contracts_.Test.ExternalDomainY.Scenario2.Process2.MethodA;
            
            public sealed class MethodAInput : IBankingProxyInput<string>
            {
