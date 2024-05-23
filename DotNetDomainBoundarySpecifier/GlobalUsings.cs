@@ -19,3 +19,9 @@ global using DotNetDomainBoundarySpecifier.Processors;
 global using DotNetDomainBoundarySpecifier.WebUI.Components;
 global using System.Text;
 global using ReactWithDotNet.ThirdPartyLibraries.ReactWithDotNetSkeleton;
+
+
+
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("Test.ExternalDomainY")]
