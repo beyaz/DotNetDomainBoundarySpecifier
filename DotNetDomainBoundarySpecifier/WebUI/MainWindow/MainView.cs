@@ -1,10 +1,12 @@
 ﻿namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
-class MainView : Component<MainViewModel>
+sealed class MainView : Component<MainViewModel>
 {
     protected override Task constructor()
     {
         state = StateFile.TryReadState() ?? new();
+
+        state = state with { IsAnalyzing = false };
 
         return base.constructor();
     }
