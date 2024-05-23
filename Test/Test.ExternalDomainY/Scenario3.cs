@@ -4,34 +4,34 @@
 
 public class Process3
 {
-    public Method2Output MethodB(Method2Input parameter3)
+    public Method2Output MethodB(Method2In parameter3)
     {
         return default;
     }
     
-    public GenericResponse<Method2Output> MethodC(Method2Input parameter3)
+    public GenericResponse<Method2Output> MethodC(Method2In parameter3)
     {
         return default;
     }
     
-    public GenericResponse<int> MethodD(Method2Input parameter3)
+    public GenericResponse<int> MethodD(Method2In parameter3)
     {
         return default;
     }
     
-    public GenericResponse<int> MethodE(Method2Input parameter3, ObjectHelper objectHelper)
+    public GenericResponse<int> MethodE(Method2In parameter3, ObjectHelper objectHelper)
     {
         return default;
     }
     
-    public GenericResponse<Method2Output> MethodF(ObjectHelper objectHelper, Method2Input parameter3)
+    public GenericResponse<Method2Output> MethodF(ObjectHelper objectHelper, Method2In parameter3)
     {
         return default;
     }
 }
 
 
-public class Method2Input
+public class Method2In
 {
     public string Property0 { get; set; }
     public int Property1 { get; set; }   

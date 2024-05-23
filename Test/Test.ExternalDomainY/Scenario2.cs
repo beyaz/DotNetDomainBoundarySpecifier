@@ -2,14 +2,14 @@
 
 public class Process2
 {
-    public string MethodA( Method2Input parameter3, string parameter1,int parameter2)
+    public string MethodA( Method2In parameter3, string parameter1,int parameter2)
     {
         return default;
     }
 }
 
 
-public class Method2Input
+public class Method2In
 {
     public string Property0 { get; set; }
     public int Property1 { get; set; }   

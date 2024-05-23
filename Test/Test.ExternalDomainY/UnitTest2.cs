@@ -13,7 +13,7 @@ public class Scenario2
         {
             AssemblyFileName = "Test.ExternalDomainY.dll",
             TypeFullName     = "Test.ExternalDomainY.Scenario2.Process2",
-            MethodFullName   = "System.String Test.ExternalDomainY.Scenario2.Process2::MethodA(Test.ExternalDomainY.Scenario2.Method2Input,System.String,System.Int32)"
+            MethodFullName   = "System.String Test.ExternalDomainY.Scenario2.Process2::MethodA(Test.ExternalDomainY.Scenario2.Method2In,System.String,System.Int32)"
         };
         
         
@@ -29,7 +29,7 @@ public class Scenario2
            
            public sealed class MethodAInput : IBankingProxyInput<string>
            {
-               public Method2Input Parameter3 { get; set; }
+               public Method2In Parameter3 { get; set; }
                public string Parameter1 { get; set; }
                public int Parameter2 { get; set; }
            }

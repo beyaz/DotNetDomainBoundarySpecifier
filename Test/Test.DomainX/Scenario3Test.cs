@@ -8,7 +8,7 @@ public class Scenario3Test
     {
         var process = new ExternalDomainY.Scenario3.Process3();
 
-        process.MethodB(new Method2Input()
+        process.MethodB(new Method2In()
         {
             Property0 = "a",
             Property1 = 1,
@@ -30,7 +30,7 @@ public class Scenario3Test
     {
         var process = new ExternalDomainY.Scenario3.Process3();
 
-        var output = process.MethodC(new Method2Input()
+        var output = process.MethodC(new Method2In()
         {
             Property0 = "a",
             Property1 = 1,
@@ -54,7 +54,7 @@ public class Scenario3Test
     {
         var process = new ExternalDomainY.Scenario3.Process3();
 
-        var output = process.MethodE(new Method2Input()
+        var output = process.MethodE(new Method2In()
         {
             Property0 = "a",
             Property1 = 1,
@@ -78,7 +78,7 @@ public class Scenario3Test
     {
         var process = new ExternalDomainY.Scenario3.Process3();
 
-        var output = process.MethodF(null, new Method2Input()
+        var output = process.MethodF(null, new Method2In()
         {
             Property0 = "a",
             Property1 = 1,
