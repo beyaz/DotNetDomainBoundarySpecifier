@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿using System.Xml.Linq;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -172,11 +174,7 @@ static class Analyzer
                 {
                     var parameterTypeName = parameterDefinition.ParameterType.GetShortNameInCsharp();
 
-                    var name = parameterDefinition.Name;
-
-                    name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
-
-                    lines.Add($"    public {parameterTypeName} {name} {{ get; set; }}");
+                    lines.Add($"    public {parameterTypeName} {UppercaseFirstChar(parameterDefinition.Name)} {{ get; set; }}");
                 }
                 lines.Add("}");
                 
@@ -185,6 +183,8 @@ static class Analyzer
             
             return None;
         }
+
+        
 
         tryCreateInputTypeLines(scope, targetMethod, outputTypeName).Then(lines => contracts.Add((lines, true)));
         
@@ -512,7 +512,10 @@ static class Analyzer
 
         return false;
     }
-
+    static string UppercaseFirstChar(string value)
+    {
+        return char.ToUpper(value[0], new("en-US")) + new string(value.Skip(1).ToArray());
+    }
     internal sealed record AnalyzeMethodInput
     {
         public required string AssemblyFileName { get; init; }
