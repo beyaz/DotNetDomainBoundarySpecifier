@@ -2,16 +2,16 @@
 namespace DotNetDomainBoundarySpecifier.Tests;
 
 [TestClass]
-public class Scenario1
+public class GenerationTest
 {
     [TestMethod]
-    public void Scenario1Test()
+    public void Method1()
     {
         var analyzeMethodInput = new Analyzer.AnalyzeMethodInput()
         {
             AssemblyFileName = "Test.ExternalDomainY.dll",
-            TypeFullName     = "Test.ExternalDomainY.Scenario1.Process1",
-            MethodFullName   = "System.String Test.ExternalDomainY.Scenario1.Process1::Method1(System.String,System.Int32,System.Nullable`1<System.DateTime>)"
+            TypeFullName     = "Test.ExternalDomainY.AnyProcess",
+            MethodFullName   = "System.String Test.ExternalDomainY.AnyProcess::Method1(System.String,System.Int32,System.Nullable`1<System.DateTime>)"
         };
         
         var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
@@ -22,7 +22,7 @@ public class Scenario1
 
         var expected =
             """
-           namespace _Contracts_.Test.ExternalDomainY.Scenario1.Process1.Method1;
+           namespace _Contracts_.Test.ExternalDomainY.AnyProcess.Method1;
            
            public sealed class Method1Input : IBankingProxyInput<string>
            {
