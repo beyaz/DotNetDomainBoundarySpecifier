@@ -1,7 +1,11 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿global using static DotNetDomainBoundarySpecifier.Processors.Scope;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 sealed record Scope
 {
+    public static readonly Scope DefaultScope = new();
+
     public Scope()
     {
         Config = ReadConfig();

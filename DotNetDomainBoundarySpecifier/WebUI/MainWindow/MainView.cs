@@ -153,9 +153,9 @@ sealed class MainView : Component<MainViewModel>
             return null;
         }
 
-        var scope = new Scope();
+        
 
-        var methodDefinition = scope
+        var methodDefinition = DefaultScope
                               .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)
                               .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)?
                               .Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
@@ -169,7 +169,7 @@ sealed class MainView : Component<MainViewModel>
 
         foreach (var relatedTableFullName in records.Select(x => x.RelatedClassFullName).Distinct())
         {
-            var typeDefinition = scope.GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x => x.FullName == relatedTableFullName);
+            var typeDefinition = DefaultScope.GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x => x.FullName == relatedTableFullName);
             if (typeDefinition is null)
             {
                 continue;
@@ -236,9 +236,9 @@ sealed class MainView : Component<MainViewModel>
             MethodFullName   = state.SelectedMethodFullName
         };
 
-        state = state with { Records = AnalyzeMethod(new(), analyzeMethodInput) };
+        state = state with { Records = AnalyzeMethod(DefaultScope, analyzeMethodInput) };
 
-        var generatedCode = GenerateCode(new(), analyzeMethodInput, state.Records);
+        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Records);
 
         state = state with
         {
@@ -271,11 +271,11 @@ sealed class MainView : Component<MainViewModel>
             MethodFullName   = state.SelectedMethodFullName
         };
 
-        var records = AnalyzeMethod(new(), analyzeMethodInput);
+        var records = AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
-        var generatedCode = GenerateCode(new(), analyzeMethodInput, records);
+        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, records);
 
-        var result = FileExporter.ExportToFile(new(), generatedCode);
+        var result = FileExporter.ExportToFile(DefaultScope, generatedCode);
         if (result.HasError)
         {
             Client.RunJavascript($"alert(\"{result.Error}\")");

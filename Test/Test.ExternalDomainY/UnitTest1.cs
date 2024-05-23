@@ -16,11 +16,11 @@ public class Scenario1
             MethodFullName   = "System.String Test.ExternalDomainY.Scenario1.Process1::Method1(System.String,System.Int32,System.Nullable`1<System.DateTime>)"
         };
         
-        var records = Analyzer.AnalyzeMethod(new(), analyzeMethodInput);
+        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
         records.Count.Should().Be(0);
 
-        var generationOutput = Analyzer.GenerateCode(new(), analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
 
         var expected =
             """

@@ -1,6 +1,3 @@
-using DotNetDomainBoundarySpecifier.Processors;
-using FluentAssertions;
-
 namespace DotNetDomainBoundarySpecifier.Tests;
 
 [TestClass]
@@ -17,11 +14,11 @@ public class Scenario3
         };
         
         
-        var records = Analyzer.AnalyzeMethod(new(), analyzeMethodInput);
+        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
         records.Count.Should().Be(11);
 
-        var generationOutput = Analyzer.GenerateCode(new(), analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
 
         var expected =
             """

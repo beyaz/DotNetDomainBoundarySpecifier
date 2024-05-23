@@ -17,11 +17,11 @@ public class Scenario2
         };
         
         
-        var records = Analyzer.AnalyzeMethod(new(), analyzeMethodInput);
+        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
         records.Count.Should().Be(9);
 
-        var generationOutput = Analyzer.GenerateCode(new(), analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
 
         var expected =
             """

@@ -40,7 +40,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
 
             itemsSource = GetMethods(assemblyDefinitionResult.Value, SelectedTypeFullName).Select(m => m.FullName).ToList();
 
-            markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
+            markedItems = GetCalledMethodsFromExternalDomain(DefaultScope, SelectedAssemblyFileName)
                          .Where(m => m.DeclaringType.FullName == SelectedTypeFullName)
                          .Select(m => m.FullName).ToList();
         }
