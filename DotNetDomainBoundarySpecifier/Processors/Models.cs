@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿using System.Diagnostics;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 sealed record AssemblyAnalyse
 {
@@ -38,4 +40,22 @@ sealed record TableModel
     public string RelatedClassFullName { get; init; }
 
     public string RelatedPropertyFullName { get; init; }
+
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        
+        if (RelatedClassFullName.HasValue())
+        {
+            sb.Append(RelatedClassFullName.Split('.', StringSplitOptions.RemoveEmptyEntries).Last());
+            sb.Append(" -> ");
+        }
+        
+        if (RelatedPropertyFullName.HasValue())
+        {
+            sb.Append(RelatedPropertyFullName.Split(":()".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Last());
+        }
+
+        return sb.ToString();
+    }
 }
