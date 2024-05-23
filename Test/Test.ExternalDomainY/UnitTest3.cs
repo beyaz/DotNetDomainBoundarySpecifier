@@ -10,7 +10,7 @@ public class Scenario3
         {
             AssemblyFileName = "Test.ExternalDomainY.dll",
             TypeFullName     = "Test.ExternalDomainY.Scenario3.Process3",
-            MethodFullName   = "Test.ExternalDomainY.Scenario3.Method2Output Test.ExternalDomainY.Scenario3.Process3::MethodB(Test.ExternalDomainY.Scenario3.Method2Input)"
+            MethodFullName   = "Test.ExternalDomainY.Scenario3.Method2Output Test.ExternalDomainY.Scenario3.Process3::MethodB(Test.ExternalDomainY.Scenario3.Method2In)"
         };
         
         
