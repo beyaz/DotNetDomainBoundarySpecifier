@@ -190,3 +190,8 @@ sealed class Option<TValue>
     }
     
 }
+
+class ListOf<T>: List<T>
+{
+    public void Add(IEnumerable<T> items) => AddRange(items);
+}

@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace DotNetDomainBoundarySpecifier.Processors;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -159,25 +157,21 @@ static class Analyzer
         {
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
             
-            var isInputType = parameters.Count == 1 &&  IsDotNetCoreType(parameters[0].ParameterType.FullName)||
-                              parameters.Count > 1;
-            
-            if (isInputType)
-            {
-                var lines = new List<string>
-                {
-                    $"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>",
-                    "{"
-                };
+            var isInputType = parameters.Count == 1 &&  IsDotNetCoreType(parameters[0].ParameterType.FullName)
+                              || parameters.Count > 1;
 
-                lines.AddRange(parameters.Select(p=>$"    public {p.ParameterType.GetShortNameInCsharp()} {UppercaseFirstChar(p.Name)} {{ get; set; }}"));
-                
-                lines.Add("}");
-                
-                return lines;
+            if (!isInputType)
+            {
+                return None;
             }
             
-            return None;
+            return new ListOf<string>
+            {
+                $"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>",
+                "{",
+                parameters.Select(p => $"    public {p.ParameterType.GetShortNameInCsharp()} {UppercaseFirstChar(p.Name)} {{ get; set; }}"),
+                "}"
+            };
         }
 
         
