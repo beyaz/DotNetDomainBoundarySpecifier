@@ -116,6 +116,8 @@ static class Analyzer
         }
 
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
+        contractFile.AppendLine();
+        contractFile.AppendLine($"using Output = {GetValueTypeIfTypeIsMonadType(targetMethod.ReturnType).GetShortNameInCsharp()};");
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
         if (outputTypeIsAlreadyExistingType)
@@ -153,7 +155,7 @@ static class Analyzer
         var contracts = new List<(IReadOnlyList<string> lines, bool isInputType)>();
         
         // Input Output types
-        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod, string outputTypeName)
+        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod)
         {
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
             
@@ -167,7 +169,7 @@ static class Analyzer
             
             return new ListOf<string>
             {
-                $"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>",
+                $"public sealed class {targetMethod.Name}Input : IBankingProxyInput<Output>",
                 "{",
                 parameters.Select(p => $"    public {p.ParameterType.GetShortNameInCsharp()} {UppercaseFirstChar(p.Name)} {{ get; set; }}"),
                 "}"
@@ -176,7 +178,7 @@ static class Analyzer
 
         
 
-        tryCreateInputTypeLines(scope, targetMethod, outputTypeName).Then(lines => contracts.Add((lines, true)));
+        tryCreateInputTypeLines(scope, targetMethod).Then(lines => contracts.Add((lines, true)));
         
         foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
         {
@@ -190,7 +192,7 @@ static class Analyzer
             
             if (isInputType)
             {
-                lines.Add($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");    
+                lines.Add($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<Output>");    
             }
             else
             {
@@ -272,48 +274,46 @@ static class Analyzer
         {
             
 
+            var parameterPart = new List<string>();
+
+            foreach (var parameterDefinition in targetMethod.Parameters)
             {
-                var parameterPart = new List<string>();
-
-                foreach (var parameterDefinition in targetMethod.Parameters)
+                if (parameterDefinition.ParameterType.Name == "ObjectHelper")
                 {
-                    if (parameterDefinition.ParameterType.Name == "ObjectHelper")
-                    {
-                        parameterPart.Add("objectHelper");
-                        continue;
-                    }
-
-                    var name = parameterDefinition.Name;
-
-                    name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
-
-                    parameterPart.Add($"input.{name}");
+                    parameterPart.Add("objectHelper");
+                    continue;
                 }
 
-                processFile.AppendLine();
-                processFile.AppendLine($"{padding}{padding}var response = bo.{targetMethod.Name}({string.Join(", ", parameterPart)});");
-                processFile.AppendLine($"{padding}{padding}if (!response.Success)");
-                processFile.AppendLine($"{padding}{padding}{{");
-                processFile.AppendLine($"{padding}{padding}{padding}returnObject.Results.AddRange(response.Results);");
-                processFile.AppendLine($"{padding}{padding}{padding}return returnObject;");
-                processFile.AppendLine($"{padding}{padding}}}");
-                processFile.AppendLine();
-                processFile.AppendLine($"{padding}{padding}var value = response.Value;");
-                processFile.AppendLine();
-                if (outputTypeIsAlreadyExistingType)
-                {
-                    processFile.AppendLine($"{padding}{padding}returnObject.Value = value;");
-                }
-                else
-                {
-                    processFile.AppendLine($"{padding}{padding}returnObject.Value = ConvertTo<Output>(value);");
-                }
+                var name = parameterDefinition.Name;
 
-                processFile.AppendLine();
-                processFile.AppendLine($"{padding}{padding}return returnObject;");
-                processFile.AppendLine($"{padding}}}"); // end of method
-                processFile.AppendLine("}"); // end of class
+                name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
+
+                parameterPart.Add($"input.{name}");
             }
+
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}var response = bo.{targetMethod.Name}({string.Join(", ", parameterPart)});");
+            processFile.AppendLine($"{padding}{padding}if (!response.Success)");
+            processFile.AppendLine($"{padding}{padding}{{");
+            processFile.AppendLine($"{padding}{padding}{padding}returnObject.Results.AddRange(response.Results);");
+            processFile.AppendLine($"{padding}{padding}{padding}return returnObject;");
+            processFile.AppendLine($"{padding}{padding}}}");
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}var value = response.Value;");
+            processFile.AppendLine();
+            if (outputTypeIsAlreadyExistingType)
+            {
+                processFile.AppendLine($"{padding}{padding}returnObject.Value = value;");
+            }
+            else
+            {
+                processFile.AppendLine($"{padding}{padding}returnObject.Value = ConvertTo<Output>(value);");
+            }
+
+            processFile.AppendLine();
+            processFile.AppendLine($"{padding}{padding}return returnObject;");
+            processFile.AppendLine($"{padding}}}"); // end of method
+            processFile.AppendLine("}"); // end of class
         }
 
         return new()
