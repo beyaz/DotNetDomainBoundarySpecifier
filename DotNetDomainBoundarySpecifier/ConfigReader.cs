@@ -4,14 +4,14 @@ namespace DotNetDomainBoundarySpecifier;
 
 static class ConfigReader
 {
-    static ConfigInfo cache;
+    static Config cache;
 
-    public static ConfigInfo ReadConfig()
+    public static Config ReadConfig()
     {
         return cache ??= ReadFromFileSystem();
     }
 
-    static ConfigInfo ReadFromFileSystem()
+    static Config ReadFromFileSystem()
     {
         var appFolder = Path.GetDirectoryName(typeof(ConfigReader).Assembly.Location);
         if (appFolder == null)
@@ -19,7 +19,7 @@ static class ConfigReader
             throw new ArgumentException("assembly location not found");
         }
 
-        var config = JsonConvert.DeserializeObject<ConfigInfo>(File.ReadAllText(Path.Combine(appFolder, "DotNetDomainBoundarySpecifier.Config.json")));
+        var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Path.Combine(appFolder, "DotNetDomainBoundarySpecifier.Config.json")));
 
         var isRunningInVisualStudio = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
         if (isRunningInVisualStudio)

@@ -1,6 +1,6 @@
 ﻿namespace DotNetDomainBoundarySpecifier;
 
-sealed record ConfigInfo
+sealed record Config
 {
     // @formatting:off
     public string BrowserExeArguments { get; init; }

@@ -9,7 +9,7 @@ sealed record Scope
         GetTypesInAssemblyFile = assemblyFileName => CecilHelper.GetTypesInAssemblyFile(this, assemblyFileName);
     }
 
-    public ConfigInfo Config { get; init; }
+    public Config Config { get; init; }
 
     public Func<string, IReadOnlyList<TypeDefinition>> GetTypesInAssemblyFile { get; init; }
 }
