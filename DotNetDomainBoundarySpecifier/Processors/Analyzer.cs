@@ -9,12 +9,12 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static ImmutableList<TableModel> AnalyzeMethod(ServiceContext serviceContext, AnalyzeMethodInput input)
+    public static ImmutableList<TableModel> AnalyzeMethod(Scope scope, AnalyzeMethodInput input)
     {
         var records = ImmutableList<TableModel>.Empty;
 
         var methodDefinition =
-            serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
+            scope.GetTypesInAssemblyFile(input.AssemblyFileName)
                           .FirstOrDefault(t => t.FullName == input.TypeFullName)
                          ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
@@ -25,14 +25,14 @@ static class Analyzer
 
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            records = pushType(serviceContext, input, methodDefinition, records, parameterDefinition.ParameterType);
+            records = pushType(scope, input, methodDefinition, records, parameterDefinition.ParameterType);
         }
 
-        records = pushType(serviceContext, input, methodDefinition, records, methodDefinition.ReturnType);
+        records = pushType(scope, input, methodDefinition, records, methodDefinition.ReturnType);
 
         return records;
 
-        static ImmutableList<TableModel> pushType(ServiceContext serviceContext, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
+        static ImmutableList<TableModel> pushType(Scope serviceContext, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
         {
             var config = serviceContext.Config;
 
@@ -70,12 +70,12 @@ static class Analyzer
         }
     }
 
-    public static CodeGenerationOutput GenerateCode(ServiceContext serviceContext, AnalyzeMethodInput input, ImmutableList<TableModel> records)
+    public static CodeGenerationOutput GenerateCode(Scope scope, AnalyzeMethodInput input, ImmutableList<TableModel> records)
     {
         const string padding = "    ";
 
         var targetMethod =
-            serviceContext.GetTypesInAssemblyFile(input.AssemblyFileName)
+            scope.GetTypesInAssemblyFile(input.AssemblyFileName)
                           .FirstOrDefault(t => t.FullName == input.TypeFullName)
                          ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
 
@@ -150,7 +150,7 @@ static class Analyzer
 
         processFile.AppendLine($"{padding}{padding}var bo = new {targetType.FullName.RemoveFromStart("BOA.Process.")}({string.Join(", ", constructorParameters)});");
 
-        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(serviceContext, p.ParameterType)).ToList();
+        var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
 
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
@@ -273,11 +273,11 @@ static class Analyzer
         };
     }
 
-    public static IEnumerable<MethodDefinition> GetCalledMethodsFromExternalDomain(ServiceContext serviceContext, string assemblyFileNameInExternalDomain)
+    public static IEnumerable<MethodDefinition> GetCalledMethodsFromExternalDomain(Scope scope, string assemblyFileNameInExternalDomain)
     {
-        var config = serviceContext.Config;
+        var config = scope.Config;
 
-        var domainAssemblies = GetDomainAssemblies(serviceContext);
+        var domainAssemblies = GetDomainAssemblies(scope);
 
         foreach (var analyse in domainAssemblies)
         {
@@ -294,7 +294,7 @@ static class Analyzer
                     continue;
                 }
 
-                if (!IsMethodBelongToExternalDomain(serviceContext, methodReference))
+                if (!IsMethodBelongToExternalDomain(scope, methodReference))
                 {
                     continue;
                 }
@@ -354,9 +354,9 @@ static class Analyzer
         return coreTypes.Contains(fullTypeName);
     }
 
-    public static bool IsInDomain(ServiceContext serviceContext, string file)
+    public static bool IsInDomain(Scope scope, string file)
     {
-        var config = serviceContext.Config;
+        var config = scope.Config;
 
         foreach (var name in config.DomainFiles)
         {
@@ -401,26 +401,26 @@ static class Analyzer
         );
     }
 
-    static bool CanIgnoreParameterType(ServiceContext serviceContext, TypeReference parameterTypeReference)
+    static bool CanIgnoreParameterType(Scope scope, TypeReference parameterTypeReference)
     {
-        return serviceContext.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
+        return scope.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }
 
-    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(ServiceContext serviceContext)
+    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(Scope scope)
     {
-        var config = serviceContext.Config;
+        var config = scope.Config;
 
         return Cache.AccessValue(nameof(GetDomainAssemblies), () =>
         {
             var directory = config.AssemblySearchDirectory;
 
-            var files = Directory.GetFiles(directory, "*.dll").Where(x => IsInDomain(serviceContext, x));
+            var files = Directory.GetFiles(directory, "*.dll").Where(x => IsInDomain(scope, x));
 
             return files
                   .Select(ReadAssemblyDefinition)
                   .Where(r => r.Success)
                   .Select(x => x.Value)
-                  .Select(x => AnalyzeAssembly(serviceContext, x))
+                  .Select(x => AnalyzeAssembly(scope, x))
                   .ToList();
         });
     }

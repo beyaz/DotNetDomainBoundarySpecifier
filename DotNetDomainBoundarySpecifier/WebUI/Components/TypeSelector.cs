@@ -30,7 +30,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
         if (SelectedAssemblyFileName.HasValue())
         {
-            var serviceContext = new ServiceContext();
+            var serviceContext = new Scope();
 
             
 

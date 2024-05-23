@@ -2,9 +2,9 @@
 
 static class FileExporter
 {
-    public static Unit ExportToFile(ServiceContext serviceContext, CodeGenerationOutput output)
+    public static Unit ExportToFile(Scope scope, CodeGenerationOutput output)
     {
-        var config = serviceContext.Config;
+        var config = scope.Config;
 
         return Run([
             () => writeToFile(config.ExportDirectoryForTypes, output.ContractFile),

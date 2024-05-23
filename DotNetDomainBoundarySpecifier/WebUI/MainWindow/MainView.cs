@@ -151,7 +151,7 @@ class MainView : Component<MainViewModel>
             return null;
         }
 
-        var serviceContext = new ServiceContext();
+        var serviceContext = new Scope();
 
         var methodDefinition = serviceContext
                               .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)

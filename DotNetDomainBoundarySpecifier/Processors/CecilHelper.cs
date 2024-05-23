@@ -7,7 +7,7 @@ static class CecilHelper
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static AssemblyAnalyse AnalyzeAssembly(ServiceContext serviceContext, AssemblyDefinition assemblyDefinition)
+    public static AssemblyAnalyse AnalyzeAssembly(Scope scope, AssemblyDefinition assemblyDefinition)
     {
         var types = new List<TypeDefinition>();
 
@@ -37,7 +37,7 @@ static class CecilHelper
                             {
                                 if (instruction.Operand is MethodReference mr)
                                 {
-                                    if (IsMethodBelongToExternalDomain(serviceContext, mr))
+                                    if (IsMethodBelongToExternalDomain(scope, mr))
                                     {
                                         calledMethods.Add(mr);
                                     }
@@ -163,9 +163,9 @@ static class CecilHelper
         return name;
     }
 
-    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(ServiceContext serviceContext, string assemblyFileName)
+    public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(Scope scope, string assemblyFileName)
     {
-        var config = serviceContext.Config;
+        var config = scope.Config;
 
         var filePath = Path.Combine(config.AssemblySearchDirectory, assemblyFileName);
 
@@ -210,9 +210,9 @@ static class CecilHelper
         return false;
     }
 
-    public static bool IsMethodBelongToExternalDomain(ServiceContext serviceContext, MethodReference methodReference)
+    public static bool IsMethodBelongToExternalDomain(Scope scope, MethodReference methodReference)
     {
-        var config = serviceContext.Config;
+        var config = scope.Config;
 
         foreach (var partOfFileName in config.ExternalDomainFileNameContains)
         {
