@@ -153,9 +153,17 @@ static class Analyzer
         var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
 
         
+        var contracts = new List<(IReadOnlyList<string> lines, bool isInputType)>();
+        
         // Input Output types
+        static (bool success, IReadOnlyList<string> lines) tryCreateInputType()
+        {
+            return default;
+        }
         foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
         {
+            var lines = new List<string>();
+            
             var typeDefinition = scope.GetTypesInAssemblyFile(input.AssemblyFileName).First(t => t.FullName == tableModel.RelatedClassFullName);
 
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
@@ -164,24 +172,37 @@ static class Analyzer
             
             if (isInputType)
             {
-                contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");    
+                lines.Add($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");    
             }
             else
             {
-                contractFile.AppendLine($"public sealed class {typeDefinition.Name}");
+                lines.Add($"public sealed class {typeDefinition.Name}");
             }
                     
-            contractFile.AppendLine("{");
+            lines.Add("{");
                 
             foreach (var record in records.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
             {
                 var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyFullName);
 
-                contractFile.AppendLine($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
+                lines.Add($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
             }
                 
-            contractFile.AppendLine("}");
+            lines.Add("}");
+            
+            contracts.Add((lines,isInputType));
         }
+        
+        foreach (var (lines, _) in contracts.OrderByDescending(x=>x.isInputType?1:0))
+        {
+            contractFile.AppendLine();
+            
+            foreach (var line in lines)
+            {
+                contractFile.AppendLine(line);
+            }
+        }
+        
         
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
