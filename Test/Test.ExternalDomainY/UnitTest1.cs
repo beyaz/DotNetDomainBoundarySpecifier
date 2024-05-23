@@ -24,8 +24,15 @@ public class Scenario1
 
         var expected =
             """
-
+           namespace BOA.Card.Contracts.Banking.Test.ExternalDomainY.Scenario1.Process1.Method1;
+           
+           public sealed class Method1Input : IBankingProxyInput<string>
+           {
+               public string Parameter1 { get; set; }
+               public int Parameter2 { get; set; }
+               public DateTime? Parameter3 { get; set; }
+           }
            """;
-        generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected);
+        generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
     }
 }
