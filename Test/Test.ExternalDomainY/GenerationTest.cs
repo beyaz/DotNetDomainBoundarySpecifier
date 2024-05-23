@@ -55,6 +55,24 @@ public class GenerationTest
             """
             namespace _Contracts_.Test.ExternalDomainY.AnyProcess.Method2;
             
+            public sealed class A
+            {
+                public string Property0 { get; set; }
+                public int Property1 { get; set; }
+                public DateTime? Property2 { get; set; }
+                public long Property3 { get; set; }
+                public B Property5 { get; set; }
+            }
+            public sealed class B
+            {
+                public string X { get; set; }
+                public int Y { get; set; }
+                public C Nested { get; set; }
+            }
+            public sealed class C
+            {
+                public DateTime? Z { get; set; }
+            }
             public sealed class Method2Input : IBankingProxyInput<string>
             {
                 public A Parameter3 { get; set; }

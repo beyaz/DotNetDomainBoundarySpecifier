@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿using System.Linq;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -150,35 +152,41 @@ static class Analyzer
 
         var targetMethodParameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
 
+        
+        // Input Output types
+        foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
+        {
+            var typeDefinition = scope.GetTypesInAssemblyFile(input.AssemblyFileName).First(t => t.FullName == tableModel.RelatedClassFullName);
+
+            var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
+            
+            var isInputType = parameters.Count == 1 && parameters[0].ParameterType.FullName == typeDefinition.FullName;
+            
+            if (isInputType)
+            {
+                contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");    
+            }
+            else
+            {
+                contractFile.AppendLine($"public sealed class {typeDefinition.Name}");
+            }
+                    
+            contractFile.AppendLine("{");
+                
+            foreach (var record in records.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
+            {
+                var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyFullName);
+
+                contractFile.AppendLine($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
+            }
+                
+            contractFile.AppendLine("}");
+        }
+        
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
         {
             
-            
-            foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
-            {
-                var typeDefinition = scope.GetTypesInAssemblyFile(input.AssemblyFileName).First(t => t.FullName == tableModel.RelatedClassFullName);
-                        
-                if (targetMethod.Parameters[0].ParameterType.FullName == typeDefinition.FullName)
-                {
-                    contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");    
-                }
-                else
-                {
-                    contractFile.AppendLine($"public sealed class {typeDefinition.Name}");
-                }
-                    
-                contractFile.AppendLine("{");
-                
-                foreach (var record in records.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
-                {
-                    var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyFullName);
-
-                    contractFile.AppendLine($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
-                }
-                
-                contractFile.AppendLine("}");
-            }
             
             
             processFile.AppendLine();
