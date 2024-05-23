@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿using Mono.Cecil.Rocks;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -153,6 +155,34 @@ static class Analyzer
         if (targetMethodParameters.Count == 1 &&
             !IsDotNetCoreType(targetMethodParameters[0].ParameterType.FullName))
         {
+            
+            
+            foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
+            {
+                var typeDefinition = scope.GetTypesInAssemblyFile(input.AssemblyFileName).First(t => t.FullName == tableModel.RelatedClassFullName);
+                        
+                if (targetMethod.Parameters[0].ParameterType.FullName == typeDefinition.FullName)
+                {
+                    contractFile.AppendLine($"public sealed class {targetMethod.Name}Input : IBankingProxyInput<{outputTypeName}>");    
+                }
+                else
+                {
+                    contractFile.AppendLine($"public sealed class {typeDefinition.Name}");
+                }
+                    
+                contractFile.AppendLine("{");
+                
+                foreach (var record in records.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
+                {
+                    var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyFullName);
+
+                    contractFile.AppendLine($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
+                }
+                
+                contractFile.AppendLine("}");
+            }
+            
+            
             processFile.AppendLine();
             processFile.AppendLine($"{padding}{padding}var parameter = ConvertTo<{targetMethodParameters[0].ParameterType.FullName}>(input);");
 
