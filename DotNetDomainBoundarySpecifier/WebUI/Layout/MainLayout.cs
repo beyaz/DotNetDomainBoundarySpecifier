@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace DotNetDomainBoundarySpecifier.WebUI.Layout;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Layout;
 
 sealed class MainLayout : Component, IPageLayout
 {
@@ -79,7 +77,7 @@ sealed class MainLayout : Component, IPageLayout
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"import {{ReactWithDotNet}} from './{root}/dist/index.js?v={LastWriteTimeOfIndexJsFile}';");
+            sb.AppendLine($"import {{ReactWithDotNet}} from './{root}/dist/index.{CompilerMode}.js?v={LastWriteTimeOfIndexJsFile}';");
             sb.AppendLine("ReactWithDotNet.StrictMode = false;");
 
             sb.AppendLine("ReactWithDotNet.RenderComponentIn({");
@@ -100,7 +98,7 @@ sealed class MainLayout : Component, IPageLayout
 
         if (Directory.Exists(directoryName))
         {
-            var fileInfo = new FileInfo(Path.Combine(directoryName, root, "dist", "index.js"));
+            var fileInfo = new FileInfo(Path.Combine(directoryName, root, "dist", $"index.{CompilerMode}.js"));
             if (fileInfo.Exists)
             {
                 return fileInfo.LastWriteTime.Ticks.ToString();
@@ -108,5 +106,17 @@ sealed class MainLayout : Component, IPageLayout
         }
 
         throw new IOException("index.js file not found");
+    }
+    
+    static string CompilerMode
+    {
+        get
+        {
+#if DEBUG
+            return "debug";
+#else
+                return "release";
+#endif
+        }
     }
 }
