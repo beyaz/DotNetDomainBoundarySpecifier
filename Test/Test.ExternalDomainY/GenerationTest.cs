@@ -33,4 +33,35 @@ public class GenerationTest
            """;
         generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
     }
+    
+    
+    [TestMethod]
+    public void Method2()
+    {
+        var analyzeMethodInput = new Analyzer.AnalyzeMethodInput()
+        {
+            AssemblyFileName = "Test.ExternalDomainY.dll",
+            TypeFullName     = "Test.ExternalDomainY.AnyProcess",
+            MethodFullName   = "System.String Test.ExternalDomainY.AnyProcess::Method2(Test.ExternalDomainY.A,System.String,System.Int32)"
+        };
+        
+        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+
+        records.Count.Should().Be(9);
+
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+
+        var expected =
+            """
+            namespace _Contracts_.Test.ExternalDomainY.AnyProcess.Method2;
+            
+            public sealed class Method2Input : IBankingProxyInput<string>
+            {
+                public A Parameter3 { get; set; }
+                public string Parameter1 { get; set; }
+                public int Parameter2 { get; set; }
+            }
+            """;
+        generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
+    }
 }

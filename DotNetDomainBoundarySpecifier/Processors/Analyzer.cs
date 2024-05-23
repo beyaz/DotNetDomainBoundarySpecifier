@@ -1,6 +1,4 @@
-﻿using Mono.Cecil.Rocks;
-
-namespace DotNetDomainBoundarySpecifier.Processors;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
