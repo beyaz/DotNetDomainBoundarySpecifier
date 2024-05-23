@@ -30,14 +30,14 @@ sealed class TypeSelector : Component<TypeSelector.State>
 
         if (SelectedAssemblyFileName.HasValue())
         {
-            var serviceContext = new Scope();
+            var scope = new Scope();
 
             
 
 
 
 
-            itemsSource = serviceContext.GetTypesInAssemblyFile(SelectedAssemblyFileName).Select(x => x.FullName).ToList();
+            itemsSource = scope.GetTypesInAssemblyFile(SelectedAssemblyFileName).Select(x => x.FullName).ToList();
 
             markedItems = GetCalledMethodsFromExternalDomain(new(), SelectedAssemblyFileName)
                          .Select(m => m.DeclaringType.FullName).ToList();

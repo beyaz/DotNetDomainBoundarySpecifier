@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace DotNetDomainBoundarySpecifier.Processors;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -32,9 +30,9 @@ static class Analyzer
 
         return records;
 
-        static ImmutableList<TableModel> pushType(Scope serviceContext, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
+        static ImmutableList<TableModel> pushType(Scope scope, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
         {
-            var config = serviceContext.Config;
+            var config = scope.Config;
 
             if (IsDotNetCoreType(typeReference.FullName))
             {
@@ -45,7 +43,7 @@ static class Analyzer
 
             var typeDefinition = typeReference.Resolve();
 
-            var usedProperties = GetDomainAssemblies(serviceContext).FindUsedProperties(typeDefinition);
+            var usedProperties = GetDomainAssemblies(scope).FindUsedProperties(typeDefinition);
             if (usedProperties.Count is 0)
             {
                 return records;
@@ -63,7 +61,7 @@ static class Analyzer
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
 
-                records = pushType(serviceContext, input, methodDefinition, records, propertyDefinition.PropertyType);
+                records = pushType(scope, input, methodDefinition, records, propertyDefinition.PropertyType);
             }
 
             return records;

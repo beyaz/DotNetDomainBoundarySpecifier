@@ -151,9 +151,9 @@ class MainView : Component<MainViewModel>
             return null;
         }
 
-        var serviceContext = new Scope();
+        var scope = new Scope();
 
-        var methodDefinition = serviceContext
+        var methodDefinition = scope
                               .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)
                               .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)?
                               .Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
@@ -167,7 +167,7 @@ class MainView : Component<MainViewModel>
 
         foreach (var relatedTableFullName in records.Select(x => x.RelatedClassFullName).Distinct())
         {
-            var typeDefinition = serviceContext.GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x => x.FullName == relatedTableFullName);
+            var typeDefinition = scope.GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x => x.FullName == relatedTableFullName);
             if (typeDefinition is null)
             {
                 continue;
