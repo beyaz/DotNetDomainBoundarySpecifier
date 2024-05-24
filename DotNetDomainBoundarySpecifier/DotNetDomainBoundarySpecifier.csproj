@@ -13,18 +13,7 @@
 		<Reference Include="ReactWithDotNet">
 			<HintPath>Libs\ReactWithDotNet\ReactWithDotNet.dll</HintPath>
 		</Reference>
-		<Reference Include="Mono.Cecil">
-			<HintPath>Libs\mono.cecil\Mono.Cecil.dll</HintPath>
-		</Reference>
-		<Reference Include="Mono.Cecil.Mdb">
-			<HintPath>Libs\mono.cecil\Mono.Cecil.Mdb.dll</HintPath>
-		</Reference>
-		<Reference Include="Mono.Cecil.Pdb">
-			<HintPath>Libs\mono.cecil\Mono.Cecil.Pdb.dll</HintPath>
-		</Reference>
-		<Reference Include="Mono.Cecil.Rocks">
-			<HintPath>Libs\mono.cecil\Mono.Cecil.Rocks.dll</HintPath>
-		</Reference>
+		
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,7 +32,7 @@
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.35" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Mono.Cecil" Version="0.11.5" />
 		<PackageReference Include="System.Data.SQLite" Version="1.0.118" />
 	</ItemGroup>
 
