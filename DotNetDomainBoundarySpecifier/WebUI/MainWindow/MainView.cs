@@ -77,13 +77,13 @@ sealed class MainView : Component<MainViewModel>
                         new TypeSelector
                         {
                             SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-                            SelectedTypeFullName     = state.SelectedTypeFullName,
+                            SelectedTypeFullName     = state.SelectedClassFullName,
                             SelectionChange          = OnSelectedTypeChanged
                         },
                         new MethodSelector
                         {
                             SelectedAssemblyFileName = state.SelectedAssemblyFileName,
-                            SelectedTypeFullName     = state.SelectedTypeFullName,
+                            SelectedTypeFullName     = state.SelectedClassFullName,
                             SelectedMethodFullName   = state.SelectedMethodFullName,
                             SelectionChange          = OnSelectedMethodChanged
                         },
@@ -129,7 +129,7 @@ sealed class MainView : Component<MainViewModel>
                                 {
                                     (b)"Assembly: ", state.SelectedAssemblyFileName,
                                     br,
-                                    (b)"Class: ", state.SelectedTypeFullName,
+                                    (b)"Class: ", state.SelectedClassFullName,
                                     br,
                                     (b)"Method: ", state.SelectedMethodFullName
                                 }
@@ -140,7 +140,7 @@ sealed class MainView : Component<MainViewModel>
 
                 new div(SizeFull)
                 {
-                    CreatePropertySelectors(state.Records)
+                    CreatePropertySelectors(state.Boundary)
                 }
             };
         }
@@ -160,7 +160,7 @@ sealed class MainView : Component<MainViewModel>
 
         var methodDefinition = DefaultScope
                               .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)
-                              .FirstOrDefault(t => t.FullName == state.SelectedTypeFullName)?
+                              .FirstOrDefault(t => t.FullName == state.SelectedClassFullName)?
                               .Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
 
         if (methodDefinition is null)
@@ -234,7 +234,7 @@ sealed class MainView : Component<MainViewModel>
         var analyzeMethodInput = new AnalyzeMethodInput
         {
             AssemblyFileName = state.SelectedAssemblyFileName,
-            TypeFullName     = state.SelectedTypeFullName,
+            TypeFullName     = state.SelectedClassFullName,
             MethodFullName   = state.SelectedMethodFullName
         };
 
@@ -242,7 +242,7 @@ sealed class MainView : Component<MainViewModel>
         
         
 
-        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Records);
+        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary);
 
         var previewCode = "<< T Y P E S >>" + Environment.NewLine +
                       generatedCode.ContractFile.Content
@@ -254,7 +254,7 @@ sealed class MainView : Component<MainViewModel>
         state = state with
         {
             IsAnalyzing = false ,
-            Records = boundary,
+            Boundary = boundary,
             GeneratedCode = previewCode
         };
 
@@ -286,7 +286,7 @@ sealed class MainView : Component<MainViewModel>
     {
         state = state with { IsSaving = false };
         
-        Db.Save(DefaultScope, state.Records).ShowResult(this, "Saved");
+        Db.Save(DefaultScope, state.Boundary).ShowResult(this, "Saved");
         
         return Task.CompletedTask;
     }
@@ -308,7 +308,7 @@ sealed class MainView : Component<MainViewModel>
         var analyzeMethodInput = new AnalyzeMethodInput
         {
             AssemblyFileName = state.SelectedAssemblyFileName,
-            TypeFullName     = state.SelectedTypeFullName,
+            TypeFullName     = state.SelectedClassFullName,
             MethodFullName   = state.SelectedMethodFullName
         };
 
@@ -342,14 +342,31 @@ sealed class MainView : Component<MainViewModel>
 
     Task OnSelectedMethodChanged(string methodFullName)
     {
-        state = state with { SelectedMethodFullName = methodFullName };
+        state = state with
+        {
+            SelectedMethodFullName = methodFullName,
+            Boundary = new ()
+        };
 
+        var boundary = new ExternalDomainBoundaryMethod
+        {
+            ModuleName               = DefaultScope.Config.ModuleName,
+            ExternalAssemblyFileName = state.SelectedAssemblyFileName,
+            ExternalClassFullName    = state.SelectedClassFullName,
+            ExternalMethodFullName   = state.SelectedMethodFullName
+        };
+        
+        Db.TryGet(DefaultScope,boundary).Then(x =>
+        {
+            state = state with { Boundary = x };
+        });
+        
         return Task.CompletedTask;
     }
 
     Task OnSelectedTypeChanged(string typeFullName)
     {
-        state = state with { SelectedTypeFullName = typeFullName };
+        state = state with { SelectedClassFullName = typeFullName };
 
         return Task.CompletedTask;
     }
