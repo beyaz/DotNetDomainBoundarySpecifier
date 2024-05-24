@@ -317,8 +317,6 @@ sealed class MainView : Component<MainViewModel>
     {
         state = state with { SelectedMethodFullName = methodFullName };
 
-        var records = Db.GetRecordsByMethod(DefaultScope, methodFullName).Value;
-
         return Task.CompletedTask;
     }
 
