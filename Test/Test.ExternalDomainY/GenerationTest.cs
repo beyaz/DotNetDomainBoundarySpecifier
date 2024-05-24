@@ -14,11 +14,11 @@ public class GenerationTest
             MethodFullName   = "System.String Test.ExternalDomainY.AnyProcess::Method1(System.String,System.Int32,System.Nullable`1<System.DateTime>)"
         };
         
-        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+        var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
-        records.Count.Should().Be(0);
+        methodBoundary.Properties.Count.Should().Be(0);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
 
         var expected =
             """
@@ -47,11 +47,11 @@ public class GenerationTest
             MethodFullName   = "System.String Test.ExternalDomainY.AnyProcess::Method2(Test.ExternalDomainY.A,System.String,System.Int32)"
         };
         
-        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+        var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
-        records.Count.Should().Be(9);
+        methodBoundary.Properties.Count.Should().Be(9);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
 
         var expected =
             """
@@ -101,11 +101,11 @@ public class GenerationTest
             MethodFullName   = "Test.ExternalDomainY.AnyOutput Test.ExternalDomainY.AnyProcess::Method3(Test.ExternalDomainY.A)"
         };
         
-        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+        var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
-        records.Count.Should().Be(11);
+        methodBoundary.Properties.Count.Should().Be(11);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
 
         var expected =
             """
@@ -154,11 +154,11 @@ public class GenerationTest
             MethodFullName   = "Test.ExternalDomainY.GenericResponse`1<Test.ExternalDomainY.AnyOutput> Test.ExternalDomainY.AnyProcess::Method4(Test.ExternalDomainY.A)"
         };
         
-        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+        var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
-        records.Count.Should().Be(11);
+        methodBoundary.Properties.Count.Should().Be(11);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
 
         var expected =
             """
@@ -206,11 +206,11 @@ public class GenerationTest
             MethodFullName   = "Test.ExternalDomainY.GenericResponse`1<System.Int32> Test.ExternalDomainY.AnyProcess::Method5(Test.ExternalDomainY.A)"
         };
         
-        var records = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+        var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
 
-        records.Count.Should().Be(9);
+        methodBoundary.Properties.Count.Should().Be(9);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, records);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
 
         var expected =
             """

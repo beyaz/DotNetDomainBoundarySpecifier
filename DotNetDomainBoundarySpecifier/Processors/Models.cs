@@ -30,10 +30,7 @@ sealed record CodeGenerationOutput
 
 sealed record ExternalDomainBoundary
 {
-    public ExternalDomainBoundary()
-    {
-        
-    }
+    
     public ExternalDomainBoundaryMethod Method { get; init; }
     public ImmutableList<ExternalDomainBoundaryProperty> Properties { get; init; } = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
     

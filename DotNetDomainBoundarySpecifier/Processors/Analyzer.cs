@@ -7,9 +7,16 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static ImmutableList<ExternalDomainBoundary> AnalyzeMethod(Scope scope, AnalyzeMethodInput input)
+    public static ExternalDomainBoundary AnalyzeMethod(Scope scope, AnalyzeMethodInput input)
     {
-        var records = ImmutableList<ExternalDomainBoundary>.Empty;
+        var methodRecord = new ExternalDomainBoundaryMethod
+        {
+            ModuleName               = scope.Config.ModuleName,
+            ExternalAssemblyFileName = input.AssemblyFileName,
+            ExternalClassFullName    = input.TypeFullName,
+            ExternalMethodFullName   = input.MethodFullName
+        };
+        var records = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
 
         var methodDefinition =
             scope.GetTypesInAssemblyFile(input.AssemblyFileName)
@@ -18,22 +25,28 @@ static class Analyzer
 
         if (methodDefinition is null)
         {
-            return records;
+            return new ()
+            {
+                Method = methodRecord,
+                Properties = records
+            };
         }
 
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            records = pushType(scope, input, methodDefinition, records, parameterDefinition.ParameterType);
+            records = pushType(scope,methodRecord, input, methodDefinition, records, parameterDefinition.ParameterType);
         }
 
-        records = pushType(scope, input, methodDefinition, records, methodDefinition.ReturnType);
+        records = pushType(scope, methodRecord, input, methodDefinition, records, methodDefinition.ReturnType);
 
-        return records;
-
-        static ImmutableList<ExternalDomainBoundary> pushType(Scope scope, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<ExternalDomainBoundary> records, TypeReference typeReference)
+        return new ()
         {
-            var config = scope.Config;
+            Method     = methodRecord,
+            Properties = records
+        };
 
+        static ImmutableList<ExternalDomainBoundaryProperty> pushType(Scope scope, ExternalDomainBoundaryMethod methodRecord, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<ExternalDomainBoundaryProperty> records, TypeReference typeReference)
+        {
             if (IsDotNetCoreType(typeReference.FullName))
             {
                 return records;
@@ -53,22 +66,18 @@ static class Analyzer
             {
                 records = records.Add(new()
                 {
-                    ExternalAssemblyFileName = input.AssemblyFileName,
-                    ExternalClassFullName    = input.TypeFullName,
-                    ExternalMethodFullName   = methodDefinition.FullName,
-                    ModuleName               = config.ModuleName,
                     RelatedClassFullName     = typeDefinition.FullName,
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
 
-                records = pushType(scope, input, methodDefinition, records, propertyDefinition.PropertyType);
+                records = pushType(scope,methodRecord, input, methodDefinition, records, propertyDefinition.PropertyType);
             }
 
             return records;
         }
     }
 
-    public static CodeGenerationOutput GenerateCode(Scope scope, AnalyzeMethodInput input, ImmutableList<ExternalDomainBoundary> records)
+    public static CodeGenerationOutput GenerateCode(Scope scope, AnalyzeMethodInput input, ExternalDomainBoundary boundary)
     {
         const string padding = "    ";
 
@@ -180,7 +189,7 @@ static class Analyzer
 
         tryCreateInputTypeLines(scope, targetMethod).Then(lines => contracts.Add((lines, true)));
         
-        foreach (var tableModel in records.DistinctBy(x=>x.RelatedClassFullName))
+        foreach (var tableModel in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName))
         {
             var lines = new List<string>();
             
@@ -201,7 +210,7 @@ static class Analyzer
                     
             lines.Add("{");
                 
-            foreach (var record in records.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
+            foreach (var record in boundary.Properties.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
             {
                 var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyFullName);
 

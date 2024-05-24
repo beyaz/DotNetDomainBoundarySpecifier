@@ -10,7 +10,7 @@ sealed record MainViewModel
 
     public bool IsAnalyzing { get; init; }
 
-    public ImmutableList<ExternalDomainBoundary> Records { get; init; } = ImmutableList<ExternalDomainBoundary>.Empty;
+    public ExternalDomainBoundary Records { get; init; }
 
     public string GeneratedCode { get; init; }
 

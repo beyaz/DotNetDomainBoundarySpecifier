@@ -139,22 +139,15 @@ sealed class MainView : Component<MainViewModel>
         }
     }
 
-    Element CreatePropertySelectors(ImmutableList<ExternalDomainBoundary> records)
+    Element CreatePropertySelectors(ExternalDomainBoundary methodBoundary)
     {
+        var records = methodBoundary.Properties;
+        
         if (records is null || records.Count == 0)
         {
             return null;
         }
 
-        records = records.Where(x => x.ExternalAssemblyFileName == state.SelectedAssemblyFileName &&
-                                     x.ExternalClassFullName == state.SelectedTypeFullName &&
-                                     x.ExternalMethodFullName == state.SelectedMethodFullName
-                               ).ToImmutableList();
-
-        if (records.Count == 0)
-        {
-            return null;
-        }
 
         
 
