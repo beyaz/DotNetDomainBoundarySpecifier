@@ -10,6 +10,8 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
     public IReadOnlyList<TRecord> MarkedItems { get; init; } = [];
 
+    public required string Name { get; init; }
+
     public TRecord SelectedItem { get; init; }
 
     [CustomEvent]
@@ -24,8 +26,6 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
     public string Title { get; init; }
 
-    public required string Name { get; init; }
-
     protected override Task constructor()
     {
         state = new()
@@ -33,31 +33,12 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             SelectedItems             = SelectedItems,
             SelectedItemsInitialValue = SelectedItems,
             SelectionIsSingle         = SelectionIsSingle,
-            SearchText = LastUsedSearchText.TryRead(Name)
+            SearchText                = LastUsedSearchText.TryRead(Name)
         };
 
         return Task.CompletedTask;
     }
 
-    static class LastUsedSearchText
-    {
-
-        static string CalculateFilePath(string listViewComponentName)
-        {
-            return Path.GetTempPath()
-                + nameof(DotNetDomainBoundarySpecifier)
-                + ".ListView."
-                + listViewComponentName
-                + ".json";
-        }
-         
-
-        public static void Save(string listViewComponentName, string lastUsedSearchText)
-            => File.WriteAllText(CalculateFilePath(listViewComponentName), lastUsedSearchText, Encoding.UTF8);
-
-        public static string TryRead(string listViewComponentName)
-            => Try(() => File.ReadAllText(CalculateFilePath(listViewComponentName))).Value;
-    }
     protected override Task OverrideStateFromPropsBeforeRender()
     {
         bool hasChange;
@@ -93,19 +74,19 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             {
                 Title.HasValue() ? (b)Title : null,
 
-                IsInSkeletonMode[Context] ? new Skeleton{ Padding(8, 16) } :
-                new SearchTextBox
-                {
-                    Value = state.SearchText,
-                    OnValueChange = x =>
+                IsInSkeletonMode[Context] ? new Skeleton { Padding(8, 16) } :
+                    new SearchTextBox
                     {
-                        state = state with { SearchText = x };
+                        Value = state.SearchText,
+                        OnValueChange = x =>
+                        {
+                            state = state with { SearchText = x };
 
-                        LastUsedSearchText.Save(Name,x);
+                            LastUsedSearchText.Save(Name, x);
 
-                        return Task.CompletedTask;
-                    }
-                },
+                            return Task.CompletedTask;
+                        }
+                    },
                 new Style
                 {
                     BorderBottom(1, solid, Theme.BorderColor),
@@ -191,6 +172,28 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
             isMarked ? Marker.Mark : null
         };
+    }
+
+    static class LastUsedSearchText
+    {
+        public static void Save(string listViewComponentName, string lastUsedSearchText)
+        {
+            File.WriteAllText(CalculateFilePath(listViewComponentName), lastUsedSearchText, Encoding.UTF8);
+        }
+
+        public static string TryRead(string listViewComponentName)
+        {
+            return Try(() => File.ReadAllText(CalculateFilePath(listViewComponentName))).Value;
+        }
+
+        static string CalculateFilePath(string listViewComponentName)
+        {
+            return Path.GetTempPath()
+                   + nameof(DotNetDomainBoundarySpecifier)
+                   + ".ListView."
+                   + listViewComponentName
+                   + ".json";
+        }
     }
 
     static class Marker
