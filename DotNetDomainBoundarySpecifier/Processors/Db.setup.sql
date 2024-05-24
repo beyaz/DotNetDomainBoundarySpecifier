@@ -12,5 +12,5 @@ CREATE TABLE ExternalDomainBoundaryProperty
         RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
         MethodId               INTEGER,
         RelatedClassFullName     TEXT (1000),
-        RelatedPropertyFullName  TEXT (1000)
+        RelatedPropertyName  TEXT (1000)
 );

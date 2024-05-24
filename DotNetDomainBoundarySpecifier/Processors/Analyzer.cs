@@ -68,7 +68,7 @@ static class Analyzer
                 properties = properties.Add(new()
                 {
                     RelatedClassFullName     = typeDefinition.FullName,
-                    RelatedPropertyFullName  = propertyDefinition.FullName
+                    RelatedPropertyName  = propertyDefinition.Name
                 });
 
                 properties = pushType(scope, properties, propertyDefinition.PropertyType);
@@ -213,7 +213,7 @@ static class Analyzer
                 
             foreach (var record in boundary.Properties.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
             {
-                var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyFullName);
+                var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyName);
 
                 lines.Add($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
             }

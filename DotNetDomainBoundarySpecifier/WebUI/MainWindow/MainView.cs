@@ -181,7 +181,7 @@ sealed class MainView : Component<MainViewModel>
 
             var itemsSource = typeDefinition.Properties.Select(p => p.Name).ToList();
 
-            var selectedProperties = records.Where(x => x.RelatedClassFullName == relatedTableFullName).Select(x => x.RelatedPropertyFullName).ToList();
+            var selectedProperties = records.Where(x => x.RelatedClassFullName == relatedTableFullName).Select(x => x.RelatedPropertyName).ToList();
 
             elements.Add(new ListView<string>
             {
@@ -204,7 +204,7 @@ sealed class MainView : Component<MainViewModel>
             {
                 var itemsSource = typeDefinition.Properties.Select(p => p.Name).ToList();
 
-                var selectedProperties = records.Where(x => x.RelatedClassFullName == returnType.FullName).Select(x => x.RelatedPropertyFullName).ToList();
+                var selectedProperties = records.Where(x => x.RelatedClassFullName == returnType.FullName).Select(x => x.RelatedPropertyName).ToList();
 
                 elements.Add(new ListView<string>
                 {
@@ -243,7 +243,7 @@ sealed class MainView : Component<MainViewModel>
                     {
                         MethodId                = state.Boundary.Method.RecordId,
                         RelatedClassFullName    = senderName,
-                        RelatedPropertyFullName = p
+                        RelatedPropertyName = p
                     }))
             }
         };

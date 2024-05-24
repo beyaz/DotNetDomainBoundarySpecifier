@@ -80,7 +80,7 @@ sealed record ExternalDomainBoundaryProperty
    
     public string RelatedClassFullName { get; init; }
 
-    public string RelatedPropertyFullName { get; init; }
+    public string RelatedPropertyName { get; init; }
 
     public override string ToString()
     {
@@ -92,9 +92,9 @@ sealed record ExternalDomainBoundaryProperty
             sb.Append(" -> ");
         }
         
-        if (RelatedPropertyFullName.HasValue())
+        if (RelatedPropertyName.HasValue())
         {
-            sb.Append(RelatedPropertyFullName.Split(":()".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Last());
+            sb.Append(RelatedPropertyName.Split(":()".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Last());
         }
 
         return sb.ToString();
