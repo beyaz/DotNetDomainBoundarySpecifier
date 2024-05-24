@@ -29,7 +29,7 @@ sealed record CodeGenerationOutput
 }
 
 
-[Table("ExternalDomainBoundaries")]
+[Table("ExternalDomainBoundary")]
 sealed record ExternalDomainBoundary
 {
     /*
