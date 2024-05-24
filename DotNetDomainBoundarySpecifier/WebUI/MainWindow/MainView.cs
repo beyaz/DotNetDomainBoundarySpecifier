@@ -1,4 +1,6 @@
-﻿namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
+﻿
+
+namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 sealed class MainView : Component<MainViewModel>
 {
@@ -307,7 +309,7 @@ sealed class MainView : Component<MainViewModel>
     {
         state = state with { SelectedMethodFullName = methodFullName };
 
-        var records = DbOperations.GetRecordsByMethod(DefaultScope, methodFullName).Value;
+        var records = Db.GetRecordsByMethod(DefaultScope, methodFullName).Value;
 
         return Task.CompletedTask;
     }

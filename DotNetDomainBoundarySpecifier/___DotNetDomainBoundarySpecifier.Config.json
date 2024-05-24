@@ -27,5 +27,6 @@
     "ExportDirectoryForProcess": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Process.Card.Banking\\",
 
     "InputOutputsNamespacePrefix": "BOA.Card.Contracts.Banking",
-    "ProcessNamespacePrefix": "BOA.Process.Card.Banking"
+    "ProcessNamespacePrefix": "BOA.Process.Card.Banking",
+    "DatabaseFilePath": "C:\\github\\DotNetDomainBoundarySpecifier\\Database.db"
 }

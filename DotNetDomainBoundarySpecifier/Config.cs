@@ -30,5 +30,7 @@ sealed record Config
     
     public string InputOutputsNamespacePrefix { get; init; }
     public string ProcessNamespacePrefix { get; init; }
+    
+    public string DatabaseFilePath { get; init; }
     // @formatting:on
 }
