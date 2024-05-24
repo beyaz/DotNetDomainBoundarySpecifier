@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Dapper.Contrib.Extensions;
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
@@ -27,10 +28,13 @@ sealed record CodeGenerationOutput
     public FileModel ProcessFile { get; init; }
 }
 
+
+[Table("ExternalDomainBoundaries")]
 sealed record TableModel
 {
     /*
      CREATE TABLE ExternalDomainBoundaries (
+           RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
            ModuleName               TEXT (250),
            ExternalAssemblyFileName TEXT (500),
            ExternalClassFullName    TEXT (1000),
@@ -39,6 +43,10 @@ sealed record TableModel
            RelatedPropertyFullName  TEXT (1000) 
        );
      */
+
+    [Key]
+    public int RecordId { get; init; }
+    
     public string ModuleName { get; init; }
 
     public string ExternalAssemblyFileName { get; init; }
