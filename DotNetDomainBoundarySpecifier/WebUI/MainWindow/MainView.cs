@@ -1,8 +1,4 @@
-﻿
-
-using ReactWithDotNet.ThirdPartyLibraries.FramerMotion;
-
-namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 sealed class MainView : Component<MainViewModel>
 {
@@ -10,7 +6,12 @@ sealed class MainView : Component<MainViewModel>
     {
         state = StateFile.TryReadState() ?? new();
 
-        state = state with { IsAnalyzing = false };
+        state = state with
+        {
+            IsAnalyzing = false  ,
+            IsSaving = false,
+            IsExporting = false
+        };
 
         return base.constructor();
     }
@@ -99,14 +100,16 @@ sealed class MainView : Component<MainViewModel>
 
                                 new ActionButton
                                 {
-                                    Label     = "Save",
-                                    OnClicked = OnSaveClicked,
+                                    Label        = "Save",
+                                    OnClicked    = OnSaveClicked,
+                                    IsProcessing = state.IsSaving
                                 },
 
                                 new ActionButton
                                 {
-                                    Label     = "Export cs files to project",
-                                    OnClicked = OnExportClicked
+                                    Label        = "Export cs files to project",
+                                    OnClicked    = OnExportClicked,
+                                    IsProcessing = state.IsExporting
                                 }
                             },
 
@@ -225,9 +228,8 @@ sealed class MainView : Component<MainViewModel>
         };
     }
 
-    Task DoAnalyze()
+    Task OnAnalyzeClicked1()
     {
-        state = state with { IsAnalyzing = false };
 
         var analyzeMethodInput = new AnalyzeMethodInput
         {
@@ -236,21 +238,27 @@ sealed class MainView : Component<MainViewModel>
             MethodFullName   = state.SelectedMethodFullName
         };
 
-        state = state with { Records = AnalyzeMethod(DefaultScope, analyzeMethodInput) };
+        var boundary = AnalyzeMethod(DefaultScope, analyzeMethodInput);
+        
+        
 
         var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Records);
 
+        var previewCode = "<< T Y P E S >>" + Environment.NewLine +
+                      generatedCode.ContractFile.Content
+                      + Environment.NewLine
+                      + "<< P R O C E S S >>"
+                      + Environment.NewLine +
+                      generatedCode.ProcessFile.Content;
+        
         state = state with
         {
-            GeneratedCode = "<< T Y P E S >>" + Environment.NewLine +
-                            generatedCode.ContractFile.Content
-                            + Environment.NewLine
-                            + "<< P R O C E S S >>"
-                            + Environment.NewLine +
-                            generatedCode.ProcessFile.Content
+            IsAnalyzing = false ,
+            Records = boundary,
+            GeneratedCode = previewCode
         };
 
-        this.NotifySuccess("Başarılı");
+        this.NotifySuccess("Successfully analyzed");
         
         return Task.CompletedTask;
     }
@@ -259,22 +267,44 @@ sealed class MainView : Component<MainViewModel>
     {
         state = state with { IsAnalyzing = true };
 
-        Client.GotoMethod(DoAnalyze);
+        Client.GotoMethod(OnAnalyzeClicked1);
 
         return Task.CompletedTask;
     }
+
     
     Task OnSaveClicked()
     {
-        Db.Save(DefaultScope, state.Records)
-            .Match(_ => this.NotifySuccess("Saved"), 
-                   e => this.NotifyFail(e.ToString()));
+        state = state with { IsSaving = true };
+
+        Client.GotoMethod(OnSaveClicked1);
+        
+        return Task.CompletedTask;
+    }
+    
+    Task OnSaveClicked1()
+    {
+        state = state with { IsSaving = false };
+        
+        Db.Save(DefaultScope, state.Records).ShowResult(this, "Saved");
         
         return Task.CompletedTask;
     }
 
+    
     Task OnExportClicked()
     {
+        state = state with { IsExporting = true };
+        
+        Client.GotoMethod(OnExportClicked1);
+        
+        return Task.CompletedTask;
+    }
+    
+    Task OnExportClicked1()
+    {
+        state = state with { IsExporting = false };
+        
         var analyzeMethodInput = new AnalyzeMethodInput
         {
             AssemblyFileName = state.SelectedAssemblyFileName,
@@ -286,11 +316,7 @@ sealed class MainView : Component<MainViewModel>
 
         var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, records);
 
-        var result = FileExporter.ExportToFile(DefaultScope, generatedCode);
-        if (result.HasError)
-        {
-            Client.RunJavascript($"alert(\"{result.Error}\")");
-        }
+        FileExporter.ExportToFile(DefaultScope, generatedCode).ShowResult(this, "Exported");
 
         return Task.CompletedTask;
     }

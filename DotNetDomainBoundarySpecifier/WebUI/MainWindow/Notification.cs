@@ -69,7 +69,7 @@ sealed class NotificationHost : Component<NotificationHost.State>
     {
         state = state with { Message = message };
 
-        Client.GotoMethod(ResetState, TimeSpan.FromMicroseconds(message.TimeoutInMilliseconds));
+        Client.GotoMethod(ResetState, TimeSpan.FromMilliseconds(message.TimeoutInMilliseconds));
 
         return Task.CompletedTask;
     }
@@ -150,5 +150,15 @@ static class Notification
         };
 
         component.Client.DispatchEvent<PublishNotification>([notificationMessage]);
+    }
+    
+    public static void ShowResult<T>(this Result<T> result, ReactComponentBase component, string successMessage)
+    {
+        result.Match(_ => component.NotifySuccess(successMessage), e => component.NotifyFail(e.ToString()));
+    }
+    
+    public static void ShowResult(this Unit unit, ReactComponentBase component, string successMessage)
+    {
+        unit.Match(() => component.NotifySuccess(successMessage), e => component.NotifyFail(e.ToString()));
     }
 }
