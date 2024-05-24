@@ -1,4 +1,5 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using System.Diagnostics;
+using Dapper.Contrib.Extensions;
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
@@ -27,57 +28,14 @@ sealed record CodeGenerationOutput
     public FileModel ProcessFile { get; init; }
 }
 
-
+[DebuggerDisplay("{Method} -> {Properties}")]
 sealed record ExternalDomainBoundary
 {
     
     public ExternalDomainBoundaryMethod Method { get; init; }
     public ImmutableList<ExternalDomainBoundaryProperty> Properties { get; init; } = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
     
-    /*
-     CREATE TABLE ExternalDomainBoundary (
-             RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-             ModuleName               TEXT (250),
-             ExternalAssemblyFileName TEXT (500),
-             ExternalClassFullName    TEXT (1000),
-             ExternalMethodFullName   TEXT (1000),
-             RelatedClassFullName     TEXT (1000),
-             RelatedPropertyFullName  TEXT (1000) 
-         );
-     */
-
-    [Key]
-    public int RecordId { get; init; }
-    
-    public string ModuleName { get; init; }
-
-    public string ExternalAssemblyFileName { get; init; }
-
-    public string ExternalClassFullName { get; init; }
-
-    public string ExternalMethodFullName { get; init; }
-
-    public string RelatedClassFullName { get; init; }
-
-    public string RelatedPropertyFullName { get; init; }
-
-    public override string ToString()
-    {
-        var sb = new StringBuilder();
-        
-        if (RelatedClassFullName.HasValue())
-        {
-            sb.Append(RelatedClassFullName.Split('.', StringSplitOptions.RemoveEmptyEntries).Last());
-            sb.Append(" -> ");
-        }
-        
-        if (RelatedPropertyFullName.HasValue())
-        {
-            sb.Append(RelatedPropertyFullName.Split(":()".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Last());
-        }
-
-        return sb.ToString();
-    }
+   
 }
 
 [Table(nameof(ExternalDomainBoundaryMethod))]

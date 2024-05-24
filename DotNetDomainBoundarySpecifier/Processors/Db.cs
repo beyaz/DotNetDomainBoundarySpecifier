@@ -7,18 +7,40 @@ namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Db
 {
-    public static Result<List<ExternalDomainBoundary>> GetRecordsByMethod(Scope scope, string externalMethodFullName)
+    public static Result<Option<ExternalDomainBoundary>> TryGet(Scope scope, ExternalDomainBoundaryMethod method)
     {
         return Operation(scope, db =>
         {
             const string sql =
                 $"""
                  SELECT *
-                   FROM {nameof(ExternalDomainBoundary)}
-                  WHERE {nameof(ExternalDomainBoundary.ExternalMethodFullName)} = @{nameof(externalMethodFullName)}
+                   FROM {nameof(ExternalDomainBoundaryMethod)}
+                  WHERE {nameof(ExternalDomainBoundaryMethod.ExternalAssemblyFileName)} = @{nameof(method.ExternalAssemblyFileName)}
+                    AND {nameof(ExternalDomainBoundaryMethod.ExternalClassFullName)} = @{nameof(method.ExternalClassFullName)}
+                    AND {nameof(ExternalDomainBoundaryMethod.ExternalMethodFullName)} = @{nameof(method.ExternalMethodFullName)}
                  """;
 
-            return db.Query<ExternalDomainBoundary>(sql, new { externalMethodFullName }).ToList();
+            var externalMethod = db.QueryFirstOrDefault<ExternalDomainBoundaryMethod>(sql, method);
+
+            if (externalMethod is null)
+            {
+                return None;
+            }
+            
+            const string sql2 =
+                $"""
+                 SELECT *
+                   FROM {nameof(ExternalDomainBoundaryProperty)}
+                  WHERE {nameof(ExternalDomainBoundaryProperty.MethodId)} = @{nameof(externalMethod.RecordId)}
+                 """;
+
+            var externalProperties = db.Query<ExternalDomainBoundaryProperty>(sql2, externalMethod.RecordId);
+
+            return Some(new ExternalDomainBoundary
+            {
+                Method     = externalMethod,
+                Properties = externalProperties.ToImmutableList()
+            });
         });
     }
     

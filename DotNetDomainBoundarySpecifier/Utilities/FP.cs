@@ -142,6 +142,11 @@ static class FP
     }
 
     public static readonly OptionNoneValue None = new();
+
+    public static Option<TValue> Some<TValue>(TValue value)
+    {
+        return value;
+    }
 }
 
 class OptionNoneValue;
