@@ -23,9 +23,10 @@ static class Theme
         Padding(10)
     ];
 
-    public static Element SearchIcon => new svg(Fill(none), svg.Size(14))
+    public static Element SearchIcon => new svg(ViewBox(0, 0, 16, 16), Fill("currentColor"), svg.FocusableFalse,  Size(16))
     {
-        new path { d = "M2.676 11.027a6.02 6.02 0 0 0 7.157-.347l3.144 3.144a.595.595 0 0 0 .847 0 .6.6 0 0 0 0-.848l-3.143-3.143a6.02 6.02 0 1 0-8.005 1.194Zm.68-9.011a4.797 4.797 0 1 1 5.33 7.977 4.797 4.797 0 0 1-5.33-7.977Z", fill = "currentColor" }
+        new path { d = "M6.5 1a5.5 5.5 0 110 11 5.5 5.5 0 110-11zm0 1a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" },
+        new path { d = "M9.646 9.646a.5.5 0 01.638-.058l.069.058 4.5 4.5a.5.5 0 01-.638.765l-.069-.058-4.5-4.5a.5.5 0 010-.707z" }
     };
 
     public static class ListView
