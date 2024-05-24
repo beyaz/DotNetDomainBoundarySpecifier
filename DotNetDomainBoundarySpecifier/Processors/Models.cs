@@ -35,7 +35,7 @@ sealed record ExternalDomainBoundary
         
     }
     public ExternalDomainBoundaryMethod Method { get; init; }
-    public ImmutableList<ExternalDomainBoundaryProperty> Properties { get; init; }
+    public ImmutableList<ExternalDomainBoundaryProperty> Properties { get; init; } = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
     
     /*
      CREATE TABLE ExternalDomainBoundary (
