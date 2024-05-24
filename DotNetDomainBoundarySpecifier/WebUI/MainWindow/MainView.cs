@@ -138,7 +138,7 @@ sealed class MainView : Component<MainViewModel>
         }
     }
 
-    Element CreatePropertySelectors(ImmutableList<TableModel> records)
+    Element CreatePropertySelectors(ImmutableList<ExternalDomainBoundary> records)
     {
         if (records is null || records.Count == 0)
         {

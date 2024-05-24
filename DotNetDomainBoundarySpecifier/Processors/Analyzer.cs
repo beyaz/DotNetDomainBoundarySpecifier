@@ -7,9 +7,9 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static ImmutableList<TableModel> AnalyzeMethod(Scope scope, AnalyzeMethodInput input)
+    public static ImmutableList<ExternalDomainBoundary> AnalyzeMethod(Scope scope, AnalyzeMethodInput input)
     {
-        var records = ImmutableList<TableModel>.Empty;
+        var records = ImmutableList<ExternalDomainBoundary>.Empty;
 
         var methodDefinition =
             scope.GetTypesInAssemblyFile(input.AssemblyFileName)
@@ -30,7 +30,7 @@ static class Analyzer
 
         return records;
 
-        static ImmutableList<TableModel> pushType(Scope scope, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<TableModel> records, TypeReference typeReference)
+        static ImmutableList<ExternalDomainBoundary> pushType(Scope scope, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<ExternalDomainBoundary> records, TypeReference typeReference)
         {
             var config = scope.Config;
 
@@ -68,7 +68,7 @@ static class Analyzer
         }
     }
 
-    public static CodeGenerationOutput GenerateCode(Scope scope, AnalyzeMethodInput input, ImmutableList<TableModel> records)
+    public static CodeGenerationOutput GenerateCode(Scope scope, AnalyzeMethodInput input, ImmutableList<ExternalDomainBoundary> records)
     {
         const string padding = "    ";
 

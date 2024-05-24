@@ -30,18 +30,18 @@ sealed record CodeGenerationOutput
 
 
 [Table("ExternalDomainBoundaries")]
-sealed record TableModel
+sealed record ExternalDomainBoundary
 {
     /*
-     CREATE TABLE ExternalDomainBoundaries (
-           RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-           ModuleName               TEXT (250),
-           ExternalAssemblyFileName TEXT (500),
-           ExternalClassFullName    TEXT (1000),
-           ExternalMethodFullName   TEXT (1000),
-           RelatedClassFullName     TEXT (1000),
-           RelatedPropertyFullName  TEXT (1000) 
-       );
+     CREATE TABLE ExternalDomainBoundary (
+             RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
+             ModuleName               TEXT (250),
+             ExternalAssemblyFileName TEXT (500),
+             ExternalClassFullName    TEXT (1000),
+             ExternalMethodFullName   TEXT (1000),
+             RelatedClassFullName     TEXT (1000),
+             RelatedPropertyFullName  TEXT (1000) 
+         );
      */
 
     [Key]
