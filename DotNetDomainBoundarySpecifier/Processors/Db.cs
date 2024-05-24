@@ -1,6 +1,7 @@
 ﻿using System.Data.Common;
 using System.Data.SQLite;
 using Dapper;
+using Dapper.Contrib.Extensions;
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
@@ -19,6 +20,11 @@ static class Db
 
             return db.Query<ExternalDomainBoundary>(sql, new { externalMethodFullName }).ToList();
         });
+    }
+    
+    public static Result<long> Save(Scope scope, List<ExternalDomainBoundary> records)
+    {
+        return Operation(scope, db => db.Insert(records));
     }
 
     static string ConnectionString(Scope scope)
