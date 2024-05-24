@@ -1,5 +1,7 @@
 ﻿
 
+using ReactWithDotNet.ThirdPartyLibraries.FramerMotion;
+
 namespace DotNetDomainBoundarySpecifier.WebUI.MainWindow;
 
 sealed class MainView : Component<MainViewModel>
@@ -32,7 +34,9 @@ sealed class MainView : Component<MainViewModel>
                     BorderRadius(10),
                     Theme.BoxShadowForWindow
                 }
-            }
+            },
+            
+            new NotificationHost()
         };
 
         Element applicationTopPanel()
@@ -246,6 +250,8 @@ sealed class MainView : Component<MainViewModel>
                             generatedCode.ProcessFile.Content
         };
 
+        this.NotifySuccess("Başarılı");
+        
         return Task.CompletedTask;
     }
 
@@ -331,5 +337,116 @@ sealed class MainView : Component<MainViewModel>
 
         public static MainViewModel TryReadState()
             => Try(() => Json.Deserialize<MainViewModel>(File.ReadAllText(StateFilePath))).Value;
+    }
+}
+
+static class Notification
+{
+    public static void NotifySuccess(this ReactComponentBase component, string message)
+    {
+        component.Client.DispatchEvent<NotificationHost.SuccessNotify>([message]);
+    }
+}
+sealed class NotificationHost: Component<NotificationHost.State>
+{
+    internal record State
+    {
+        public string SuccessMessage { get; init; }
+    }
+    
+   public delegate Task SuccessNotify(string message);
+    
+  
+    
+    protected override Task constructor()
+    {
+        Client.ListenEvent<SuccessNotify>(OnSuccessNotified);
+        
+        return Task.CompletedTask;
+    }
+
+    Task OnSuccessNotified(string message)
+    {
+        state = state with { SuccessMessage = message };
+        
+        Client.GotoMethod(ResetState, TimeSpan.FromSeconds(1));
+        
+        return Task.CompletedTask;
+    }
+
+    Task ResetState()
+    {
+        state = new();
+        
+        return Task.CompletedTask;
+    }
+    
+
+    protected override Element render()
+    {
+        if (state.SuccessMessage.HasValue())
+        {
+            return AnimateVisibility(true,Draw());
+        }
+
+        return null;
+    }
+
+    static Element Draw()
+    {
+        return new div
+        {
+            "Notification Title",
+            MarginBottom(8),
+            MarginInlineStart("36px"),
+            FontSize16,
+            PaddingInlineEnd("24px"),
+            Color("rgba(0, 0, 0, 0.88)"),
+            LineHeight24,
+            BoxSizingBorderBox
+        };
+    }
+    
+    
+    public static Element AnimateVisibility(bool isVisible, Element content)
+    {
+        return new AnimatePresence
+        {
+            !isVisible
+                ? null
+                : new motion.div
+                {
+                    initial =
+                    {
+                        height  = 0,
+                        opacity = 0,
+                        
+                        position="fixed",
+                        bottom="30px",
+                        right="10px"
+                    },
+                    animate =
+                    {
+                        height   = "auto",
+                        opacity  = 1,
+                        duration = 400,
+                        
+                        position ="fixed",
+                        bottom   ="30px",
+                        right    ="90px"
+                    },
+                    exit =
+                    {
+                        height  = 0,
+                        opacity = 0
+                    },
+
+                    style = { WidthFull },
+                    children =
+                    {
+                        content
+                    }
+                }
+        };
     }
 }
