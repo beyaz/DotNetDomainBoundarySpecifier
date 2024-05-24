@@ -22,7 +22,7 @@ static class Db
         });
     }
     
-    public static Result<long> Save(Scope scope, List<ExternalDomainBoundary> records)
+    public static Result<long> Save(Scope scope, IEnumerable<ExternalDomainBoundary> records)
     {
         return Operation(scope, db => db.Insert(records));
     }

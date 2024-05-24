@@ -95,7 +95,8 @@ sealed class MainView : Component<MainViewModel>
 
                                 new ActionButton
                                 {
-                                    Label = "Save"
+                                    Label     = "Save",
+                                    OnClicked = OnSaveClicked,
                                 },
 
                                 new ActionButton
@@ -261,6 +262,13 @@ sealed class MainView : Component<MainViewModel>
 
         Client.GotoMethod(DoAnalyze);
 
+        return Task.CompletedTask;
+    }
+    
+    Task OnSaveClicked()
+    {
+        Db.Save(DefaultScope, state.Records);
+        
         return Task.CompletedTask;
     }
 
