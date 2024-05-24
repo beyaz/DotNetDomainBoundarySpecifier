@@ -31,26 +31,15 @@ sealed record CodeGenerationOutput
 [DebuggerDisplay("{Method} -> {Properties}")]
 sealed record ExternalDomainBoundary
 {
-    
     public ExternalDomainBoundaryMethod Method { get; init; }
-    public ImmutableList<ExternalDomainBoundaryProperty> Properties { get; init; } = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
     
-   
+    public ImmutableList<ExternalDomainBoundaryProperty> Properties { get; init; } = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
 }
 
 [Table(nameof(ExternalDomainBoundaryMethod))]
 sealed record ExternalDomainBoundaryMethod
 {
-    /*
-     CREATE TABLE ExternalDomainBoundaryMethod (
-             RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-             ModuleName               TEXT (250),
-             ExternalAssemblyFileName TEXT (500),
-             ExternalClassFullName    TEXT (1000),
-             ExternalMethodFullName   TEXT (1000)
-         );
-     */
-
+    
     [Key]
     public long RecordId { get; init; }
     
@@ -61,8 +50,6 @@ sealed record ExternalDomainBoundaryMethod
     public string ExternalClassFullName { get; init; }
 
     public string ExternalMethodFullName { get; init; }
-
-    
 
     public override string ToString()
     {
@@ -86,16 +73,6 @@ sealed record ExternalDomainBoundaryMethod
 [Table(nameof(ExternalDomainBoundaryProperty))]
 sealed record ExternalDomainBoundaryProperty
 {
-    /*
-     CREATE TABLE ExternalDomainBoundaryProperty 
-     (
-             RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-             MethodId               INTEGER,
-             RelatedClassFullName     TEXT (1000),
-             RelatedPropertyFullName  TEXT (1000)
-     );
-     */
-
     [Key]
     public long RecordId { get; init; }
     
@@ -123,4 +100,3 @@ sealed record ExternalDomainBoundaryProperty
         return sb.ToString();
     }
 }
-

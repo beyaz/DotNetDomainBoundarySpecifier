@@ -44,8 +44,8 @@ static class Db
                  SELECT *
                    FROM {nameof(ExternalDomainBoundaryMethod)}
                   WHERE {nameof(ExternalDomainBoundaryMethod.ExternalAssemblyFileName)} = @{nameof(method.ExternalAssemblyFileName)}
-                    AND {nameof(ExternalDomainBoundaryMethod.ExternalClassFullName)} = @{nameof(method.ExternalClassFullName)}
-                    AND {nameof(ExternalDomainBoundaryMethod.ExternalMethodFullName)} = @{nameof(method.ExternalMethodFullName)}
+                    AND {nameof(ExternalDomainBoundaryMethod.ExternalClassFullName)}    = @{nameof(method.ExternalClassFullName)}
+                    AND {nameof(ExternalDomainBoundaryMethod.ExternalMethodFullName)}   = @{nameof(method.ExternalMethodFullName)}
                  """;
 
             var externalMethod = db.QueryFirstOrDefault<ExternalDomainBoundaryMethod>(sql, method);
@@ -62,7 +62,7 @@ static class Db
                   WHERE {nameof(ExternalDomainBoundaryProperty.MethodId)} = @{nameof(externalMethod.RecordId)}
                  """;
 
-            var externalProperties = db.Query<ExternalDomainBoundaryProperty>(sql2, externalMethod.RecordId);
+            var externalProperties = db.Query<ExternalDomainBoundaryProperty>(sql2, new{externalMethod.RecordId});
 
             return Some(new ExternalDomainBoundary
             {

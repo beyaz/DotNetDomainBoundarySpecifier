@@ -266,7 +266,9 @@ sealed class MainView : Component<MainViewModel>
     
     Task OnSaveClicked()
     {
-        Db.Save(DefaultScope, state.Records);
+        Db.Save(DefaultScope, state.Records)
+            .Match(_ => this.NotifySuccess("Saved"), 
+                   e => this.NotifyFail(e.ToString()));
         
         return Task.CompletedTask;
     }
