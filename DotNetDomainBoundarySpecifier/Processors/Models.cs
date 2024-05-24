@@ -29,6 +29,16 @@ sealed record CodeGenerationOutput
 
 sealed record TableModel
 {
+    /*
+     CREATE TABLE ExternalDomainBoundaries (
+           ModuleName               TEXT (250),
+           ExternalAssemblyFileName TEXT (500),
+           ExternalClassFullName    TEXT (1000),
+           ExternalMethodFullName   TEXT (1000),
+           RelatedClassFullName     TEXT (1000),
+           RelatedPropertyFullName  TEXT (1000) 
+       );
+     */
     public string ModuleName { get; init; }
 
     public string ExternalAssemblyFileName { get; init; }
