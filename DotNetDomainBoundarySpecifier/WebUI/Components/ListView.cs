@@ -1,8 +1,8 @@
 ﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
-public delegate Task ListViewSelectedItemsChanged<in TRecord>(IReadOnlyList<TRecord> selectedItems);
+public delegate Task ListViewSelectedItemsChanged<in TRecord>(string senderName, IReadOnlyList<TRecord> selectedItems);
 
-public delegate Task ListViewSelectedItemChanged<in TRecord>(TRecord selectedItem);
+public delegate Task ListViewSelectedItemChanged<in TRecord>(string senderName, TRecord selectedItem);
 
 sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 {
@@ -115,7 +115,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                     SelectedItem = ItemsSource[index]
                 };
 
-                DispatchEvent(SelectedItemChanged, [state.SelectedItem]);
+                DispatchEvent(SelectedItemChanged, [Name, state.SelectedItem]);
             }
             else
             {
@@ -124,7 +124,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
                     SelectedItems = state.SelectedItems.Toggle(ItemsSource[index])
                 };
 
-                DispatchEvent(SelectedItemsChanged, [state.SelectedItems]);
+                DispatchEvent(SelectedItemsChanged, [Name, state.SelectedItems]);
             }
         }
 

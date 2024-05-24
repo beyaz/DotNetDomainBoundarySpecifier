@@ -185,10 +185,11 @@ sealed class MainView : Component<MainViewModel>
 
             elements.Add(new ListView<string>
             {
-                Name          = typeDefinition.Name,
-                Title         = typeDefinition.Name,
-                ItemsSource   = itemsSource,
-                SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
+                Name                 = typeDefinition.FullName,
+                Title                = typeDefinition.Name,
+                ItemsSource          = itemsSource,
+                SelectedItems        = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList(),
+                SelectedItemsChanged = PropertySelectionChanged
             });
         }
 
@@ -207,10 +208,11 @@ sealed class MainView : Component<MainViewModel>
 
                 elements.Add(new ListView<string>
                 {
-                    Name          = typeDefinition.Name,
+                    Name          = typeDefinition.FullName,
                     Title         = typeDefinition.Name,
                     ItemsSource   = itemsSource,
-                    SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList()
+                    SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList(),
+                    SelectedItemsChanged = PropertySelectionChanged
                 });
             }
         }
@@ -227,6 +229,26 @@ sealed class MainView : Component<MainViewModel>
         {
             elements
         };
+    }
+    
+    Task PropertySelectionChanged(string senderName, IReadOnlyList<string> selectedItems)
+    {
+        state = state with
+        {
+            Boundary = state.Boundary with
+            {
+                Properties = state.Boundary.Properties
+                    .RemoveAll(x => x.RelatedClassFullName == senderName)
+                    .AddRange(selectedItems.Select(p => new ExternalDomainBoundaryProperty
+                    {
+                        MethodId                = state.Boundary.Method.RecordId,
+                        RelatedClassFullName    = senderName,
+                        RelatedPropertyFullName = p
+                    }))
+            }
+        };
+
+        return Task.CompletedTask;
     }
 
     Task OnAnalyzeClicked1()

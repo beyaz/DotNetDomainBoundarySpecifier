@@ -38,7 +38,7 @@ sealed class AssemblySelector : Component<AssemblySelector.State>
         };
     }
 
-    Task SelectedItemChanged(string selectedItem)
+    Task SelectedItemChanged(string senderName, string selectedItem)
     {
         state = new()
         {

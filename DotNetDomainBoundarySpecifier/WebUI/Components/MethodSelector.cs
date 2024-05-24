@@ -79,7 +79,7 @@ sealed class MethodSelector : Component<MethodSelector.State>
         }
     }
 
-    Task SelectedItemChanged(string selectedItem)
+    Task SelectedItemChanged(string senderName, string selectedItem)
     {
         state = new()
         {

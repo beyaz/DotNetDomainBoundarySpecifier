@@ -1,6 +1,4 @@
-﻿using DotNetDomainBoundarySpecifier.Processors;
-
-namespace DotNetDomainBoundarySpecifier.WebUI.Components;
+﻿namespace DotNetDomainBoundarySpecifier.WebUI.Components;
 
 sealed class TypeSelector : Component<TypeSelector.State>
 {
@@ -48,7 +46,7 @@ sealed class TypeSelector : Component<TypeSelector.State>
         };
     }
 
-    Task SelectedItemChanged(string selectedItem)
+    Task SelectedItemChanged(string senderName, string selectedItem)
     {
         state = new()
         {
