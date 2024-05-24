@@ -3,6 +3,8 @@
 sealed class ActionButton : Component<ActionButton.State>
 {
     public bool IsProcessing { get; init; }
+    
+    public bool IsDisabled { get; init; }
 
     public string Label { get; init; }
 
@@ -51,7 +53,9 @@ sealed class ActionButton : Component<ActionButton.State>
             BorderRadius(5),
             Padding(10, 20),
             CursorPointer,
-            TextAlignCenter
+            TextAlignCenter,
+            IsDisabled ? Cursor("not-allowed") : null,
+            IsDisabled ? Opacity(0.3) : null
         };
 
         var onClick = isProcessing ? null : OnClick(ActionButtonOnClick);

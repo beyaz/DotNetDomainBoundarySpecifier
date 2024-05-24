@@ -95,7 +95,8 @@ sealed class MainView : Component<MainViewModel>
                                 {
                                     Label        = "Analyze",
                                     OnClicked    = OnAnalyzeClicked,
-                                    IsProcessing = state.IsAnalyzing
+                                    IsProcessing = state.IsAnalyzing,
+                                    IsDisabled = state.IsAnalyzeButtonDisabled
                                 },
 
                                 new ActionButton
@@ -345,7 +346,8 @@ sealed class MainView : Component<MainViewModel>
         state = state with
         {
             SelectedMethodFullName = methodFullName,
-            Boundary = new ()
+            Boundary = new (),
+            IsAnalyzeButtonDisabled = false
         };
 
         var boundary = new ExternalDomainBoundaryMethod
@@ -358,7 +360,11 @@ sealed class MainView : Component<MainViewModel>
         
         Db.TryGet(DefaultScope,boundary).Then(x =>
         {
-            state = state with { Boundary = x };
+            state = state with
+            {
+                Boundary = x,
+                IsAnalyzeButtonDisabled = true
+            };
         });
         
         return Task.CompletedTask;

@@ -19,4 +19,6 @@ sealed record MainViewModel
     public bool IsSaving { get; init; }
     
     public bool IsExporting { get; init; }
+    
+    public bool IsAnalyzeButtonDisabled { get; init; }
 }
