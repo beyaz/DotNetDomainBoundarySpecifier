@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 namespace DotNetDomainBoundarySpecifier;
 
@@ -19,7 +19,7 @@ static class ConfigReader
             throw new ArgumentException("assembly location not found");
         }
 
-        var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Path.Combine(appFolder, "DotNetDomainBoundarySpecifier.Config.json")));
+        var config = JsonSerializer.Deserialize<Config>(File.ReadAllText(Path.Combine(appFolder, "DotNetDomainBoundarySpecifier.Config.json")));
 
         var isRunningInVisualStudio = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
         if (isRunningInVisualStudio)
