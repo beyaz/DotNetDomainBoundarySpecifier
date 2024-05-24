@@ -141,7 +141,7 @@ sealed class MainView : Component<MainViewModel>
 
     Element CreatePropertySelectors(ExternalDomainBoundary methodBoundary)
     {
-        var records = methodBoundary.Properties;
+        var records = methodBoundary?.Properties;
         
         if (records is null || records.Count == 0)
         {

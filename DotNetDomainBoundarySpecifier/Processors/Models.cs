@@ -52,7 +52,7 @@ sealed record ExternalDomainBoundaryMethod
      */
 
     [Key]
-    public int RecordId { get; init; }
+    public long RecordId { get; init; }
     
     public string ModuleName { get; init; }
 
@@ -97,9 +97,9 @@ sealed record ExternalDomainBoundaryProperty
      */
 
     [Key]
-    public int RecordId { get; init; }
+    public long RecordId { get; init; }
     
-    public int MethodId { get; init; }
+    public long MethodId { get; init; }
    
     public string RelatedClassFullName { get; init; }
 

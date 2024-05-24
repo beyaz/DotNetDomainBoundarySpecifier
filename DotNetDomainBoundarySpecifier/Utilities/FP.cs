@@ -147,6 +147,14 @@ static class FP
     {
         return value;
     }
+
+    public static void Then<TValue>(this Result<Option<TValue>> result, Action<TValue> next)
+    {
+        if (result.Success)
+        {
+            result.Value.Then(next);
+        }
+    }
 }
 
 class OptionNoneValue;

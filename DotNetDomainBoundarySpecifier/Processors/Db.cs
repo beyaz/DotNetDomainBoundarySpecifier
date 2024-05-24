@@ -7,6 +7,34 @@ namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Db
 {
+    public static Result<ExternalDomainBoundary> Save(Scope scope, ExternalDomainBoundary boundary)
+    {
+        return Operation(scope, db =>
+        {
+            TryGet(scope, boundary.Method).Then(x =>
+            {
+                db.Delete(x.Properties);
+                db.Delete(x.Method);
+            });
+
+            var method = boundary.Method with
+            {
+                RecordId = db.Insert(boundary.Method)
+            };
+
+            var properties = boundary.Properties.Select(p => p with { MethodId = boundary.Method.RecordId }).Select(p => p with
+            {
+                RecordId = db.Insert(p)
+            });
+
+            return new ExternalDomainBoundary
+            {
+                Method     = method,
+                Properties = properties.ToImmutableList()
+            };
+        });
+    }
+
     public static Result<Option<ExternalDomainBoundary>> TryGet(Scope scope, ExternalDomainBoundaryMethod method)
     {
         return Operation(scope, db =>
@@ -26,7 +54,7 @@ static class Db
             {
                 return None;
             }
-            
+
             const string sql2 =
                 $"""
                  SELECT *
@@ -42,11 +70,6 @@ static class Db
                 Properties = externalProperties.ToImmutableList()
             });
         });
-    }
-    
-    public static Result<long> Save(Scope scope, ExternalDomainBoundary records)
-    {
-        return Operation(scope, db => db.Insert(records));
     }
 
     static string ConnectionString(Scope scope)
