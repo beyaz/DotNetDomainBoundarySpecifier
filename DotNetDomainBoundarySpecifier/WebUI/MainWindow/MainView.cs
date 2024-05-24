@@ -188,7 +188,7 @@ sealed class MainView : Component<MainViewModel>
                 Name                 = typeDefinition.FullName,
                 Title                = typeDefinition.Name,
                 ItemsSource          = itemsSource,
-                SelectedItems        = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList(),
+                SelectedItems        = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.Name)).Select(p => p.Name).ToList(),
                 SelectedItemsChanged = PropertySelectionChanged
             });
         }
@@ -211,7 +211,7 @@ sealed class MainView : Component<MainViewModel>
                     Name          = typeDefinition.FullName,
                     Title         = typeDefinition.Name,
                     ItemsSource   = itemsSource,
-                    SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.FullName)).Select(p => p.Name).ToList(),
+                    SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.Name)).Select(p => p.Name).ToList(),
                     SelectedItemsChanged = PropertySelectionChanged
                 });
             }
