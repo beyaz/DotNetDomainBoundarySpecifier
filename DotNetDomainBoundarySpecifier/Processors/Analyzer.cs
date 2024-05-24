@@ -16,7 +16,8 @@ static class Analyzer
             ExternalClassFullName    = input.TypeFullName,
             ExternalMethodFullName   = input.MethodFullName
         };
-        var records = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
+        
+        var properties = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
 
         var methodDefinition =
             scope.GetTypesInAssemblyFile(input.AssemblyFileName)
@@ -28,28 +29,28 @@ static class Analyzer
             return new ()
             {
                 Method = methodRecord,
-                Properties = records
+                Properties = properties
             };
         }
 
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            records = pushType(scope,methodRecord, input, methodDefinition, records, parameterDefinition.ParameterType);
+            properties = pushType(scope, properties, parameterDefinition.ParameterType);
         }
 
-        records = pushType(scope, methodRecord, input, methodDefinition, records, methodDefinition.ReturnType);
+        properties = pushType(scope, properties, methodDefinition.ReturnType);
 
         return new ()
         {
             Method     = methodRecord,
-            Properties = records
+            Properties = properties
         };
 
-        static ImmutableList<ExternalDomainBoundaryProperty> pushType(Scope scope, ExternalDomainBoundaryMethod methodRecord, AnalyzeMethodInput input, MethodDefinition methodDefinition, ImmutableList<ExternalDomainBoundaryProperty> records, TypeReference typeReference)
+        static ImmutableList<ExternalDomainBoundaryProperty> pushType(Scope scope, ImmutableList<ExternalDomainBoundaryProperty> properties, TypeReference typeReference)
         {
             if (IsDotNetCoreType(typeReference.FullName))
             {
-                return records;
+                return properties;
             }
 
             typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
@@ -59,21 +60,21 @@ static class Analyzer
             var usedProperties = GetDomainAssemblies(scope).FindUsedProperties(typeDefinition);
             if (usedProperties.Count is 0)
             {
-                return records;
+                return properties;
             }
 
             foreach (var propertyDefinition in usedProperties)
             {
-                records = records.Add(new()
+                properties = properties.Add(new()
                 {
                     RelatedClassFullName     = typeDefinition.FullName,
                     RelatedPropertyFullName  = propertyDefinition.FullName
                 });
 
-                records = pushType(scope,methodRecord, input, methodDefinition, records, propertyDefinition.PropertyType);
+                properties = pushType(scope, properties, propertyDefinition.PropertyType);
             }
 
-            return records;
+            return properties;
         }
     }
 
