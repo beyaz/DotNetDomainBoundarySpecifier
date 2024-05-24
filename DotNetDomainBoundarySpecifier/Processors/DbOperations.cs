@@ -1,6 +1,6 @@
-﻿using Dapper;
+﻿using System.Data.SQLite;
+using Dapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.Data.Sqlite;
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
@@ -8,19 +8,21 @@ static class DbOperations
 {
     public static Result<List<TableModel>> GetRecordsByMethod(Scope scope, string fullMethodName)
     {
-        string connectionString = "Data Source=Database.db";
+        string connectionString = "Data Source=C:\\github\\DotNetDomainBoundarySpecifier\\Database.db";
 
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SQLiteConnection(connectionString))
         {
             
-            return connection.GetAll<TableModel>().ToList();
+            //return connection.GetAll<TableModel>().ToList();
             
             var sql = """
-                      SELECT *
+                      SELECT ModuleName
                              FROM ExternalDomainBoundaries
                       """;
 
-            return connection.Query<TableModel>(sql).ToList();
+            var r =  connection.QuerySingle<string>(sql).ToList();
+
+            return default;
         }
     }
 }

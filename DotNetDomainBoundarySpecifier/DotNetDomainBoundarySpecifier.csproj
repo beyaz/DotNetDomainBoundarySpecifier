@@ -43,8 +43,8 @@
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.35" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.5" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Data.SQLite" Version="1.0.118" />
 	</ItemGroup>
 
 
