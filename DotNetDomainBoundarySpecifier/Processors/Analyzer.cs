@@ -189,7 +189,7 @@ static class Analyzer
 
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
         contractFile.AppendLine();
-        contractFile.AppendLine(calculateOutputDeclerationLine(targetMethod,names.ContractsProject.NamespaceName));
+        contractFile.AppendLine(calculateOutputDeclerationLine(targetMethod.ReturnType,names.ContractsProject.NamespaceName));
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
         if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
@@ -402,11 +402,11 @@ static class Analyzer
             }
         };
 
-        static string calculateOutputDeclerationLine(MethodDefinition methodDefinition, string namespaceFullName)
+        static string calculateOutputDeclerationLine(TypeReference methodReturnType, string namespaceFullName)
         {
             string fullName = null;
             
-            var returnType = GetValueTypeIfTypeIsMonadType(methodDefinition.ReturnType);
+            var returnType = GetValueTypeIfTypeIsMonadType(methodReturnType);
             if (returnType is GenericInstanceType genericInstanceType)
             {
                 if (genericInstanceType.GenericArguments.Count is 1)
