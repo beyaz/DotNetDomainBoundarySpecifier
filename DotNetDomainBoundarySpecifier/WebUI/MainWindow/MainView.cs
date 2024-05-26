@@ -231,12 +231,14 @@ sealed class MainView : Component<MainViewModel>
 
         var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary);
 
+       
+        
         var previewCode = "<< T Y P E S >>" + Environment.NewLine +
-                          generatedCode.ContractFile.Content
+                          generatedCode?.ContractFile.Content
                           + Environment.NewLine
                           + "<< P R O C E S S >>"
                           + Environment.NewLine +
-                          generatedCode.ProcessFile.Content;
+                          generatedCode?.ProcessFile.Content;
         
         state = state with
         {

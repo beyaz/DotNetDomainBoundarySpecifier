@@ -88,6 +88,11 @@ static class Analyzer
                 return properties;
             }
 
+            if (CanIgnoreParameterType(scope, typeReference))
+            {
+                return properties;
+            }
+
             typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
 
             var typeDefinition = typeReference.Resolve();

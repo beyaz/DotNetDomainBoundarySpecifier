@@ -172,6 +172,10 @@ static class CecilHelper
     
     public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(Scope scope, string assemblyFileName)
     {
+        if (assemblyFileName.HasNoValue())
+        {
+            return [];
+        }
         var config = scope.Config;
 
         var filePath = Path.Combine(config.AssemblySearchDirectory, assemblyFileName);

@@ -28,5 +28,5 @@
 
   "InputOutputsNamespacePrefix": "BOA.Card.Contracts.Banking",
   "ProcessNamespacePrefix": "BOA.Process.Card.Banking",
-  "DatabaseFilePath": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\DotNetDomainBoundarySpecifier\\Database.db"
+  "DatabaseFilePath": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\DotNetDomainBoundarySpecifier\\Database.sqlite"
 }
