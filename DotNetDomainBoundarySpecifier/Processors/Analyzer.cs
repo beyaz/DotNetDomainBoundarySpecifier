@@ -189,7 +189,7 @@ static class Analyzer
 
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
         contractFile.AppendLine();
-        contractFile.AppendLine($"using Output = {GetValueTypeIfTypeIsMonadType(targetMethod.ReturnType).GetShortNameInCsharp()};");
+        contractFile.AppendLine(calculateOutputDeclerationLine(targetMethod,names.ContractsProject.NamespaceName));
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
         if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
@@ -401,6 +401,30 @@ static class Analyzer
                 Content = processFile.ToString().Trim()
             }
         };
+
+        static string calculateOutputDeclerationLine(MethodDefinition methodDefinition, string namespaceFullName)
+        {
+            string fullName = null;
+            
+            var returnType = GetValueTypeIfTypeIsMonadType(methodDefinition.ReturnType);
+            if (returnType is GenericInstanceType genericInstanceType)
+            {
+                if (genericInstanceType.GenericArguments.Count is 1)
+                {
+                    if (IsDotNetCoreType(genericInstanceType.GenericArguments[0].FullName))
+                    {
+                        fullName = returnType.FullName.Replace("`" + genericInstanceType.GenericArguments.Count,"");
+                    }
+                    else
+                    {
+                        fullName = genericInstanceType.ElementType.FullName.Replace("`1", "") +"<"+ namespaceFullName+"." +genericInstanceType.GenericArguments[0].Name +">";    
+                    }
+                }
+                
+                return $"using Output = {fullName};";
+            }
+            return $"using Output = {returnType.GetShortNameInCsharp()};";
+        }
     }
 
     public static IEnumerable<MethodDefinition> GetCalledMethodsFromExternalDomain(Scope scope, string assemblyFileNameInExternalDomain)
