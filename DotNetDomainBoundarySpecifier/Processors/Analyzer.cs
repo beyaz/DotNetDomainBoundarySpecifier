@@ -168,7 +168,7 @@ static class Analyzer
         contractFile.AppendLine($"using Output = {GetValueTypeIfTypeIsMonadType(targetMethod.ReturnType).GetShortNameInCsharp()};");
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
-        if (outputTypeIsAlreadyExistingType)
+        if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
         {
             processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" : outputTypeName)};");
         }
@@ -349,7 +349,7 @@ static class Analyzer
             processFile.AppendLine();
             processFile.AppendLine($"{padding}{padding}var value = response.Value;");
             processFile.AppendLine();
-            if (outputTypeIsAlreadyExistingType)
+            if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
             {
                 processFile.AppendLine($"{padding}{padding}returnObject.Value = value;");
             }
