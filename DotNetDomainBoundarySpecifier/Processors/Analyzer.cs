@@ -32,8 +32,19 @@ static class Analyzer
                 return;
             }
 
+           
+
             typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
 
+            if (typeReference is GenericInstanceType genericInstanceType)
+            {
+                if (genericInstanceType.GenericArguments.Count == 1)
+                {
+                    pushType(scope, items, genericInstanceType.GenericArguments[0]);
+                    return;
+                }
+            }
+            
             items.Add(typeReference);
             
             var typeDefinition = typeReference.Resolve();
