@@ -77,9 +77,9 @@ public class GenerationTest
             
             public sealed class B
             {
+                public C Nested { get; set; }
                 public string X { get; set; }
                 public int Y { get; set; }
-                public C Nested { get; set; }
             }
             
             public sealed class C
