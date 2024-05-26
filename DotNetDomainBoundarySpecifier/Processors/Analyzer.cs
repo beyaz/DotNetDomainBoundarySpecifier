@@ -19,11 +19,7 @@ static class Analyzer
         
         var properties = ImmutableList<ExternalDomainBoundaryProperty>.Empty;
 
-        var methodDefinition =
-            scope.GetTypesInAssemblyFile(input.AssemblyFileName)
-                          .FirstOrDefault(t => t.FullName == input.TypeFullName)
-                         ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
-
+        var methodDefinition = scope.FindMethod(input.AssemblyFileName, input.TypeFullName,input.MethodFullName);
         if (methodDefinition is null)
         {
             return new ()
@@ -82,10 +78,7 @@ static class Analyzer
     {
         const string padding = "    ";
 
-        var targetMethod =
-            scope.GetTypesInAssemblyFile(input.AssemblyFileName)
-                          .FirstOrDefault(t => t.FullName == input.TypeFullName)
-                         ?.Methods.FirstOrDefault(m => m.FullName == input.MethodFullName);
+        var targetMethod = scope.FindMethod(input.AssemblyFileName,input.TypeFullName,input.MethodFullName);
 
         if (targetMethod is null)
         {

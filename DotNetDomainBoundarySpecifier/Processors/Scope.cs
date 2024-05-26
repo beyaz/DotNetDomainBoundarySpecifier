@@ -18,4 +18,14 @@ sealed record Scope
     public Config Config { get; init; }
 
     public GetTypesInAssemblyFile GetTypesInAssemblyFile { get; init; }
+
+
+    public MethodDefinition FindMethod(string assemblyFileName, string fullTypeName, string fullMethodName)
+    {
+        return GetTypesInAssemblyFile(assemblyFileName)
+            .FirstOrDefault(t => t.FullName == fullTypeName)?
+            .Methods.FirstOrDefault(m => m.FullName == fullMethodName);
+    }
 }
+
+

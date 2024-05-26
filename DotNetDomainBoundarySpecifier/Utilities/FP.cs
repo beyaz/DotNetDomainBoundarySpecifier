@@ -163,7 +163,7 @@ sealed class Option<TValue>
 {
     public TValue Value { get; init; }
     
-    bool IsNone { get; init; }
+    public bool IsNone { get; init; }
     
     public static implicit operator Option<TValue>(TValue value)
     {

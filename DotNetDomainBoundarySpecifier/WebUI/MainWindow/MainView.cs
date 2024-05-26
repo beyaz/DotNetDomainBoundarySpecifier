@@ -159,11 +159,7 @@ sealed class MainView : Component<MainViewModel>
 
         
 
-        var methodDefinition = DefaultScope
-                              .GetTypesInAssemblyFile(state.SelectedAssemblyFileName)
-                              .FirstOrDefault(t => t.FullName == state.SelectedClassFullName)?
-                              .Methods.FirstOrDefault(m => m.FullName == state.SelectedMethodFullName);
-
+        var methodDefinition = DefaultScope.FindMethod(state.SelectedAssemblyFileName,state.SelectedClassFullName,state.SelectedMethodFullName);
         if (methodDefinition is null)
         {
             return null;
