@@ -1,31 +1,32 @@
 ﻿{
-    "BrowserExePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-    "BrowserExeArguments": "--app=https://localhost:{Port}/",
-    "HideConsoleWindow": true,
-    "NextAvailablePortFrom": 5005,
-    "UseUrls": true,
+  "BrowserExePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "BrowserExeArguments": "--app=https://localhost:{Port}/",
+  "HideConsoleWindow": true,
+  "NextAvailablePortFrom": 5005,
+  "UseUrls": true,
 
-    "FileStorage": {
-        "IsActive": true,
-        "CacheDirectoryFormat": "{MyDocuments} > ApiInspector > Cache"
-    },
+  "FileStorage": {
+    "IsActive": true,
+    "CacheDirectoryFormat": "{MyDocuments} > ApiInspector > Cache"
+  },
 
-    "ModuleName": "ModuleX",
-    "AssemblySearchDirectory": "C:\\github\\DotNetDomainBoundarySpecifier\\Test\\bin\\",
-    "DomainFiles": [ "Test.DomainX" ],
-    "SkipTypes": [
-        "<Module>",
-        "Microsoft.CodeAnalysis.EmbeddedAttribute",
-        "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
-    ],
-    "ExternalDomainFileNameContains": [ "Test.ExternalDomainY" ],
+  "ModuleName": "BOACard",
+  "AssemblySearchDirectory": "d:\\boa\\server\\bin\\",
+  "DomainFiles": [ ".Orchestration.Card.CCO.dll", ".Orchestration.Card.Application.dll" ],
+  "SkipTypes": [
+    "<Module>",
+    "Microsoft.CodeAnalysis.EmbeddedAttribute",
+    "System.Runtime.CompilerServices.RefSafetyRulesAttribute",
+    "BOA.Business.Kernel.General.FTP"
+  ],
+  "ExternalDomainFileNameContains": [ "BOA." ],
 
-    "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
+  "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
 
-    "ExportDirectoryForTypes": "C:\temp\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
-    "ExportDirectoryForProcess": "C:\temp\\BOA.Card.Banking\\BOA.Process.Card.Banking\\",
+  "ExportDirectoryForTypes": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Card.Contracts.Banking\\",
+  "ExportDirectoryForProcess": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\BOA.Process.Card.Banking\\",
 
-    "InputOutputsNamespacePrefix": "_Contracts_",
-    "ProcessNamespacePrefix": "_Process_",
-    "DatabaseFilePath": "C:\\github\\DotNetDomainBoundarySpecifier\\Database.db"
+  "InputOutputsNamespacePrefix": "BOA.Card.Contracts.Banking",
+  "ProcessNamespacePrefix": "BOA.Process.Card.Banking",
+  "DatabaseFilePath": "D:\\work\\BOA.CardModules\\Dev\\BOA.Card.Banking\\DotNetDomainBoundarySpecifier\\Database.db"
 }
