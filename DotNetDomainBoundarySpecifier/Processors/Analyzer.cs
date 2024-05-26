@@ -228,11 +228,11 @@ static class Analyzer
 
         tryCreateInputTypeLines(scope, targetMethod).Then(lines => contracts.Add((lines, true)));
         
-        foreach (var tableModel in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName).OrderBy(x=>x.RelatedClassFullName))
+        foreach (var propertyRecord in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName).OrderBy(x=>x.RelatedClassFullName))
         {
             var lines = new List<string>();
             
-            var typeDefinition = scope.GetTypesInAssemblyFile(input.AssemblyFileName).First(t => t.FullName == tableModel.RelatedClassFullName);
+            var typeDefinition = scope.GetTypesInAssemblyFile(propertyRecord.AssemblyFileName).First(t => t.FullName == propertyRecord.RelatedClassFullName);
 
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
             
@@ -249,7 +249,7 @@ static class Analyzer
                     
             lines.Add("{");
                 
-            foreach (var record in boundary.Properties.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName).OrderBy(p=>p.RelatedPropertyName))
+            foreach (var record in boundary.Properties.Where(x=>x.RelatedClassFullName == propertyRecord.RelatedClassFullName).OrderBy(p=>p.RelatedPropertyName))
             {
                 var propertyDefinition = typeDefinition.Properties.First(p=>p.Name == record.RelatedPropertyName);
 

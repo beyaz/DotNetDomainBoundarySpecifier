@@ -177,7 +177,7 @@ sealed class MainView : Component<MainViewModel>
 
             elements.Add(new ListView<string>
             {
-                Name                 = typeDefinition.FullName,
+                Name                 = typeDefinition.Scope.Name +"|"+ typeDefinition.FullName,
                 Title                = typeDefinition.Name,
                 ItemsSource          = itemsSource,
                 SelectedItems        = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.Name)).Select(p => p.Name).ToList(),
@@ -201,16 +201,20 @@ sealed class MainView : Component<MainViewModel>
     
     Task PropertySelectionChanged(string senderName, IReadOnlyList<string> selectedItems)
     {
+        var assemblyFileName = senderName.Split('|').First();
+        var classFullName = senderName.Split('|').Last();
+
         state = state with
         {
             Boundary = state.Boundary with
             {
                 Properties = state.Boundary.Properties
-                    .RemoveAll(x => x.RelatedClassFullName == senderName)
+                    .RemoveAll(x => x.AssemblyFileName == assemblyFileName && x.RelatedClassFullName == classFullName)
                     .AddRange(selectedItems.Select(p => new ExternalDomainBoundaryProperty
                     {
-                        RelatedClassFullName    = senderName,
-                        RelatedPropertyName = p
+                        AssemblyFileName     = assemblyFileName,
+                        RelatedClassFullName = classFullName,
+                        RelatedPropertyName  = p
                     }))
             }
         };
