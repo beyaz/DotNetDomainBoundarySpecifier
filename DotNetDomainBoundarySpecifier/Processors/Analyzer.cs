@@ -143,7 +143,7 @@ static class Analyzer
         }
     }
 
-    public static CodeGenerationOutput GenerateCode(Scope scope, AnalyzeMethodInput input, ExternalDomainBoundary boundary)
+    public static Result<CodeGenerationOutput> GenerateCode(Scope scope, AnalyzeMethodInput input, ExternalDomainBoundary boundary)
     {
         const string padding = "    ";
 
@@ -388,7 +388,7 @@ static class Analyzer
             processFile.AppendLine("}"); // end of class
         }
 
-        return new()
+        return new CodeGenerationOutput()
         {
             ContractFile = new()
             {

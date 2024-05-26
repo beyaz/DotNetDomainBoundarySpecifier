@@ -155,6 +155,16 @@ static class FP
             result.Value.Then(next);
         }
     }
+    
+    public static Unit Then<A>(this Result<A> result, Func<A,Unit> next)
+    {
+        if (result.HasError)
+        {
+            return new () { Error = result.Error };
+        }
+
+        return next(result.Value);
+    }
 }
 
 class OptionNoneValue;
@@ -201,6 +211,8 @@ sealed class Option<TValue>
         nextOperation(Value);
 
     }
+    
+    
     
 }
 

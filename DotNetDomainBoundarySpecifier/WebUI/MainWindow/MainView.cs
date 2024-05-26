@@ -233,7 +233,7 @@ sealed class MainView : Component<MainViewModel>
             MethodFullName   = state.SelectedMethodFullName
         };
 
-        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary);
+        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary).Value;
 
        
         
@@ -322,14 +322,14 @@ sealed class MainView : Component<MainViewModel>
             MethodFullName   = state.SelectedMethodFullName
         };
 
-        var records = AnalyzeMethod(DefaultScope, analyzeMethodInput);
-
-        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, records);
-
-        FileExporter.ExportToFile(DefaultScope, generatedCode).ShowResult(this, "Exported");
+        GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary)
+            .Then(generatedCode => FileExporter.ExportToFile(DefaultScope, generatedCode))
+            .ShowResult(this, "Exported");        
 
         return Task.CompletedTask;
     }
+    
+    
 
     Task OnSelectedAssemblyChanged_Finish(string assemblyFilename)
     {
@@ -399,4 +399,3 @@ sealed class MainView : Component<MainViewModel>
             => Try(() => Json.Deserialize<MainViewModel>(File.ReadAllText(StateFilePath))).Value;
     }
 }
-

@@ -17,7 +17,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(0);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -50,7 +50,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(9);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -104,7 +104,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(11);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -157,7 +157,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(11);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -209,7 +209,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(9);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -255,7 +255,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(9);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -301,7 +301,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(11);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
@@ -354,7 +354,7 @@ public class GenerationTest
 
         methodBoundary.Properties.Count.Should().Be(2);
 
-        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
 
         var expected =
             """
