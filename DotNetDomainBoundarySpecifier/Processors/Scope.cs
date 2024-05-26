@@ -2,6 +2,8 @@
 
 namespace DotNetDomainBoundarySpecifier.Processors;
 
+delegate IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(string assemblyFileName);
+
 sealed record Scope
 {
     public static readonly Scope DefaultScope = new();
@@ -15,5 +17,5 @@ sealed record Scope
 
     public Config Config { get; init; }
 
-    public Func<string, IReadOnlyList<TypeDefinition>> GetTypesInAssemblyFile { get; init; }
+    public GetTypesInAssemblyFile GetTypesInAssemblyFile { get; init; }
 }
