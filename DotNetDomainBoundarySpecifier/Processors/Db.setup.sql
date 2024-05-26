@@ -10,7 +10,8 @@ CREATE TABLE ExternalDomainBoundaryMethod
 CREATE TABLE ExternalDomainBoundaryProperty
 (
         RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-        MethodId               INTEGER,
-        RelatedClassFullName     TEXT (1000),
+        MethodId             INTEGER,
+        AssemblyFileName     TEXT (500),
+        RelatedClassFullName TEXT (1000),
         RelatedPropertyName  TEXT (1000)
 );

@@ -77,7 +77,9 @@ sealed record ExternalDomainBoundaryProperty
     public long RecordId { get; init; }
     
     public long MethodId { get; init; }
-   
+
+    public string AssemblyFileName { get; init; }
+    
     public string RelatedClassFullName { get; init; }
 
     public string RelatedPropertyName { get; init; }

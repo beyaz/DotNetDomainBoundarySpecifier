@@ -107,6 +107,7 @@ static class Analyzer
             {
                 properties = properties.Add(new()
                 {
+                    AssemblyFileName = typeDefinition.Scope.Name,
                     RelatedClassFullName     = typeDefinition.FullName,
                     RelatedPropertyName  = propertyDefinition.Name
                 });
