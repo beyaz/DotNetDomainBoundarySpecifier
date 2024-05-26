@@ -7,22 +7,27 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
-    public static IReadOnlyList<TypeReference> GetRelatedTypes(MethodDefinition methodDefinition)
+    public static IReadOnlyList<TypeReference> GetRelatedTypes(Scope scope,MethodDefinition methodDefinition)
     {
         var items = new List<TypeReference>();
         
         foreach (var parameterDefinition in methodDefinition.Parameters)
         {
-            pushType(items, parameterDefinition.ParameterType);
+            pushType(scope, items, parameterDefinition.ParameterType);
         }
 
-        pushType(items, GetValueTypeIfTypeIsMonadType(methodDefinition.ReturnType));
+        pushType(scope, items, GetValueTypeIfTypeIsMonadType(methodDefinition.ReturnType));
 
         return items;
 
-        static void pushType(ICollection<TypeReference> items, TypeReference typeReference)
+        static void pushType(Scope scope, ICollection<TypeReference> items, TypeReference typeReference)
         {
             if (IsDotNetCoreType(typeReference.FullName))
+            {
+                return;
+            }
+
+            if (CanIgnoreParameterType(scope, typeReference))
             {
                 return;
             }
@@ -36,7 +41,7 @@ static class Analyzer
             {
                 foreach (var typeDefinitionProperty in typeDefinition.Properties)
                 {
-                    pushType(items, typeDefinitionProperty.PropertyType);
+                    pushType(scope, items, typeDefinitionProperty.PropertyType);
                 }
             }
         }

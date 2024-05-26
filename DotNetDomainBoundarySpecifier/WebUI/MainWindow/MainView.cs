@@ -149,7 +149,9 @@ sealed class MainView : Component<MainViewModel>
 
     Element CreatePropertySelectors(ExternalDomainBoundary methodBoundary)
     {
-        var methodDefinition = DefaultScope.FindMethod(state.SelectedAssemblyFileName,state.SelectedClassFullName,state.SelectedMethodFullName);
+        var scope = DefaultScope;
+        
+        var methodDefinition = scope.FindMethod(state.SelectedAssemblyFileName,state.SelectedClassFullName,state.SelectedMethodFullName);
         if (methodDefinition is null)
         {
             return null;
@@ -159,7 +161,7 @@ sealed class MainView : Component<MainViewModel>
         
         var records = methodBoundary?.Properties ?? ImmutableList<ExternalDomainBoundaryProperty>.Empty;
         
-        var relatedTypes = GetRelatedTypes(methodDefinition);
+        var relatedTypes = GetRelatedTypes(scope,methodDefinition);
         
         foreach (var typeReference in relatedTypes)
         {
