@@ -36,6 +36,11 @@ public class AnyProcess
     {
         return default;
     }
+    
+    public GenericResponse<List<AnyOutput>> Method8(ObjectHelper objectHelper, int accountNumber)
+    {
+        return default;
+    }
 }
 
 

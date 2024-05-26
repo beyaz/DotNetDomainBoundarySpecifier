@@ -109,8 +109,19 @@ static class Analyzer
                 return properties;
             }
 
-            typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
-
+            if (IsMonadType(typeReference))
+            {
+                return pushType(scope, properties, GetMonadValueType(typeReference));
+            }
+            
+            if (typeReference is GenericInstanceType genericInstanceType)
+            {
+                if (genericInstanceType.ElementType.FullName == "System.Collections.Generic.List`1")
+                {
+                    return pushType(scope, properties, genericInstanceType.GenericArguments[0]);
+                }
+            }
+            
             var typeDefinition = typeReference.Resolve();
 
             var usedProperties = GetDomainAssemblies(scope).FindUsedProperties(typeDefinition);

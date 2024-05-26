@@ -1,4 +1,3 @@
-
 namespace DotNetDomainBoundarySpecifier.Tests;
 
 [TestClass]
@@ -335,6 +334,43 @@ public class GenerationTest
             public sealed class C
             {
                 public DateTime? Z { get; set; }
+            }
+            """;
+        generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
+    }
+    
+    
+    [TestMethod]
+    public void Method8()
+    {
+        var analyzeMethodInput = new Analyzer.AnalyzeMethodInput()
+        {
+            AssemblyFileName = "Test.ExternalDomainY.dll",
+            TypeFullName     = "Test.ExternalDomainY.AnyProcess",
+            MethodFullName   = "Test.ExternalDomainY.GenericResponse`1<System.Collections.Generic.List`1<Test.ExternalDomainY.AnyOutput>> Test.ExternalDomainY.AnyProcess::Method8(Test.ExternalDomainY.ObjectHelper,System.Int32)"
+        };
+        
+        var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+
+        methodBoundary.Properties.Count.Should().Be(2);
+
+        var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary);
+
+        var expected =
+            """
+            namespace _Contracts_.Test.ExternalDomainY.AnyProcess.Method8;
+            
+            using Output = System.Collections.Generic.List<AnyOutput>;
+            
+            public sealed class Method8Input : IBankingProxyInput<Output>
+            {
+                public int AccountNumber { get; set; }
+            }
+            
+            public sealed class AnyOutput
+            {
+                public int OutputProperty1 { get; set; }
+                public long OutputProperty3 { get; set; }
             }
             """;
         generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());

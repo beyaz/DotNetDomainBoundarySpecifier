@@ -1,5 +1,7 @@
 ﻿using Test.ExternalDomainY;
 
+//using Output = System.Collections.Generic.List<AnyProcessCaller>;
+
 namespace Test.DomainX;
 
 public class AnyProcessCaller
@@ -148,6 +150,16 @@ public class AnyProcessCaller
 
         Dummy(output.Value.OutputProperty1);
         Dummy(output.Value.OutputProperty3);
+    }
+    
+    public static void Call_Method8()
+    {
+        var process = new AnyProcess();
+
+        var output = process.Method8(default, default);
+
+        Dummy(output.Value[0].OutputProperty1);
+        Dummy(output.Value[1].OutputProperty3);
     }
 
     static void Dummy(object _)
