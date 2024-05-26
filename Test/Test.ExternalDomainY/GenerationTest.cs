@@ -122,22 +122,22 @@ public class GenerationTest
                 public B Property5 { get; set; }
             }
             
+            public sealed class AnyOutput
+            {
+                public int OutputProperty1 { get; set; }
+                public long OutputProperty3 { get; set; }
+            }
+            
             public sealed class B
             {
+                public C Nested { get; set; }
                 public string X { get; set; }
                 public int Y { get; set; }
-                public C Nested { get; set; }
             }
             
             public sealed class C
             {
                 public DateTime? Z { get; set; }
-            }
-            
-            public sealed class AnyOutput
-            {
-                public int OutputProperty1 { get; set; }
-                public long OutputProperty3 { get; set; }
             }
             """;
         generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
@@ -175,22 +175,22 @@ public class GenerationTest
                 public B Property5 { get; set; }
             }
 
-            public sealed class B
-            {
-                public string X { get; set; }
-                public int Y { get; set; }
-                public C Nested { get; set; }
-            }
-
-            public sealed class C
-            {
-                public DateTime? Z { get; set; }
-            }
-
             public sealed class AnyOutput
             {
                 public int OutputProperty1 { get; set; }
                 public long OutputProperty3 { get; set; }
+            }
+            
+            public sealed class B
+            {
+                public C Nested { get; set; }
+                public string X { get; set; }
+                public int Y { get; set; }
+            }
+            
+            public sealed class C
+            {
+                public DateTime? Z { get; set; }
             }
             """;
         generationOutput.ContractFile.Content.Trim().Should().BeEquivalentTo(expected.Trim());
@@ -229,11 +229,11 @@ public class GenerationTest
 
             public sealed class B
             {
+                public C Nested { get; set; }
                 public string X { get; set; }
                 public int Y { get; set; }
-                public C Nested { get; set; }
             }
-
+            
             public sealed class C
             {
                 public DateTime? Z { get; set; }
