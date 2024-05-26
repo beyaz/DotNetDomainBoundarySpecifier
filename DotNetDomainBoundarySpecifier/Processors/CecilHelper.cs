@@ -163,6 +163,13 @@ static class CecilHelper
         return name;
     }
 
+    public static MethodDefinition FindMethod(Scope scope, string assemblyFileName, string fullTypeName, string fullMethodName)
+    {
+        return scope.GetTypesInAssemblyFile(assemblyFileName)
+            .FirstOrDefault(t => t.FullName == fullTypeName)?
+            .Methods.FirstOrDefault(m => m.FullName == fullMethodName);
+    }
+    
     public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(Scope scope, string assemblyFileName)
     {
         var config = scope.Config;
