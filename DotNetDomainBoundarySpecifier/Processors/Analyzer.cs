@@ -189,7 +189,18 @@ static class Analyzer
 
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
         contractFile.AppendLine();
-        contractFile.AppendLine(calculateOutputDeclerationLine(targetMethod.ReturnType,names.ContractsProject.NamespaceName));
+
+        {
+            var result = calculateOutputDeclerationLine(targetMethod.ReturnType, names.ContractsProject.NamespaceName);
+            if (result.HasError)
+            {
+                return result.Error;
+            }
+
+            contractFile.AppendLine(result.Value);
+        }
+        
+        
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
         if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
@@ -402,13 +413,12 @@ static class Analyzer
             }
         };
 
-        static string calculateOutputDeclerationLine(TypeReference methodReturnType, string namespaceFullName)
+        static Result<string> calculateOutputDeclerationLine(TypeReference methodReturnType, string namespaceFullName)
         {
-            string fullName = null;
-            
             var returnType = GetValueTypeIfTypeIsMonadType(methodReturnType);
             if (returnType is GenericInstanceType genericInstanceType)
             {
+                string fullName;
                 if (genericInstanceType.GenericArguments.Count is 1)
                 {
                     if (IsDotNetCoreType(genericInstanceType.GenericArguments[0].FullName))
@@ -419,6 +429,10 @@ static class Analyzer
                     {
                         fullName = genericInstanceType.ElementType.FullName.Replace("`1", "") +"<"+ namespaceFullName+"." +genericInstanceType.GenericArguments[0].Name +">";    
                     }
+                }
+                else
+                {
+                    return new Exception("Not implemented yet more then one generic type.");
                 }
                 
                 return $"using Output = {fullName};";
