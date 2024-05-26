@@ -22,6 +22,11 @@ static class Analyzer
 
         static void pushType(Scope scope, ICollection<TypeReference> items, TypeReference typeReference)
         {
+            if (items.Any(x=>x.FullName == typeReference.FullName))
+            {
+                return;
+            }
+            
             if (IsDotNetCoreType(typeReference.FullName))
             {
                 return;
