@@ -360,7 +360,7 @@ public class GenerationTest
             """
             namespace _Contracts_.Test.ExternalDomainY.AnyProcess.Method8;
             
-            using Output = System.Collections.Generic.List<AnyOutput>;
+            using Output = System.Collections.Generic.List<_Contracts_.Test.ExternalDomainY.AnyProcess.Method8.AnyOutput>;
             
             public sealed class Method8Input : IBankingProxyInput<Output>
             {

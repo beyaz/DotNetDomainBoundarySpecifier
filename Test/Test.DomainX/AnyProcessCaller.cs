@@ -1,7 +1,5 @@
 ﻿using Test.ExternalDomainY;
 
-//using Output = System.Collections.Generic.List<AnyProcessCaller>;
-
 namespace Test.DomainX;
 
 public class AnyProcessCaller
