@@ -149,16 +149,6 @@ sealed class MainView : Component<MainViewModel>
 
     Element CreatePropertySelectors(ExternalDomainBoundary methodBoundary)
     {
-        var records = methodBoundary?.Properties;
-        
-        if (records is null || records.Count == 0)
-        {
-            return null;
-        }
-
-
-        
-
         var methodDefinition = DefaultScope.FindMethod(state.SelectedAssemblyFileName,state.SelectedClassFullName,state.SelectedMethodFullName);
         if (methodDefinition is null)
         {
@@ -166,18 +156,22 @@ sealed class MainView : Component<MainViewModel>
         }
 
         var elements = new List<Element>();
-
-        foreach (var relatedTableFullName in records.Select(x => x.RelatedClassFullName).Distinct())
+        
+        var records = methodBoundary?.Properties ?? ImmutableList<ExternalDomainBoundaryProperty>.Empty;
+        
+        var relatedTypes = GetRelatedTypes(methodDefinition);
+        
+        foreach (var typeReference in relatedTypes)
         {
-            var typeDefinition = DefaultScope.GetTypesInAssemblyFile(state.SelectedAssemblyFileName).FirstOrDefault(x => x.FullName == relatedTableFullName);
+            var typeDefinition = typeReference.Resolve();
             if (typeDefinition is null)
             {
                 continue;
             }
-
+            
             var itemsSource = typeDefinition.Properties.Select(p => p.Name).ToList();
 
-            var selectedProperties = records.Where(x => x.RelatedClassFullName == relatedTableFullName).Select(x => x.RelatedPropertyName).ToList();
+            var selectedProperties = records.Where(x => x.RelatedClassFullName == typeReference.FullName).Select(x => x.RelatedPropertyName).ToList();
 
             elements.Add(new ListView<string>
             {
@@ -187,30 +181,6 @@ sealed class MainView : Component<MainViewModel>
                 SelectedItems        = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.Name)).Select(p => p.Name).ToList(),
                 SelectedItemsChanged = PropertySelectionChanged
             });
-        }
-
-        var returnType = methodDefinition.ReturnType;
-
-        returnType = GetValueTypeIfTypeIsMonadType(returnType);
-
-        if (!IsDotNetCoreType(returnType.FullName))
-        {
-            var typeDefinition = Try(returnType.Resolve).Value;
-            if (typeDefinition is not null)
-            {
-                var itemsSource = typeDefinition.Properties.Select(p => p.Name).ToList();
-
-                var selectedProperties = records.Where(x => x.RelatedClassFullName == returnType.FullName).Select(x => x.RelatedPropertyName).ToList();
-
-                elements.Add(new ListView<string>
-                {
-                    Name          = typeDefinition.FullName,
-                    Title         = typeDefinition.Name,
-                    ItemsSource   = itemsSource,
-                    SelectedItems = typeDefinition.Properties.Where(p => selectedProperties.Contains(p.Name)).Select(p => p.Name).ToList(),
-                    SelectedItemsChanged = PropertySelectionChanged
-                });
-            }
         }
 
         elements.Add(new FlexRowCentered(SizeFull)
@@ -237,19 +207,42 @@ sealed class MainView : Component<MainViewModel>
                     .RemoveAll(x => x.RelatedClassFullName == senderName)
                     .AddRange(selectedItems.Select(p => new ExternalDomainBoundaryProperty
                     {
-                        MethodId                = state.Boundary.Method.RecordId,
                         RelatedClassFullName    = senderName,
                         RelatedPropertyName = p
                     }))
             }
         };
 
+        UpdateGeneratedCodePreview();
+        
         return Task.CompletedTask;
     }
 
+    void UpdateGeneratedCodePreview()
+    {
+        var analyzeMethodInput = new AnalyzeMethodInput
+        {
+            AssemblyFileName = state.SelectedAssemblyFileName,
+            TypeFullName     = state.SelectedClassFullName,
+            MethodFullName   = state.SelectedMethodFullName
+        };
+
+        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary);
+
+        var previewCode = "<< T Y P E S >>" + Environment.NewLine +
+                          generatedCode.ContractFile.Content
+                          + Environment.NewLine
+                          + "<< P R O C E S S >>"
+                          + Environment.NewLine +
+                          generatedCode.ProcessFile.Content;
+        
+        state = state with
+        {
+            GeneratedCode = previewCode
+        };
+    }
     Task OnAnalyzeClicked1()
     {
-
         var analyzeMethodInput = new AnalyzeMethodInput
         {
             AssemblyFileName = state.SelectedAssemblyFileName,
@@ -259,23 +252,13 @@ sealed class MainView : Component<MainViewModel>
 
         var boundary = AnalyzeMethod(DefaultScope, analyzeMethodInput);
         
-        
-
-        var generatedCode = GenerateCode(DefaultScope, analyzeMethodInput, state.Boundary);
-
-        var previewCode = "<< T Y P E S >>" + Environment.NewLine +
-                      generatedCode.ContractFile.Content
-                      + Environment.NewLine
-                      + "<< P R O C E S S >>"
-                      + Environment.NewLine +
-                      generatedCode.ProcessFile.Content;
-        
         state = state with
         {
             IsAnalyzing = false ,
             Boundary = boundary,
-            GeneratedCode = previewCode
         };
+
+        UpdateGeneratedCodePreview();
 
         this.NotifySuccess("Successfully analyzed");
         

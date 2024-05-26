@@ -110,10 +110,21 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
         {
             if (SelectionIsSingle)
             {
-                state = state with
+                if (ItemsSource[index].Equals(state.SelectedItem))
                 {
-                    SelectedItem = ItemsSource[index]
-                };
+                    state = state with
+                    {
+                        SelectedItem = default
+                    };
+                }
+                else
+                {
+                    state = state with
+                    {
+                        SelectedItem = ItemsSource[index]
+                    };    
+                }
+                
 
                 DispatchEvent(SelectedItemChanged, [Name, state.SelectedItem]);
             }
@@ -166,7 +177,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
 
             isSelected ? Background(Theme.ListView.ItemSelectedBackgroundColor) : Hover(Background(Theme.ListView.ItemHoverBackgroundColor)),
 
-            isSelected ? null : OnClick(OnItemClicked),
+            OnClick(OnItemClicked),
 
             isMarked && !isSelected ? Background(Theme.ListView.MarkedItemBackgroundColor) : null,
 

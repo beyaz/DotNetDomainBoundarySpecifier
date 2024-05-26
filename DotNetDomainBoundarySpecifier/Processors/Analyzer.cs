@@ -7,6 +7,40 @@ static class Analyzer
         Timeout = TimeSpan.FromDays(3)
     };
 
+    public static IReadOnlyList<TypeReference> GetRelatedTypes(MethodDefinition methodDefinition)
+    {
+        var items = new List<TypeReference>();
+        
+        foreach (var parameterDefinition in methodDefinition.Parameters)
+        {
+            pushType(items, parameterDefinition.ParameterType);
+        }
+
+        pushType(items, GetValueTypeIfTypeIsMonadType(methodDefinition.ReturnType));
+
+        return items;
+
+        static void pushType(ICollection<TypeReference> items, TypeReference typeReference)
+        {
+            if (IsDotNetCoreType(typeReference.FullName))
+            {
+                return;
+            }
+
+            typeReference = GetValueTypeIfTypeIsMonadType(typeReference);
+
+            items.Add(typeReference);
+            
+            var typeDefinition = typeReference.Resolve();
+            if (typeDefinition is not null)
+            {
+                foreach (var typeDefinitionProperty in typeDefinition.Properties)
+                {
+                    pushType(items, typeDefinitionProperty.PropertyType);
+                }
+            }
+        }
+    }
     public static ExternalDomainBoundary AnalyzeMethod(Scope scope, AnalyzeMethodInput input)
     {
         var methodRecord = new ExternalDomainBoundaryMethod
@@ -183,7 +217,7 @@ static class Analyzer
 
         tryCreateInputTypeLines(scope, targetMethod).Then(lines => contracts.Add((lines, true)));
         
-        foreach (var tableModel in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName))
+        foreach (var tableModel in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName).OrderBy(x=>x.RelatedClassFullName))
         {
             var lines = new List<string>();
             
@@ -204,9 +238,9 @@ static class Analyzer
                     
             lines.Add("{");
                 
-            foreach (var record in boundary.Properties.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName))
+            foreach (var record in boundary.Properties.Where(x=>x.RelatedClassFullName == tableModel.RelatedClassFullName).OrderBy(p=>p.RelatedPropertyName))
             {
-                var propertyDefinition = typeDefinition.Properties.First(p=>p.FullName == record.RelatedPropertyName);
+                var propertyDefinition = typeDefinition.Properties.First(p=>p.Name == record.RelatedPropertyName);
 
                 lines.Add($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
             }
