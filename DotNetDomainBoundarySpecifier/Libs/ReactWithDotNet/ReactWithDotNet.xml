@@ -5579,6 +5579,18 @@
                 Section in a document
             </summary>
         </member>
+        <member name="P:ReactWithDotNet.th.scope">
+            <summary>
+                specifies whether a header cell is a header for a column, row, or group of columns or rows.
+            </summary>
+        </member>
+        <member name="M:ReactWithDotNet.th.Scope(System.String)">
+            <summary>
+                scope = <paramref name="value"/>
+            <br/>
+                specifies whether a header cell is a header for a column, row, or group of columns or rows.
+            </summary>
+        </member>
         <member name="P:ReactWithDotNet.ellipse.cx">
             <summary>
                 The x-coordinate of the center of the ellipse.
