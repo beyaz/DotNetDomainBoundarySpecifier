@@ -202,27 +202,32 @@ static class Analyzer
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
         contractFile.AppendLine();
 
+        string outputDeclarationLine;
         {
-            var result = calculateOutputDeclerationLine(targetMethod.ReturnType, names.ContractsProject.NamespaceName);
+            var result = calculateOutputDeclarationLine(targetMethod.ReturnType, names.ContractsProject.NamespaceName);
             if (result.HasError)
             {
                 return result.Error;
             }
 
-            contractFile.AppendLine(result.Value);
+            outputDeclarationLine = result.Value;
         }
         
-        
+        contractFile.AppendLine(outputDeclarationLine);
+
+
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
-        if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
-        {
-            processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" : outputTypeName)};");
-        }
-        else
-        {
-            processFile.AppendLine($"using Output = {names.ContractsProject.NamespaceName}.{outputTypeName};");
-        }
+        processFile.AppendLine(outputDeclarationLine);
+        
+        //if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
+        //{
+        //    processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" : outputTypeName)};");
+        //}
+        //else
+        //{
+        //    processFile.AppendLine($"using Output = {names.ContractsProject.NamespaceName}.{outputTypeName};");
+        //}
 
         processFile.AppendLine();
         processFile.AppendLine($"namespace {names.ProcessProject.NamespaceName};");
@@ -425,7 +430,7 @@ static class Analyzer
             }
         };
 
-        static Result<string> calculateOutputDeclerationLine(TypeReference methodReturnType, string namespaceFullName)
+        static Result<string> calculateOutputDeclarationLine(TypeReference methodReturnType, string namespaceFullName)
         {
             var returnType = GetValueTypeIfTypeIsMonadType(methodReturnType);
             if (returnType is GenericInstanceType genericInstanceType)
