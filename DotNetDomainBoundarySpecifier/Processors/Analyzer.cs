@@ -129,12 +129,24 @@ static class Analyzer
 
             foreach (var propertyDefinition in usedProperties)
             {
-                properties = properties.Add(new()
+                var newItem = new ExternalDomainBoundaryProperty
                 {
-                    AssemblyFileName = typeDefinition.Scope.Name,
-                    RelatedClassFullName     = typeDefinition.FullName,
+                    AssemblyFileName     = typeDefinition.Scope.Name,
+                    RelatedClassFullName = typeDefinition.FullName,
                     RelatedPropertyName  = propertyDefinition.Name
-                });
+                };
+
+                bool alreadyExists(ExternalDomainBoundaryProperty x) =>
+                    x.AssemblyFileName == newItem.AssemblyFileName &&
+                    x.RelatedClassFullName == newItem.RelatedClassFullName &&
+                    x.RelatedPropertyName == newItem.RelatedPropertyName;
+
+                if (properties.Any(alreadyExists))
+                {
+                    continue;
+                }
+                
+                properties = properties.Add(newItem);
 
                 properties = pushType(scope, properties, propertyDefinition.PropertyType);
             }
