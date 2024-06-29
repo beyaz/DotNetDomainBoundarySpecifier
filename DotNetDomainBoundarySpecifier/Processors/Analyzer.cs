@@ -459,6 +459,8 @@ static class Analyzer
 
         var domainAssemblies = GetDomainAssemblies(scope);
 
+        var results = new Dictionary<string, MethodDefinition>();
+        
         foreach (var analyse in domainAssemblies)
         {
             foreach (var methodReference in analyse.CalledMethods)
@@ -490,11 +492,13 @@ static class Analyzer
 
                     if (targetMethod.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
                     {
-                        yield return targetMethod;
+                        results.TryAdd(targetMethod.FullName, targetMethod);
                     }
                 }
             }
         }
+
+        return results.Values;
     }
 
     public static TypeReference GetValueTypeIfTypeIsMonadType(TypeReference typeReference)
