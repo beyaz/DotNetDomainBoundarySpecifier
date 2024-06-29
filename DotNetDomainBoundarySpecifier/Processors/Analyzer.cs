@@ -260,7 +260,8 @@ static class Analyzer
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
             
             var isInputType = parameters.Count == 1 &&  IsDotNetCoreType(parameters[0].ParameterType.FullName)
-                              || parameters.Count > 1;
+                              || parameters.Count > 1
+                              || parameters.Count == 0;
 
             if (!isInputType)
             {
@@ -457,11 +458,21 @@ static class Analyzer
 
             if (returnType.Namespace.StartsWith("BOA.", StringComparison.OrdinalIgnoreCase))
             {
-
                 return $"using Output = {namespaceFullName}.{returnType.Name};";
-                
             }
-            return $"using Output = {returnType.GetShortNameInCsharp()};";
+            
+            
+            return $"using Output = {convertDateTimeAsSystemDotDateTime(returnType.GetShortNameInCsharp())};";
+
+            static string convertDateTimeAsSystemDotDateTime(string typeName)
+            {
+                if (typeName == "DateTime")
+                {
+                    return "System.DateTime";
+                }
+
+                return typeName;
+            }
         }
     }
 

@@ -12,12 +12,12 @@ public class ExportAllTest
         {
             foreach (var methodDefinition in Analyzer.GetCalledMethodsFromExternalDomain(scope, externalDomainAssemblyFile))
             {
-                //if (methodDefinition.Name != "GetUserByUserCode")
+                //if (methodDefinition.Name != "GetCityList")
                 //{
                 //    continue;
                 //}
-                
-                
+
+
                 var analyzeMethodInput = new Analyzer.AnalyzeMethodInput
                 {
                     AssemblyFileName = externalDomainAssemblyFile,
