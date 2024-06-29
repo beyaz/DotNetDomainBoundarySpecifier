@@ -8,11 +8,13 @@ public class ExportAllTest
     [TestMethod]
     public void ExportAll()
     {
+        var scope = DefaultScope;
+
         foreach (var externalDomainAssemblyFile in AssemblySelector.ExternalDomainAssemblyFiles)
         {
-            foreach (var typeDefinition in DefaultScope.GetTypesInAssemblyFile(externalDomainAssemblyFile))
+            foreach (var typeDefinition in scope.GetTypesInAssemblyFile(externalDomainAssemblyFile))
             {
-                foreach (var methodDefinition in Analyzer.GetCalledMethodsFromExternalDomain(DefaultScope, externalDomainAssemblyFile))
+                foreach (var methodDefinition in Analyzer.GetCalledMethodsFromExternalDomain(scope, externalDomainAssemblyFile))
                 {
                     var analyzeMethodInput = new Analyzer.AnalyzeMethodInput
                     {
@@ -21,11 +23,11 @@ public class ExportAllTest
                         MethodFullName   = methodDefinition.FullName
                     };
 
-                    var methodBoundary = Analyzer.AnalyzeMethod(DefaultScope, analyzeMethodInput);
+                    var methodBoundary = Analyzer.AnalyzeMethod(scope, analyzeMethodInput);
 
-                    var generationOutput = Analyzer.GenerateCode(DefaultScope, analyzeMethodInput, methodBoundary).Unwrap();
+                    var generationOutput = Analyzer.GenerateCode(scope, analyzeMethodInput, methodBoundary).Unwrap();
 
-                    FileExporter.ExportToFile(DefaultScope, generationOutput).Unwrap();
+                    FileExporter.ExportToFile(scope, generationOutput).Unwrap();
                 }
             }
         }
