@@ -70,6 +70,13 @@ static class CecilHelper
         }
     }
 
+    public static MethodDefinition FindMethod(Scope scope, string assemblyFileName, string fullTypeName, string fullMethodName)
+    {
+        return scope.GetTypesInAssemblyFile(assemblyFileName)
+                    .FirstOrDefault(t => t.FullName == fullTypeName)?
+                    .Methods.FirstOrDefault(m => m.FullName == fullMethodName);
+    }
+
     public static IReadOnlyList<PropertyDefinition> FindUsedProperties(this IReadOnlyList<AssemblyAnalyse> analyses, TypeDefinition searchType)
     {
         var usedProperties = new List<PropertyDefinition>();
@@ -78,7 +85,7 @@ static class CecilHelper
         {
             foreach (var assemblyAnalyse in analyses)
             {
-                if (assemblyAnalyse.HasUsage(propertyDefinition))
+                if (HasUsage(assemblyAnalyse, propertyDefinition))
                 {
                     usedProperties.Add(propertyDefinition);
                 }
@@ -90,6 +97,20 @@ static class CecilHelper
         static bool IsSame(PropertyDefinition a, PropertyDefinition b)
         {
             return a.FullName == b.FullName;
+        }
+
+        static bool HasUsage(AssemblyAnalyse assemblyAnalyse, PropertyDefinition propertyDefinition)
+        {
+            foreach (var mr in assemblyAnalyse.CalledMethods)
+            {
+                if (propertyDefinition.GetMethod?.FullName == mr.FullName ||
+                    propertyDefinition.SetMethod?.FullName == mr.FullName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -163,19 +184,13 @@ static class CecilHelper
         return name;
     }
 
-    public static MethodDefinition FindMethod(Scope scope, string assemblyFileName, string fullTypeName, string fullMethodName)
-    {
-        return scope.GetTypesInAssemblyFile(assemblyFileName)
-            .FirstOrDefault(t => t.FullName == fullTypeName)?
-            .Methods.FirstOrDefault(m => m.FullName == fullMethodName);
-    }
-    
     public static IReadOnlyList<TypeDefinition> GetTypesInAssemblyFile(Scope scope, string assemblyFileName)
     {
         if (assemblyFileName.HasNoValue())
         {
             return [];
         }
+
         var config = scope.Config;
 
         var filePath = Path.Combine(config.AssemblySearchDirectory, assemblyFileName);
@@ -205,20 +220,6 @@ static class CecilHelper
 
             return typeList;
         });
-    }
-
-    public static bool HasUsage(this AssemblyAnalyse assemblyAnalyse, PropertyDefinition propertyDefinition)
-    {
-        foreach (var mr in assemblyAnalyse.CalledMethods)
-        {
-            if (propertyDefinition.GetMethod?.FullName == mr.FullName ||
-                propertyDefinition.SetMethod?.FullName == mr.FullName)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static bool IsMethodBelongToExternalDomain(Scope scope, MethodReference methodReference)
