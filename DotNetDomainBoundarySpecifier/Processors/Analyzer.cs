@@ -454,6 +454,13 @@ static class Analyzer
                 
                 return $"using Output = {fullName};";
             }
+
+            if (returnType.Namespace.StartsWith("BOA.", StringComparison.OrdinalIgnoreCase))
+            {
+
+                return $"using Output = {namespaceFullName}.{returnType.Name};";
+                
+            }
             return $"using Output = {returnType.GetShortNameInCsharp()};";
         }
     }
