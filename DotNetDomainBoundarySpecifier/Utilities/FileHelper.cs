@@ -2,6 +2,16 @@
 
 static class FileHelper
 {
+    public static bool IsFileContentAlreadySame(string filePath, string fileContent)
+    {
+        if (File.Exists(filePath))
+        {
+            return File.ReadAllText(filePath) == fileContent;
+        }
+
+        return false;
+    }
+
     public static Exception WriteCSharpFile(string filePath, string fileContent)
     {
         try
@@ -13,6 +23,11 @@ static class FileHelper
 
             if (File.Exists(filePath))
             {
+                if (IsFileContentAlreadySame(filePath, fileContent))
+                {
+                    return default;
+                }
+
                 File.Delete(filePath);
             }
 
