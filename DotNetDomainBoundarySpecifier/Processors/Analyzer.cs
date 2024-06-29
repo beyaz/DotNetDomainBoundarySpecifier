@@ -599,7 +599,7 @@ static class Analyzer
         return scope.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }
 
-    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(Scope scope)
+    internal static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(Scope scope)
     {
         var config = scope.Config;
 
