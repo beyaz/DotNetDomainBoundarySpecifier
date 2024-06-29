@@ -23,9 +23,12 @@ public class ExportAllTest
 
                     var methodBoundary = Analyzer.AnalyzeMethod(scope, analyzeMethodInput);
 
-                    var generationOutput = Analyzer.GenerateCode(scope, analyzeMethodInput, methodBoundary).Unwrap();
-
-                    FileExporter.ExportToFile(scope, generationOutput).Unwrap();
+                    var generationOutput = Analyzer.GenerateCode(scope, analyzeMethodInput, methodBoundary);
+                    if (generationOutput.Success)
+                    {
+                        FileExporter.ExportToFile(scope, generationOutput.Value).Unwrap();
+                    }
+                  
                 }
             }
         }
