@@ -1,5 +1,3 @@
-using DotNetDomainBoundarySpecifier.WebUI.Components;
-
 namespace DotNetDomainBoundarySpecifier.Tests;
 
 [TestClass]
@@ -10,7 +8,7 @@ public class ExportAllTest
     {
         var scope = DefaultScope;
 
-        foreach (var externalDomainAssemblyFile in AssemblySelector.ExternalDomainAssemblyFiles)
+        foreach (var externalDomainAssemblyFile in scope.Config.UsedExternalAssemblies)
         {
             foreach (var typeDefinition in scope.GetTypesInAssemblyFile(externalDomainAssemblyFile))
             {
