@@ -2,7 +2,7 @@
 
 sealed class AssemblySelector : Component<AssemblySelector.State>
 {
-    static readonly IReadOnlyList<string> ExternalDomainAssemblyFiles
+    internal static readonly IReadOnlyList<string> ExternalDomainAssemblyFiles
         = Directory.GetFiles(ReadConfig().AssemblySearchDirectory, "*.dll")
                    .Where(x => !IsInDomain(DefaultScope, x))
                    .Select(Path.GetFileName)
