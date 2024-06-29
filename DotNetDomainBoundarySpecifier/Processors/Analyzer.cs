@@ -151,7 +151,7 @@ static class Analyzer
 
         if (targetMethod is null)
         {
-            return default;
+            return new InvalidDataException("Target Method not specified.");
         }
 
         var targetType = targetMethod.DeclaringType;
@@ -399,7 +399,7 @@ static class Analyzer
             processFile.AppendLine("}"); // end of class
         }
 
-        return new CodeGenerationOutput()
+        return new CodeGenerationOutput
         {
             ContractFile = new()
             {
