@@ -10,26 +10,23 @@ public class ExportAllTest
 
         foreach (var externalDomainAssemblyFile in scope.Config.UsedExternalAssemblies)
         {
-            foreach (var typeDefinition in scope.GetTypesInAssemblyFile(externalDomainAssemblyFile))
+            foreach (var methodDefinition in Analyzer.GetCalledMethodsFromExternalDomain(scope, externalDomainAssemblyFile))
             {
-                foreach (var methodDefinition in Analyzer.GetCalledMethodsFromExternalDomain(scope, externalDomainAssemblyFile))
+                var analyzeMethodInput = new Analyzer.AnalyzeMethodInput
                 {
-                    var analyzeMethodInput = new Analyzer.AnalyzeMethodInput
-                    {
-                        AssemblyFileName = externalDomainAssemblyFile,
-                        TypeFullName     = typeDefinition.FullName,
-                        MethodFullName   = methodDefinition.FullName
-                    };
+                    AssemblyFileName = externalDomainAssemblyFile,
+                    TypeFullName     = methodDefinition.DeclaringType.FullName,
+                    MethodFullName   = methodDefinition.FullName
+                };
 
-                    var methodBoundary = Analyzer.AnalyzeMethod(scope, analyzeMethodInput);
+                var methodBoundary = Analyzer.AnalyzeMethod(scope, analyzeMethodInput);
 
-                    var generationOutput = Analyzer.GenerateCode(scope, analyzeMethodInput, methodBoundary);
-                    if (generationOutput.Success)
-                    {
-                        FileExporter.ExportToFile(scope, generationOutput.Value).Unwrap();
-                    }
-                  
+                var generationOutput = Analyzer.GenerateCode(scope, analyzeMethodInput, methodBoundary);
+                if (generationOutput.Success)
+                {
+                    FileExporter.ExportToFile(scope, generationOutput.Value).Unwrap();
                 }
+
             }
         }
     }
