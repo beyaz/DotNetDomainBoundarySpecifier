@@ -497,6 +497,12 @@ static class Analyzer
 
     public static bool IsDotNetCoreType(string fullTypeName)
     {
+
+        if (fullTypeName.StartsWith("System.Collections.Generic.Dictionary`2<",StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
         var coreTypes = new[]
         {
             "System.String",
