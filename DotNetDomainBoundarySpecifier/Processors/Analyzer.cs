@@ -503,6 +503,11 @@ static class Analyzer
             return true;
         }
         
+        if (fullTypeName.StartsWith("System.Guid", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
         var coreTypes = new[]
         {
             "System.String",
