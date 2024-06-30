@@ -1,4 +1,7 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Linq;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -253,9 +256,12 @@ static class Analyzer
 
         
         var contracts = new List<(IReadOnlyList<string> lines, bool isInputType)>();
+
+
+        var enumTypes = new List<TypeDefinition>();
         
         // Input Output types
-        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod)
+        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod, List<TypeDefinition> enumTypes)
         {
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
             
@@ -266,6 +272,11 @@ static class Analyzer
             if (!isInputType)
             {
                 return None;
+            }
+
+            foreach (var parameterDefinition in parameters)
+            {
+                IfPropertyTypeIsEnumThenGetEnumType(parameterDefinition.ParameterType).Then(enumTypes.AddOrUpdate);
             }
             
             return new ListOf<string>
@@ -279,7 +290,9 @@ static class Analyzer
 
         
 
-        tryCreateInputTypeLines(scope, targetMethod).Then(lines => contracts.Add((lines, true)));
+        tryCreateInputTypeLines(scope, targetMethod,enumTypes).Then(lines => contracts.Add((lines, true)));
+
+     
         
         foreach (var propertyRecord in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName).OrderBy(x=>x.RelatedClassFullName))
         {
@@ -306,12 +319,48 @@ static class Analyzer
             {
                 var propertyDefinition = typeDefinition.Properties.First(p=>p.Name == record.RelatedPropertyName);
 
+                IfPropertyTypeIsEnumThenGetEnumType(propertyDefinition.PropertyType)
+                   .Then(x => enumTypes.AddOrUpdate(x));
+                
                 lines.Add($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
             }
                 
             lines.Add("}");
             
             contracts.Add((lines,isInputType));
+        }
+
+        static Option<TypeDefinition> IfPropertyTypeIsEnumThenGetEnumType(TypeReference typeReference)
+        {
+            var typeResolveResponse = Try(typeReference.Resolve);
+            if (typeResolveResponse.Success && typeResolveResponse.Value.IsEnum)
+            {
+                return typeResolveResponse.Value;
+            }
+
+            return None;
+        }
+        
+        foreach (var enumTypeDefinition in enumTypes)
+        {
+            var lines = new List<string>
+            {
+                $"public enum {enumTypeDefinition.Name}",
+                "{"
+            };
+            
+            foreach (var fieldDefinition in enumTypeDefinition.Fields)
+            {
+                if (fieldDefinition.Name == "value__")
+                {
+                    continue;
+                }
+
+                lines.Add($"    {fieldDefinition.Name},");
+            }
+            lines.Add("}");
+
+            contracts.Add((lines,false));
         }
         
         foreach (var (lines, _) in contracts.OrderByDescending(x=>x.isInputType?1:0))
@@ -389,7 +438,15 @@ static class Analyzer
 
                 name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
 
-                parameterPart.Add($"input.{name}");
+                if (parameterDefinition.ParameterType.Resolve().IsEnum)
+                {
+                    parameterPart.Add($"({parameterDefinition.ParameterType.FullName})input.{name}");
+                }
+                else
+                {
+                    parameterPart.Add($"input.{name}");
+                }
+                
             }
 
             processFile.AppendLine();

@@ -60,4 +60,14 @@ static class Extensions
     }
 
     public static ReactContextKey<bool> IsInSkeletonMode = new(nameof(IsInSkeletonMode));
+
+    public static void AddOrUpdate<T>(this List<T> list, T item)
+    {
+        if (list.Contains(item))
+        {
+            return;
+        }
+        
+        list.Add(item);
+    }
 }
