@@ -12,10 +12,10 @@ public class ExportAllTest
         {
             foreach (var methodDefinition in Analyzer.GetCalledMethodsFromExternalDomain(scope, externalDomainAssemblyFile))
             {
-                if (methodDefinition.Name != "IsInBlackList")
-                {
-                    continue;
-                }
+                //if (methodDefinition.Name != "IsInBlackList")
+                //{
+                //    continue;
+                //}
 
 
                 var analyzeMethodInput = new Analyzer.AnalyzeMethodInput
