@@ -294,6 +294,15 @@ sealed class MainView : Component<MainViewModel>
     
     Task OnSaveClicked1()
     {
+        if (state.Boundary.Method is null)
+        {
+            this.NotifyFail("Method should be select");
+            
+            state = state with { IsSaving = false };
+            
+            return Task.CompletedTask;
+        }
+        
         state = state with { IsSaving = false };
         
         Db.Save(DefaultScope, state.Boundary).ShowResult(this, "Saved");
