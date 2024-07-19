@@ -19,6 +19,14 @@ public sealed record Result<TValue>
             Value = value
         };
     }
+    
+    public static implicit operator Result<TValue>(OptionNoneValue none)
+    {
+        return new()
+        {
+            Value = Activator.CreateInstance<TValue>()
+        };
+    }
 
     public static implicit operator Result<TValue>(Exception error)
     {
@@ -167,19 +175,20 @@ static class FP
     }
 }
 
-class OptionNoneValue;
+public sealed class OptionNoneValue;
 
-sealed class Option<TValue>
+public sealed class Option<TValue>
 {
     public TValue Value { get; init; }
-    
-    public bool IsNone { get; init; }
+
+    public required bool IsNone { get; init; } = true;
     
     public static implicit operator Option<TValue>(TValue value)
     {
         return new()
         {
-            Value = value
+            Value = value,
+            IsNone = false
         };
     }
 

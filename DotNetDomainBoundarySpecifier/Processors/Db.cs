@@ -37,6 +37,11 @@ static class Db
 
     public static Result<Option<ExternalDomainBoundary>> TryGet(Scope scope, ExternalDomainBoundaryMethod method)
     {
+        if (method is null)
+        {
+            return None;
+        }
+        
         return Operation(scope, db =>
         {
             const string sql =
