@@ -120,6 +120,13 @@
                 flexDirection  = "column"
             </summary>
         </member>
+        <member name="P:ReactWithDotNet.Mixin.DisplayFlexColumnReverse">
+            <summary>
+                display = "flex"
+                <br />
+                flexDirection  = "column-reverse"
+            </summary>
+        </member>
         <member name="P:ReactWithDotNet.Mixin.DisplayFlexColumnCentered">
             <summary>
                 display = "flex"
@@ -136,6 +143,13 @@
                 display = "flex"
                 <br />
                 flexDirection  = "row"
+            </summary>
+        </member>
+        <member name="P:ReactWithDotNet.Mixin.DisplayFlexRowReverse">
+            <summary>
+                display = "flex"
+                <br />
+                flexDirection  = "row-reverse"
             </summary>
         </member>
         <member name="P:ReactWithDotNet.Mixin.DisplayFlexRowCentered">
