@@ -27,5 +27,6 @@
 
   "InputOutputsNamespacePrefix": "_Contracts_",
   "ProcessNamespacePrefix": "_Process_",
-  "DatabaseFilePath": "C:\\github\\DotNetDomainBoundarySpecifier\\Database.sqlite"
+  "DatabaseFilePath": "C:\\github\\DotNetDomainBoundarySpecifier\\Database.sqlite",
+  "UsedExternalAssemblies": []
 }

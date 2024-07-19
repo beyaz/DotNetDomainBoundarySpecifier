@@ -1,4 +1,7 @@
-﻿namespace DotNetDomainBoundarySpecifier.Processors;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Linq;
+
+namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -129,12 +132,24 @@ static class Analyzer
 
             foreach (var propertyDefinition in usedProperties)
             {
-                properties = properties.Add(new()
+                var newItem = new ExternalDomainBoundaryProperty
                 {
-                    AssemblyFileName = typeDefinition.Scope.Name,
-                    RelatedClassFullName     = typeDefinition.FullName,
+                    AssemblyFileName     = typeDefinition.Scope.Name,
+                    RelatedClassFullName = typeDefinition.FullName,
                     RelatedPropertyName  = propertyDefinition.Name
-                });
+                };
+
+                bool alreadyExists(ExternalDomainBoundaryProperty x) =>
+                    x.AssemblyFileName == newItem.AssemblyFileName &&
+                    x.RelatedClassFullName == newItem.RelatedClassFullName &&
+                    x.RelatedPropertyName == newItem.RelatedPropertyName;
+
+                if (properties.Any(alreadyExists))
+                {
+                    continue;
+                }
+                
+                properties = properties.Add(newItem);
 
                 properties = pushType(scope, properties, propertyDefinition.PropertyType);
             }
@@ -151,7 +166,7 @@ static class Analyzer
 
         if (targetMethod is null)
         {
-            return default;
+            return new InvalidDataException("Target Method not specified.");
         }
 
         var targetType = targetMethod.DeclaringType;
@@ -190,27 +205,32 @@ static class Analyzer
         contractFile.AppendLine($"namespace {names.ContractsProject.NamespaceName};");
         contractFile.AppendLine();
 
+        string outputDeclarationLine;
         {
-            var result = calculateOutputDeclerationLine(targetMethod.ReturnType, names.ContractsProject.NamespaceName);
+            var result = calculateOutputDeclarationLine(targetMethod.ReturnType, names.ContractsProject.NamespaceName);
             if (result.HasError)
             {
                 return result.Error;
             }
 
-            contractFile.AppendLine(result.Value);
+            outputDeclarationLine = result.Value;
         }
         
-        
+        contractFile.AppendLine(outputDeclarationLine);
+
+
 
         processFile.AppendLine($"using Input = {names.ContractsProject.NamespaceName}.{targetMethod.Name}Input;");
-        if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
-        {
-            processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" : outputTypeName)};");
-        }
-        else
-        {
-            processFile.AppendLine($"using Output = {names.ContractsProject.NamespaceName}.{outputTypeName};");
-        }
+        processFile.AppendLine(outputDeclarationLine);
+        
+        //if (outputTypeIsAlreadyExistingType && IsDotNetCoreType(outputTypeAsAlreadyExistingType.FullName))
+        //{
+        //    processFile.AppendLine($"using Output = {(outputTypeName == "DateTime" ? "System.DateTime" : outputTypeName)};");
+        //}
+        //else
+        //{
+        //    processFile.AppendLine($"using Output = {names.ContractsProject.NamespaceName}.{outputTypeName};");
+        //}
 
         processFile.AppendLine();
         processFile.AppendLine($"namespace {names.ProcessProject.NamespaceName};");
@@ -236,18 +256,27 @@ static class Analyzer
 
         
         var contracts = new List<(IReadOnlyList<string> lines, bool isInputType)>();
+
+
+        var enumTypes = new List<TypeDefinition>();
         
         // Input Output types
-        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod)
+        static Option<IReadOnlyList<string>> tryCreateInputTypeLines(Scope scope, MethodDefinition targetMethod, List<TypeDefinition> enumTypes)
         {
             var parameters = targetMethod.Parameters.Where(p => !CanIgnoreParameterType(scope, p.ParameterType)).ToList();
             
             var isInputType = parameters.Count == 1 &&  IsDotNetCoreType(parameters[0].ParameterType.FullName)
-                              || parameters.Count > 1;
+                              || parameters.Count > 1
+                              || parameters.Count == 0;
 
             if (!isInputType)
             {
                 return None;
+            }
+
+            foreach (var parameterDefinition in parameters)
+            {
+                IfPropertyTypeIsEnumThenGetEnumType(parameterDefinition.ParameterType).Then(enumTypes.AddOrUpdate);
             }
             
             return new ListOf<string>
@@ -261,7 +290,9 @@ static class Analyzer
 
         
 
-        tryCreateInputTypeLines(scope, targetMethod).Then(lines => contracts.Add((lines, true)));
+        tryCreateInputTypeLines(scope, targetMethod,enumTypes).Then(lines => contracts.Add((lines, true)));
+
+     
         
         foreach (var propertyRecord in boundary.Properties.DistinctBy(x=>x.RelatedClassFullName).OrderBy(x=>x.RelatedClassFullName))
         {
@@ -288,12 +319,48 @@ static class Analyzer
             {
                 var propertyDefinition = typeDefinition.Properties.First(p=>p.Name == record.RelatedPropertyName);
 
+                IfPropertyTypeIsEnumThenGetEnumType(propertyDefinition.PropertyType)
+                   .Then(x => enumTypes.AddOrUpdate(x));
+                
                 lines.Add($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
             }
                 
             lines.Add("}");
             
             contracts.Add((lines,isInputType));
+        }
+
+        static Option<TypeDefinition> IfPropertyTypeIsEnumThenGetEnumType(TypeReference typeReference)
+        {
+            var typeResolveResponse = Try(typeReference.Resolve);
+            if (typeResolveResponse.Success && typeResolveResponse.Value.IsEnum)
+            {
+                return typeResolveResponse.Value;
+            }
+
+            return None;
+        }
+        
+        foreach (var enumTypeDefinition in enumTypes)
+        {
+            var lines = new List<string>
+            {
+                $"public enum {enumTypeDefinition.Name}",
+                "{"
+            };
+            
+            foreach (var fieldDefinition in enumTypeDefinition.Fields)
+            {
+                if (fieldDefinition.Name == "value__")
+                {
+                    continue;
+                }
+
+                lines.Add($"    {fieldDefinition.Name},");
+            }
+            lines.Add("}");
+
+            contracts.Add((lines,false));
         }
         
         foreach (var (lines, _) in contracts.OrderByDescending(x=>x.isInputType?1:0))
@@ -371,7 +438,15 @@ static class Analyzer
 
                 name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
 
-                parameterPart.Add($"input.{name}");
+                if (parameterDefinition.ParameterType.Resolve().IsEnum)
+                {
+                    parameterPart.Add($"({parameterDefinition.ParameterType.FullName})input.{name}");
+                }
+                else
+                {
+                    parameterPart.Add($"input.{name}");
+                }
+                
             }
 
             processFile.AppendLine();
@@ -399,7 +474,7 @@ static class Analyzer
             processFile.AppendLine("}"); // end of class
         }
 
-        return new CodeGenerationOutput()
+        return new CodeGenerationOutput
         {
             ContractFile = new()
             {
@@ -413,7 +488,7 @@ static class Analyzer
             }
         };
 
-        static Result<string> calculateOutputDeclerationLine(TypeReference methodReturnType, string namespaceFullName)
+        static Result<string> calculateOutputDeclarationLine(TypeReference methodReturnType, string namespaceFullName)
         {
             var returnType = GetValueTypeIfTypeIsMonadType(methodReturnType);
             if (returnType is GenericInstanceType genericInstanceType)
@@ -437,7 +512,24 @@ static class Analyzer
                 
                 return $"using Output = {fullName};";
             }
-            return $"using Output = {returnType.GetShortNameInCsharp()};";
+
+            if (returnType.Namespace.StartsWith("BOA.", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"using Output = {namespaceFullName}.{returnType.Name};";
+            }
+            
+            
+            return $"using Output = {convertDateTimeAsSystemDotDateTime(returnType.GetShortNameInCsharp())};";
+
+            static string convertDateTimeAsSystemDotDateTime(string typeName)
+            {
+                if (typeName == "DateTime")
+                {
+                    return "System.DateTime";
+                }
+
+                return typeName;
+            }
         }
     }
 
@@ -447,6 +539,8 @@ static class Analyzer
 
         var domainAssemblies = GetDomainAssemblies(scope);
 
+        var results = new Dictionary<string, MethodDefinition>();
+        
         foreach (var analyse in domainAssemblies)
         {
             foreach (var methodReference in analyse.CalledMethods)
@@ -478,11 +572,13 @@ static class Analyzer
 
                     if (targetMethod.DeclaringType.Scope.Name == assemblyFileNameInExternalDomain)
                     {
-                        yield return targetMethod;
+                        results.TryAdd(targetMethod.FullName, targetMethod);
                     }
                 }
             }
         }
+
+        return results.Values;
     }
 
     public static TypeReference GetValueTypeIfTypeIsMonadType(TypeReference typeReference)
@@ -497,6 +593,17 @@ static class Analyzer
 
     public static bool IsDotNetCoreType(string fullTypeName)
     {
+
+        if (fullTypeName.StartsWith("System.Collections.Generic.Dictionary`2<",StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        if (fullTypeName.StartsWith("System.Guid", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
         var coreTypes = new[]
         {
             "System.String",
@@ -576,7 +683,7 @@ static class Analyzer
         return scope.Config.IgnoreParameterTypeNamesLike.Contains(parameterTypeReference.Name);
     }
 
-    static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(Scope scope)
+    internal static IReadOnlyList<AssemblyAnalyse> GetDomainAssemblies(Scope scope)
     {
         var config = scope.Config;
 

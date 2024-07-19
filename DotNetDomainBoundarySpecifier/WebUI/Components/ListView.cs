@@ -74,7 +74,7 @@ sealed class ListView<TRecord> : Component<ListView<TRecord>.State>
             {
                 Title.HasValue() ? (b)Title : null,
 
-                IsInSkeletonMode[Context] ? new Skeleton { Padding(8, 38) } :
+                IsInSkeletonMode[Context] ? new Skeleton { Height(38) } :
                     new SearchTextBox
                     {
                         Value = state.SearchText,

@@ -32,5 +32,8 @@ sealed record Config
     public string ProcessNamespacePrefix { get; init; }
     
     public string DatabaseFilePath { get; init; }
+    
+    public IReadOnlyList<string> UsedExternalAssemblies { get; init; }
+    
     // @formatting:on
 }
