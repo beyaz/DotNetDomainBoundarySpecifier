@@ -921,8 +921,8 @@ function ConvertToEventHandlerFunction(parentJsonNode, remoteMethodInfo)
     const handlerComponentUniqueIdentifier = remoteMethodInfo.HandlerComponentUniqueIdentifier;
     const functionNameOfGrabEventArguments = remoteMethodInfo.FunctionNameOfGrabEventArguments;
     const stopPropagation = remoteMethodInfo.StopPropagation;
-    const htmlElementScrollDebounceTimeout = remoteMethodInfo.HtmlElementScrollDebounceTimeout;
     const keyboardEventCallOnly = remoteMethodInfo.KeyboardEventCallOnly;
+    const debounceTimeout = remoteMethodInfo.DebounceTimeout;
 
     NotNull(remoteMethodName);
     NotNull(handlerComponentUniqueIdentifier);
@@ -989,8 +989,8 @@ function ConvertToEventHandlerFunction(parentJsonNode, remoteMethodInfo)
 
             return;
         }
-        
-        if (htmlElementScrollDebounceTimeout > 0)
+
+        if (debounceTimeout > 0)
         {
             const eventName = eventArguments[0]._reactName;
 
@@ -1013,7 +1013,7 @@ function ConvertToEventHandlerFunction(parentJsonNode, remoteMethodInfo)
                 const executionEntry = StartAction(actionArguments);
                 executionEntry.name = executionQueueItemName;
 
-            }, htmlElementScrollDebounceTimeout);
+            }, debounceTimeout);
 
             newState[SyncId] = GetNextSequence();
 
@@ -1452,6 +1452,11 @@ function ConvertToSyntheticKeyboardEvent(e)
 function ConvertToSyntheticChangeEvent(e)
 {
     const target = ConvertToShadowHtmlElement(e.target);
+
+    if (e._reactName === 'onInput')
+    {
+        target.textContent = e.target.textContent;
+    }
 
     return {
         bubbles:   e.bubbles,

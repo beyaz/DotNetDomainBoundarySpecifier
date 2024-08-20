@@ -233,7 +233,17 @@
                 img.src = <paramref name="src" />
             </summary>
         </member>
-        <member name="M:ReactWithDotNet.Mixin.ListenEventThenOnlyUpdateState``1(ReactWithDotNet.Client,``0)">
+        <member name="P:ReactWithDotNet.Mixin.LoadingLazy">
+            <summary>
+                img.loading = 'lazy'
+            </summary>
+        </member>
+        <member name="P:ReactWithDotNet.Mixin.LoadingEager">
+            <summary>
+                img.loading = 'eager'
+            </summary>
+        </member>
+        <member name="M:ReactWithDotNet.Mixin.ListenEventThenOnlyUpdateState``1(ReactWithDotNet.Client,``0,System.String)">
             <summary>
                 When event fired then updates only component state
                 <br />
@@ -379,6 +389,11 @@
         <member name="P:ReactWithDotNet.Mixin.HeightAuto">
             <summary>
                 style.height = "auto"
+            </summary>
+        </member>
+        <member name="P:ReactWithDotNet.Mixin.JustifyContentNormal">
+            <summary>
+                <para>justifyContent = "normal"</para>
             </summary>
         </member>
         <member name="P:ReactWithDotNet.Mixin.JustifyContentCenter">
@@ -807,6 +822,11 @@
         <member name="M:ReactWithDotNet.Mixin.LetterSpacing(System.Double)">
             <summary>
                 style.letterSpacing = <paramref name="letterSpacingAsPixel" /> + 'px'
+            </summary>
+        </member>
+        <member name="P:ReactWithDotNet.Mixin.AlignItemsNormal">
+            <summary>
+                <para>style.alignItems = "normal"</para>
             </summary>
         </member>
         <member name="P:ReactWithDotNet.Mixin.AlignItemsCenter">
@@ -3311,6 +3331,11 @@
         <member name="M:ReactWithDotNet.Mixin.ScrollbarGutter(System.String)">
             <summary>
                 style.scrollbarGutter = <paramref name="value" />
+            </summary>
+        </member>
+        <member name="M:ReactWithDotNet.Mixin.ScrollbarWidth(System.String)">
+            <summary>
+                style.scrollbarWidth = <paramref name="value" />
             </summary>
         </member>
         <member name="M:ReactWithDotNet.Mixin.ShapeImageThreshold(System.String)">
@@ -7541,11 +7566,6 @@
         <member name="P:ReactWithDotNet.HtmlElement.onClickPreview">
             <summary>
             TODO: comment here
-            </summary>
-        </member>
-        <member name="P:ReactWithDotNet.HtmlElement.onScrollDebounceTimeout">
-            <summary>
-                Default value: 400 <br />
             </summary>
         </member>
         <member name="P:ReactWithDotNet.HtmlElement.style">

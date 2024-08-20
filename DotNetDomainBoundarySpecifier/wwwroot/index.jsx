@@ -5,9 +5,6 @@ import ReactWithDotNet from "./react-with-dotnet/react-with-dotnet";
 
 import "./react-with-dotnet/libraries/rsuite/all";
 import "./react-with-dotnet/libraries/react-free-scrollbar/all";
-import "./react-with-dotnet/libraries/MonacoEditorReact/all";
-import "./react-with-dotnet/libraries/mui-core/all";
-import "./react-with-dotnet/libraries/react-split/all";
 import "./react-with-dotnet/libraries/framer-motion/all";
 
 ReactWithDotNet.RegisterExternalJsObject("CloseWindow", () => window.close());
