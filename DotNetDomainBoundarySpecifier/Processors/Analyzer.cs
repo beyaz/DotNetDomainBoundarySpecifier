@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using System.Linq;
-
-namespace DotNetDomainBoundarySpecifier.Processors;
+﻿namespace DotNetDomainBoundarySpecifier.Processors;
 
 static class Analyzer
 {
@@ -276,7 +273,7 @@ static class Analyzer
 
             foreach (var parameterDefinition in parameters)
             {
-                IfPropertyTypeIsEnumThenGetEnumType(parameterDefinition.ParameterType).Then(enumTypes.AddOrUpdate);
+                ResolveIfTypeIsEnum(parameterDefinition.ParameterType).Then(enumTypes.AddOrUpdate);
             }
             
             return new ListOf<string>
@@ -319,7 +316,7 @@ static class Analyzer
             {
                 var propertyDefinition = typeDefinition.Properties.First(p=>p.Name == record.RelatedPropertyName);
 
-                IfPropertyTypeIsEnumThenGetEnumType(propertyDefinition.PropertyType)
+                ResolveIfTypeIsEnum(propertyDefinition.PropertyType)
                    .Then(x => enumTypes.AddOrUpdate(x));
                 
                 lines.Add($"    public {propertyDefinition.PropertyType.GetShortNameInCsharp()} {propertyDefinition.Name} {{ get; set; }}");
@@ -330,16 +327,7 @@ static class Analyzer
             contracts.Add((lines,isInputType));
         }
 
-        static Option<TypeDefinition> IfPropertyTypeIsEnumThenGetEnumType(TypeReference typeReference)
-        {
-            var typeResolveResponse = Try(typeReference.Resolve);
-            if (typeResolveResponse.Success && typeResolveResponse.Value.IsEnum)
-            {
-                return typeResolveResponse.Value;
-            }
-
-            return None;
-        }
+        
         
         foreach (var enumTypeDefinition in enumTypes)
         {
@@ -438,7 +426,7 @@ static class Analyzer
 
                 name = char.ToUpper(name[0], new("en-US")) + new string(name.Skip(1).ToArray());
 
-                if (parameterDefinition.ParameterType.Resolve().IsEnum)
+                if (ResolveIfTypeIsEnum(parameterDefinition.ParameterType).HasValue)
                 {
                     parameterPart.Add($"({parameterDefinition.ParameterType.FullName})input.{name}");
                 }
@@ -735,5 +723,22 @@ static class Analyzer
         public required string TypeFullName { get; init; }
 
         public required string MethodFullName { get; init; }
+    }
+
+
+    static Option<TypeDefinition> ResolveIfTypeIsEnum(TypeReference typeReference)
+    {
+        if (!typeReference.IsValueType)
+        {
+            return None;
+        }
+
+        var typeResolveResponse = Try(typeReference.Resolve);
+        if (typeResolveResponse.Success && typeResolveResponse.Value.IsEnum)
+        {
+            return typeResolveResponse.Value;
+        }
+
+        return None;
     }
 }

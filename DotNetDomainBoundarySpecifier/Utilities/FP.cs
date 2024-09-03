@@ -182,6 +182,8 @@ public sealed class Option<TValue>
     public TValue Value { get; init; }
 
     public required bool IsNone { get; init; } = true;
+
+    public bool HasValue => IsNone is false;
     
     public static implicit operator Option<TValue>(TValue value)
     {
