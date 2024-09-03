@@ -74,7 +74,23 @@ static class CecilHelper
     {
         return scope.GetTypesInAssemblyFile(assemblyFileName)
                     .FirstOrDefault(t => t.FullName == fullTypeName)?
-                    .Methods.FirstOrDefault(m => m.FullName == fullMethodName);
+                    .Methods.FirstOrDefault(m => hasMatch(m, fullMethodName));
+
+
+        static bool hasMatch(MethodDefinition methodDefinition, string fullMethodNameOrOnlyMethodName)
+        {
+            if (methodDefinition.FullName == fullMethodNameOrOnlyMethodName)
+            {
+                return true;
+            }
+
+            if (methodDefinition.Name == fullMethodNameOrOnlyMethodName)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public static IReadOnlyList<PropertyDefinition> FindUsedProperties(this IReadOnlyList<AssemblyAnalyse> analyses, TypeDefinition searchType)
