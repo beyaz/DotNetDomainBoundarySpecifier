@@ -12,6 +12,7 @@ sealed record Config
     public string AssemblySearchDirectory { get; init; }
     public IReadOnlyList<string> DomainFiles { get; init; }
     public IReadOnlyList<string> SkipTypes { get; init; }
+    public IReadOnlyList<string> SkipAssemblyNameStartsWith { get; init; }
 
     public FileStorageInfo FileStorage { get; init; }
     public string ModuleName { get; init; }

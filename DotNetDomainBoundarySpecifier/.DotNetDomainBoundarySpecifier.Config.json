@@ -18,6 +18,8 @@
     "Microsoft.CodeAnalysis.EmbeddedAttribute",
     "System.Runtime.CompilerServices.RefSafetyRulesAttribute"
   ],
+  "SkipAssemblyNameStartsWith": [
+  ],
   "ExternalDomainFileNameContains": [ "Test.ExternalDomainY" ],
 
   "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],

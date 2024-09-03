@@ -13,7 +13,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        ProcessHelper.KillAllNamedProcess("ApiInspector.WebUI");
+        ProcessHelper.KillAllNamedProcess("DotNetDomainBoundarySpecifier");
 
         var config = ReadConfig();
 

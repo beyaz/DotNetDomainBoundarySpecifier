@@ -540,7 +540,7 @@ static class Analyzer
         var domainAssemblies = GetDomainAssemblies(scope);
 
         var results = new Dictionary<string, MethodDefinition>();
-        
+
         foreach (var analyse in domainAssemblies)
         {
             foreach (var methodReference in analyse.CalledMethods)
@@ -561,6 +561,11 @@ static class Analyzer
                     continue;
                 }
 
+                if (config.SkipAssemblyNameStartsWith.Any(prefix=> methodReference.DeclaringType.Scope.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+                
                 var targetMethodResult = Try(methodReference.Resolve);
                 if (targetMethodResult.Success)
                 {

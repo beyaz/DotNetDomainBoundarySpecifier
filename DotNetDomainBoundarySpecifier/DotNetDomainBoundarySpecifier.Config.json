@@ -19,6 +19,13 @@
     "System.Runtime.CompilerServices.RefSafetyRulesAttribute",
     "BOA.Business.Kernel.General.FTP"
   ],
+  "SkipAssemblyNameStartsWith": [
+    "BOA.Business.Kernel.Card.",
+    "BOA.Types.Kernel.Card.",
+    "BOA.Base",
+    "BOA.Common",
+    "BOA.Proxy"
+  ],
   "ExternalDomainFileNameContains": [ "BOA." ],
 
   "IgnoreParameterTypeNamesLike": [ "ObjectHelper" ],
