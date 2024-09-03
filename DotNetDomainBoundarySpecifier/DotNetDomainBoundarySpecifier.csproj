@@ -35,9 +35,6 @@
 
 
 	<ItemGroup>
-		<Content Update="DotNetDomainBoundarySpecifier.Config.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Update="web.config">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
