@@ -38,7 +38,7 @@ sealed class NotificationHost : Component<NotificationHost.State>
             return null;
         }
 
-        return new FlexRow(Gap(8), WidthFitContent, MaxWidth(400), BackgroundWhite, Theme.BoxShadowForWindow, BorderRadius(5), Padding(8), Border(1, solid, Theme.BorderColor),WordBreakWord)
+        return new FlexRow(Gap(8), WidthFitContent, MaxWidth(400), Background(White), Theme.BoxShadowForWindow, BorderRadius(5), Padding(8), Border(1, solid, Theme.BorderColor),WordBreakWord)
         {
             message.IsSuccess ? IconSuccess : IconFail,
             message.Text
